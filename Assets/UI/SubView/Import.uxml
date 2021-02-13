@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="/Assets/UI/Main.uss" />
+    <ui:VisualElement style="padding-left: 10px; padding-right: 20px; padding-top: 10px; padding-bottom: 10px; background-color: rgba(55, 55, 55, 0.96); height: 100%;">
+        <ui:Label text="Import from Speckle" display-tooltip-when-elided="true" name="H1" class="h1" />
+        <ui:VisualElement name="Container-Login" class="container" style="margin-top: 10px;">
+            <ui:Label text="Login" display-tooltip-when-elided="true" class="h2" />
+            <ui:TextField picking-mode="Ignore" label="Server : " value="filler text" text="https://hestia.speckle.works/api/&#10;" name="ServerText" class="inputField" />
+            <ui:TextField label="Email :" value="filler text" name="EmailText" picking-mode="Ignore" class="inputField" />
+            <ui:TextField label="Password :" value="filler text" password="true" name="PasswordText" picking-mode="Ignore" class="inputField" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Container-Model" class="container">
+            <ui:Label text="Model" display-tooltip-when-elided="true" class="h2" />
+            <ui:TextField picking-mode="Ignore" label="Stream ID : " value="filler text" text="&#10;" name="StreamIDText" class="inputField" />
+        </ui:VisualElement>
+        <ui:VisualElement style="align-items: center; position: absolute; bottom: 0; width: 100%; margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;">
+            <ui:Button text="Import&#10;" display-tooltip-when-elided="true" name="ButtonImport" class="button-fw" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
