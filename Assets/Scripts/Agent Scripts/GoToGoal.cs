@@ -19,9 +19,4 @@ public class GoToGoal : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

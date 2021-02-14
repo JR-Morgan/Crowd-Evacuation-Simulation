@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(UIDocument))]
-public class ImportUIController : MonoBehaviour
+public class OLDImportUIController : MonoBehaviour
 {
     private CallbackEventHandler import;
     private EventCallback<ClickEvent> callback;

@@ -13,12 +13,17 @@ public class CameraController : MonoBehaviour
     [Range(0f, 10f)]
     public float keyTranslateScaleZ = 1f, keyTranslateModifier = 2f, mouseTranslateScaleX = 1f, mouseTranslateScaleY = 1f, mouseRotateScaleX = 1f, mouseRotateScaleY = 1f;
 
+    private void Awake()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 144;
+    }
 
 
     void Update()
     {
 
-        float translateX = 0f, translateY = 0f, translateZ = 0f, rotX = 0f, rotY = 0f;
+        float translateX = 0f, translateY = 0f, translateZ = 0f;
 
         // Key Inputs
         translateX += (Input.GetAxis("CameraHorizontal") * keyTranslateScaleX * keyTranslateSpeed * (keyTranslateModifier * Input.GetAxis("CameraTranslateModifier") + 1)) * Time.deltaTime;
@@ -28,8 +33,8 @@ public class CameraController : MonoBehaviour
         translateX += Input.GetAxis("CameraTranslateMode") * Input.GetAxis("Mouse X") * mouseTranslateScaleX * mouseTranslateSpeed * Time.deltaTime;
         translateY += Input.GetAxis("CameraTranslateMode") * Input.GetAxis("Mouse Y") * mouseTranslateScaleY * mouseTranslateSpeed * Time.deltaTime;
 
-        rotX += Input.GetAxis("CameraRotateMode") * Input.GetAxis("Mouse Y") * mouseRotateScaleX * mouseRotateSpeed * Time.deltaTime;
-        rotY += Input.GetAxis("CameraRotateMode") * Input.GetAxis("Mouse X") * mouseRotateScaleY * mouseRotateSpeed * Time.deltaTime;
+        float rotX = Input.GetAxis("CameraRotateMode") * Input.GetAxis("Mouse Y") * mouseRotateScaleX * mouseRotateSpeed * Time.deltaTime;
+        float rotY = Input.GetAxis("CameraRotateMode") * Input.GetAxis("Mouse X") * mouseRotateScaleY * mouseRotateSpeed * Time.deltaTime;
 
 
         //Apply Transform

@@ -1,9 +1,13 @@
-LoginUIController {
+.window {
     background-color: rgb(53, 59, 72);
     color: rgb(245, 246, 250);
     flex-grow: 1;
     align-items: center;
     justify-content: center;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 .large-centered-input {
@@ -67,10 +71,32 @@ LoginUIController {
     min-height: 35px;
 }
 
-.large-centered-button:hover {
+.button:hover {
     background-color: rgb(113, 128, 147);
 }
 
 .error-message {
     font-size: 14px;
+}
+
+.small-top-element {
+    border-left-color: rgb(113, 128, 147);
+    border-right-color: rgb(113, 128, 147);
+    border-top-color: rgb(113, 128, 147);
+    border-bottom-color: rgb(113, 128, 147);
+    background-color: rgb(47, 54, 64);
+    color: rgb(245, 246, 250);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+:root {
+    flex-grow: 1;
 }

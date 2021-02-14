@@ -45,8 +45,11 @@ public class LoginUIController : VisualElement
                 if (u != null)
                 {
                     labelError.text = "Login Successful";
-                    parent.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/ImportWindow.uxml").CloneTree());
-                    RemoveFromHierarchy(); //TODO check that this will allow GC to delete this object
+                    
+                    VisualTreeAsset nextUI = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Sub Windows/ImportWindow.uxml");
+                    //VisualTreeAsset nextUI = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/SubView/Import.uxml");
+                    parent.Add(nextUI.CloneTree());
+                    RemoveFromHierarchy();
                 }
                 else
                 {
