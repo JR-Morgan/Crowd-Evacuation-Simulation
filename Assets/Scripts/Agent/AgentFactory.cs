@@ -5,29 +5,73 @@ using UnityEngine.AI;
 
 public class AgentFactory : MonoBehaviour
 {
+    private static AgentFactory _instance;
+    public static AgentFactory Instance { get => _instance; }
+
+
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
+        }
+    }
+
+
+
     [SerializeField]
     private GameObject AgentPrefab;
 
+    [SerializeField]
+    private int numberOfAgents;
+    [SerializeField]
+    private GameObject env;
+    [SerializeField]
+    private Transform goal;
 
-    public void SpawnAllAgents(GameObject environmentModel, int numberOfAgents) => SpawnAllAgents(numberOfAgents, environmentModel);
+    private void Start()
+    {
+        SpawnAllAgents();
+    }
 
+    public void SpawnAllAgents() => SpawnAllAgents(numberOfAgents, env);
 
-    public void SpawnAllAgents(int numberOfAgents, GameObject environmentModel, int tries = 50, float distance = 1f)
+    public void SpawnAllAgents(int numberOfAgents, GameObject environmentModel, int tries = 100, float distance = 1f)
     {
         Bounds bounds = CalculateLocalBounds(environmentModel);
 
-        for (int i = 0; i< numberOfAgents; i++)
+        for (int i = 0; i < numberOfAgents; i++)
         {
-            Vector3 position = RandomPoint(bounds, environmentModel.transform, tries, distance);
-            if (position != Vector3.positiveInfinity)
+            GameObject agent = Instantiate(AgentPrefab, transform);
+            NavMeshAgent navAgent = agent.transform.GetComponent<NavMeshAgent>();
+            AgentBehaviour agentBehaviour = agent.transform.GetComponent<AgentBehaviour>();
+
+            bool failed = true;
+            for (int j = 0; j < tries; j++)
             {
-                InstantateAgent(position);
+
+                Vector3 position = GetRandomPointOnNavMesh(bounds, environmentModel.transform, distance);
+                if (!position.Equals(Vector3.positiveInfinity))
+                {
+                    navAgent.Warp(position);
+                    if(agentBehaviour.CalcualtePath(goal.position))
+                    {
+                        failed = false;
+                        break;
+                    }
+                }
+                
             }
-            else
+            if (failed)
             {
-                Debug.LogError($"Could not spawn agent after {tries} tries");
+                Destroy(agent);
+                Debug.LogWarning($"Failed to instantiate agent in a valid location after {tries} tries.");
             }
-            
+
         }
         
     }
@@ -53,34 +97,24 @@ public class AgentFactory : MonoBehaviour
         return bounds;
     }
 
-    private GameObject InstantateAgent(Vector3 position)
-    {
-        GameObject agent = Instantiate(AgentPrefab, transform);
-        agent.transform.GetComponent<NavMeshAgent>().Warp(position);
-        return agent;
-    }
 
-
-    private static Vector3 RandomPoint(in Bounds bounds, Transform transform, int tries, float distance)
+    private static Vector3 GetRandomPointOnNavMesh(in Bounds bounds, Transform transform, float distance)
     {
-        for (int i = 0; i < tries; i++)
+        Vector3 randomPoint =  new Vector3(
+            Random.Range(bounds.min.x, bounds.max.x),
+            Random.Range(bounds.min.y, bounds.max.y),
+            Random.Range(bounds.min.z, bounds.max.z)
+        );
+
+        randomPoint = transform.TransformPoint(randomPoint);
+
+        //randomPoint += Random.insideUnitSphere * distance;
+
+        if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, distance, NavMesh.AllAreas))
         {
-            Vector3 randomPoint =  new Vector3(
-                Random.Range(bounds.min.x, bounds.max.x),
-                Random.Range(bounds.min.y, bounds.max.y),
-                Random.Range(bounds.min.z, bounds.max.z)
-            );
-
-            randomPoint = transform.TransformPoint(randomPoint);
-
-            //randomPoint += Random.insideUnitSphere * distance;
-
-            if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, distance, NavMesh.AllAreas))
-            {
-                return hit.position + Vector3.up ;
-            }
-
+            return hit.position + Vector3.up ;
         }
+
         return Vector3.positiveInfinity;
     }
 

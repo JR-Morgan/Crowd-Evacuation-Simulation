@@ -48,7 +48,9 @@ public class LoginUIController : VisualElement
                     
                     VisualTreeAsset nextUI = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Sub Windows/ImportWindow.uxml");
                     //VisualTreeAsset nextUI = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/SubView/Import.uxml");
-                    parent.Add(nextUI.CloneTree());
+                    VisualElement element = nextUI.CloneTree();
+
+                    parent.Add(element);
                     RemoveFromHierarchy();
                 }
                 else

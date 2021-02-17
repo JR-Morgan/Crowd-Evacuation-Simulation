@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Goal
   - SpeckleManager
+  - NavMeshManager
   layers:
   - Default
   - TransparentFX

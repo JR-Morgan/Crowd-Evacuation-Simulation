@@ -46,6 +46,8 @@ public class ImportUIController : VisualElement
     private void Logout()
     {
         VisualTreeAsset nextUI = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Sub Windows/LoginWindow.uxml");
+        SpeckleUnityManager speckle = GameObject.FindGameObjectWithTag("SpeckleManager").GetComponent<SpeckleUnityManager>();
+        speckle.Logout();
         parent.Add(nextUI.CloneTree());
         RemoveFromHierarchy();
     }
