@@ -38,17 +38,46 @@ public class AgentBehaviour : MonoBehaviour
     void Awake()
     {
         navAgent = this.GetComponent<NavMeshAgent>();
+         
     }
 
     void Start()
     {
+        //Disable automatic agent movement so that we can apply it's desired velocity in Tick();
+        //navAgent.isStopped = true;
         //if(terminalGoal == null) terminalGoal = GameObject.FindGameObjectWithTag("Goal").transform;
 
         //if(path == null) CalcualtePath(terminalGoal.position);
-        if(path != null)
+        if (path != null)
         {
             navAgent.SetPath(path);
         }
         
     }
+
+    //[SerializeField]
+    //bool update = false;
+    //[SerializeField]
+    //bool fixedUpdate = false;
+
+    //public void FixedUpdate()
+    //{
+    //    if (update && fixedUpdate)
+    //        Tick(Time.fixedDeltaTime);
+    //}
+
+    //private void Update()
+    //{
+    //    if(update && !fixedUpdate)
+    //    {
+    //        navAgent.isStopped = false;
+    //        Tick(Time.deltaTime);
+    //    }
+    //}
+
+    //public void Tick(float timeStep)
+    //{
+    //    Debug.Log($"Path: {navAgent.pathStatus}, Velocity: {navAgent.velocity}, Desired: {navAgent.desiredVelocity}");
+    //    transform.position += this.navAgent.desiredVelocity * timeStep;
+    //}
 }

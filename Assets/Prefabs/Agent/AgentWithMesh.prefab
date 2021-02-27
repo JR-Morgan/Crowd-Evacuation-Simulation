@@ -48,9 +48,9 @@ NavMeshAgent:
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
+  m_AutoTraverseOffMeshLink: 0
   m_AutoBraking: 1
-  m_AutoRepath: 1
+  m_AutoRepath: 0
   m_Height: 2
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
@@ -67,7 +67,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cc5c9c372b5637438bc9a5f183272d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terminalGoal: {fileID: 0}
 --- !u!1001 &1832499696782493303
 PrefabInstance:
   m_ObjectHideFlags: 0

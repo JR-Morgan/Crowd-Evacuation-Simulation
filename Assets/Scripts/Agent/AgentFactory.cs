@@ -8,6 +8,8 @@ public class AgentFactory : MonoBehaviour
     private static AgentFactory _instance;
     public static AgentFactory Instance { get => _instance; }
 
+    [SerializeField]
+    private int seed;
 
     private void Awake()
     {
@@ -18,6 +20,7 @@ public class AgentFactory : MonoBehaviour
         else
         {
             _instance = this;
+            Random.InitState(seed);
         }
     }
 
