@@ -85,7 +85,7 @@
     border-top-color: rgb(113, 128, 147);
     border-bottom-color: rgb(113, 128, 147);
     background-color: rgb(47, 54, 64);
-    color: rgb(245, 246, 250);
+    color: rgba(245, 246, 250, 255);
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     border-top-right-radius: 3px;
@@ -95,8 +95,13 @@
     padding-right: 5px;
     padding-top: 3px;
     padding-bottom: 3px;
+    align-items: center;
 }
 
 :root {
     flex-grow: 1;
+}
+
+Label {
+    color: rgb(220, 221, 225);
 }

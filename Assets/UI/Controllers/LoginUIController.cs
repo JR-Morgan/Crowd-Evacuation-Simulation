@@ -6,10 +6,6 @@ using UnityEngine.UIElements;
 public class LoginUIController : VisualElement
 {
     private Label labelError;
-    public LoginUIController()
-    {
-        this.RegisterCallback<GeometryChangedEvent>(Setup);
-    }
 
     private void Setup(GeometryChangedEvent evt)
     {
@@ -21,8 +17,6 @@ public class LoginUIController : VisualElement
         labelError.text = string.Empty;
 
         buttonSubmit.RegisterCallback<ClickEvent>(ev => SpeckleLogin(inputServer.text, inputEmail.text, inputPassword.text));
-
-        this.UnregisterCallback<GeometryChangedEvent>(Setup);
     }
 
     private void SpeckleLogin(string server, string email, string password)
@@ -46,7 +40,7 @@ public class LoginUIController : VisualElement
                 {
                     labelError.text = "Login Successful";
                     
-                    VisualTreeAsset nextUI = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Sub Windows/ImportWindow.uxml");
+                    VisualTreeAsset nextUI = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/ImportWindow.uxml");
                     //VisualTreeAsset nextUI = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/SubView/Import.uxml");
                     VisualElement element = nextUI.CloneTree();
 
@@ -65,12 +59,21 @@ public class LoginUIController : VisualElement
         }
 
     }
-
+    #region UXML Factory
     public new class UxmlFactory : UxmlFactory<LoginUIController, UxmlTraits> { }
 
     public new class UxmlTraits : VisualElement.UxmlTraits
     { }
+    public LoginUIController()
+    {
+        void GeometryChange(GeometryChangedEvent evt)
+        {
+            this.UnregisterCallback<GeometryChangedEvent>(Setup);
+            Setup(evt);
+        }
 
-
+        this.RegisterCallback<GeometryChangedEvent>(GeometryChange);
+    }
+    #endregion
 
 }

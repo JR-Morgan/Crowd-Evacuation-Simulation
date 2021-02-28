@@ -26,15 +26,14 @@ public class CameraController2D : MonoBehaviour
 
         // Mouse Inputs
         translateX -= Input.GetAxis("CameraTranslateMode") * Input.GetAxis("Mouse X") * mouseTranslateSpeed * Time.deltaTime;
-        translateZ -= Input.GetAxis("CameraTranslateMode") * Input.GetAxis("Mouse Y") * mouseTranslateSpeed * Time.deltaTime;
-
+        translateZ -= Input.GetAxis("CameraTranslateMode") * Input.GetAxis("Mouse Y") * mouseTranslateSpeed * Time.deltaTime;      
 
 
         //Apply Transform
         transform.Translate(translateX, translateZ, 0f);
         camera.orthographicSize -= Input.GetAxis("Scroll") * zoomSpeed * Time.deltaTime;
 
-        camera.orthographicSize = Mathf.Max(camera.orthographicSize, 0f);
+        camera.orthographicSize = Mathf.Max(camera.orthographicSize, 0.01f);
 
     }
 

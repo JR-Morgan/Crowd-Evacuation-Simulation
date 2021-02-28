@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="/Assets/UI/Styles/Sub Window Styles.uss" />
+    <ui:VisualElement class="small-top-element">
+        <ui:Label text="Untitled View" display-tooltip-when-elided="true" name="ViewName" />
+    </ui:VisualElement>
+</ui:UXML>

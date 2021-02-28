@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="Sub Window Styles.uss" />
+    <Style src="/Assets/UI/Styles/Sub Window Styles.uss" />
     <ImportUIController class="window">
         <ui:Button text="Log out" display-tooltip-when-elided="true" name="LogoutButton" class="small-top-element button" style="top: 30px; position: absolute; right: 30px;" />
         <ui:TextField picking-mode="Ignore" label="Stream ID" name="StreamIDText" class="large-centered-input" />

@@ -1,7 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="LoginWindow" src="Sub Windows/LoginWindow.uxml" />
-    <Style src="Main.uss" />
+    <ui:Template name="LoginWindow" src="Views/LoginWindow.uxml" />
+    <ui:Template name="CameraViewWindow" src="Views/CameraViewWindow.uxml" />
     <ui:VisualElement style="position: absolute; width: 25%; right: 0; bottom: 0; top: 0; flex-wrap: wrap; flex-direction: column;">
         <ui:Instance template="LoginWindow" name="LoginWindow" />
     </ui:VisualElement>
+    <ui:Instance template="CameraViewWindow" name="CameraViewWindow" style="width: 75%;" />
 </ui:UXML>

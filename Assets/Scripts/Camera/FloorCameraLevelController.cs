@@ -9,7 +9,7 @@ public class FloorCameraLevelController : MonoBehaviour
     private float floorHeight, groundOffset, relativeOffset;
 
     [SerializeField]
-    private int floor;
+    private int _floor;
 
     private new Camera camera;
 
@@ -20,10 +20,10 @@ public class FloorCameraLevelController : MonoBehaviour
 
 
     public int Floor {
-        get => floor;
+        get => _floor;
         set
         {
-            floor = value;
+            _floor = value;
             SetView();
         }
     }
@@ -46,6 +46,18 @@ public class FloorCameraLevelController : MonoBehaviour
         camera.farClipPlane = relativeOffset + floorHeight;
 
 
+    }
+
+    void Update()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            KeyCode key = KeyCode.Alpha0 + i;
+            if (Input.GetKeyDown(key))
+            {
+                Floor = i;
+            }
+        }
     }
 
 }

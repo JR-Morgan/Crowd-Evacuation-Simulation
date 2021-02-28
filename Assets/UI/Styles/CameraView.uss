@@ -1,0 +1,3 @@
+CameraViewController > * {
+    flex-grow: 0;
+}

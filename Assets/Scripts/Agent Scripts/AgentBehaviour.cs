@@ -38,7 +38,6 @@ public class AgentBehaviour : MonoBehaviour
     void Awake()
     {
         navAgent = this.GetComponent<NavMeshAgent>();
-         
     }
 
     void Start()
