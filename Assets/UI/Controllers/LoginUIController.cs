@@ -68,7 +68,7 @@ public class LoginUIController : VisualElement
     {
         void GeometryChange(GeometryChangedEvent evt)
         {
-            this.UnregisterCallback<GeometryChangedEvent>(Setup);
+            this.UnregisterCallback<GeometryChangedEvent>(GeometryChange);
             Setup(evt);
         }
 

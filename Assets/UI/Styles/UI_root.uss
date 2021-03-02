@@ -1,0 +1,13 @@
+.Left {
+    position: absolute;
+    width: 25%;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.Center {
+    width: 75%;
+}

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class AgentFactory : MonoBehaviour
+public class AgentManager : MonoBehaviour
 {
-    private static AgentFactory _instance;
-    public static AgentFactory Instance { get => _instance; }
+    private static AgentManager _instance;
+    public static AgentManager Instance { get => _instance; }
 
     [SerializeField]
     private int seed;
@@ -36,15 +36,22 @@ public class AgentFactory : MonoBehaviour
     [SerializeField]
     private Transform goal;
 
+    public List<AgentBehaviour> Agents { get; private set; }
+
     private void Start()
     {
         SpawnAllAgents();
     }
 
-    public void SpawnAllAgents() => SpawnAllAgents(numberOfAgents, env);
-
-    public void SpawnAllAgents(int numberOfAgents, GameObject environmentModel, int tries = 100, float distance = 1f)
+    public void SpawnAllAgents()
     {
+        Agents = SpawnAllAgents(numberOfAgents, env);
+        WorldStateManager.Instance.Initialise();
+    }
+
+    private List<AgentBehaviour> SpawnAllAgents(int numberOfAgents, GameObject environmentModel, int tries = 100, float distance = 1f)
+    {
+        List<AgentBehaviour> agents = new List<AgentBehaviour>();
         Bounds bounds = CalculateLocalBounds(environmentModel);
 
         for (int i = 0; i < numberOfAgents; i++)
@@ -69,14 +76,19 @@ public class AgentFactory : MonoBehaviour
                 }
                 
             }
+
             if (failed)
             {
                 Destroy(agent);
                 Debug.LogWarning($"Failed to instantiate agent in a valid location after {tries} tries.");
             }
+            else
+            {
+                agents.Add(agentBehaviour);
+            }
 
         }
-        
+        return agents;
     }
 
     private static Bounds CalculateLocalBounds(GameObject model)
