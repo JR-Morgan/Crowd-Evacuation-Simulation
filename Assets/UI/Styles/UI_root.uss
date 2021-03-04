@@ -1,6 +1,6 @@
 .Left {
     position: absolute;
-    width: 25%;
+    width: 20%;
     right: 0;
     bottom: 0;
     top: 0;
@@ -9,5 +9,5 @@
 }
 
 .Center {
-    width: 75%;
+    width: 80%;
 }

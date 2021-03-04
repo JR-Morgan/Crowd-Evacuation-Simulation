@@ -21,7 +21,8 @@ public class AgentBehaviour : MonoBehaviour
     void Awake()
     {
         navAgent = this.GetComponent<NavMeshAgent>();
-
+        //navAgent.updatePosition = false;
+        //navAgent.updateRotation = false;
     }
 
     void Start()
@@ -56,13 +57,24 @@ public class AgentBehaviour : MonoBehaviour
         set => navAgent.obstacleAvoidanceType = value ? ObstacleAvoidanceType.HighQualityObstacleAvoidance : ObstacleAvoidanceType.NoObstacleAvoidance;
     }
 
+    private Vector3 desiredVelocity = Vector3.zero;
 
     private void Update()
     {
-        if(Vector3.Distance(navAgent.destination, transform.position) < 0.1f)
+        //navAgent.nextPosition = transform.position;
+        //desiredVelocity = navAgent.desiredVelocity;
+
+        if (Vector3.Distance(navAgent.destination, transform.position) < 0.1f)
         {
             AgentActive = false;
             //this.gameObject.SetActive(false);
         }
     }
+
+    private void FixedUpdate()
+    {
+        //Vector3 velocity = desiredVelocity;
+        
+    }
+
 }

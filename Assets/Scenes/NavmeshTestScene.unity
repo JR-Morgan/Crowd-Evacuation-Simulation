@@ -191,7 +191,7 @@ Camera:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 0.75
+    width: 0.8
     height: 1
   near clip plane: 0
   far clip plane: 4
@@ -656,7 +656,7 @@ Camera:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 0.75
+    width: 0.8
     height: 1
   near clip plane: 0.3
   far clip plane: 1000

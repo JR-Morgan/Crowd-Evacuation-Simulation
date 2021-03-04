@@ -15,7 +15,7 @@ public class WorldStateManager : MonoBehaviour
 {
     #region Singleton and Unity Methods
     private static WorldStateManager _instance;
-    public static WorldStateManager Instance { get => _instance; }
+    public static WorldStateManager Instance => _instance;
 
     private void Awake()
     {
