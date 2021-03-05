@@ -85,7 +85,7 @@
     border-top-color: rgb(113, 128, 147);
     border-bottom-color: rgb(113, 128, 147);
     background-color: rgb(47, 54, 64);
-    color: rgba(245, 246, 250, 255);
+    color: rgb(245, 246, 250);
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     border-top-right-radius: 3px;

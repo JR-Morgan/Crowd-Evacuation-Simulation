@@ -1,11 +1,12 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Template name="LoginWindow" src="Views/LoginWindow.uxml" />
-    <ui:Template name="CameraViewWindow" src="Views/CameraViewWindow.uxml" />
-    <ui:Template name="TimelineView" src="Views/TimelineView.uxml" />
     <Style src="Styles/UI_root.uss" />
-    <ui:VisualElement class="Left">
-        <ui:Instance template="LoginWindow" name="LoginWindow" />
+    <ui:VisualElement name="windowContainer" class="right">
+        <Assets.UI.Elements.LoginUIElement />
     </ui:VisualElement>
-    <ui:Instance template="CameraViewWindow" name="CameraViewWindow" class="Center" />
-    <ui:Instance template="TimelineView" name="TimelineView" class="Center" style="position: absolute; bottom: 0;" />
+    <ui:VisualElement name="bottom">
+        <Assets.UI.Elements.TimelineElement />
+    </ui:VisualElement>
+    <ui:VisualElement name="top">
+        <Assets.UI.Elements.CameraViewsElement />
+    </ui:VisualElement>
 </ui:UXML>

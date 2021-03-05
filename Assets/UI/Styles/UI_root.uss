@@ -1,4 +1,4 @@
-.Left {
+.right {
     position: absolute;
     width: 20%;
     right: 0;
@@ -8,6 +8,21 @@
     flex-direction: column;
 }
 
-.Center {
+#bottom {
     width: 80%;
+    position: absolute;
+    bottom: 0;
+}
+
+#top {
+    width: 80%;
+    position: absolute;
+}
+
+.right > * {
+    flex-grow: 1;
+}
+
+#top > * {
+    flex-direction: row;
 }
