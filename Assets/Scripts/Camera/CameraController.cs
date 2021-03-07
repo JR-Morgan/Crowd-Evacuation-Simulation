@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Obsolete]
 public class CameraController : MonoBehaviour
 {
     private const float keyTranslateSpeed = 10f, mouseTranslateSpeed = 150f, mouseRotateSpeed = 2000f;

@@ -1,0 +1,23 @@
+.button {
+    background-color: rgb(53, 59, 72);
+    color: rgb(245, 246, 250);
+    border-left-color: rgb(113, 128, 147);
+    border-right-color: rgb(113, 128, 147);
+    border-top-color: rgb(113, 128, 147);
+    border-bottom-color: rgb(113, 128, 147);
+}
+
+.button:hover {
+    border-left-color: rgb(25, 42, 86);
+    border-right-color: rgb(25, 42, 86);
+    border-top-color: rgb(25, 42, 86);
+    border-bottom-color: rgb(25, 42, 86);
+    background-color: rgb(53, 59, 72);
+}
+
+.button:focus {
+    border-left-color: rgb(39, 60, 117);
+    border-right-color: rgb(39, 60, 117);
+    border-top-color: rgb(39, 60, 117);
+    border-bottom-color: rgb(39, 60, 117);
+}

@@ -44,6 +44,7 @@ public class AgentBehaviour : MonoBehaviour
         get => new AgentState { active = AgentActive, rotation = this.transform.rotation, position = this.transform.position, velocity = this.navAgent.velocity };
         set {
             AgentActive = value.active;
+            transform.position = value.position;
             navAgent.nextPosition = value.position;
             transform.rotation = value.rotation;
             navAgent.velocity = value.velocity;
@@ -53,21 +54,17 @@ public class AgentBehaviour : MonoBehaviour
 
     private bool AgentActive
     {
-        get => navAgent.obstacleAvoidanceType == ObstacleAvoidanceType.NoObstacleAvoidance;
+        get => navAgent.obstacleAvoidanceType != ObstacleAvoidanceType.NoObstacleAvoidance;
         set => navAgent.obstacleAvoidanceType = value ? ObstacleAvoidanceType.HighQualityObstacleAvoidance : ObstacleAvoidanceType.NoObstacleAvoidance;
     }
 
-    private Vector3 desiredVelocity = Vector3.zero;
 
     private void Update()
     {
-        //navAgent.nextPosition = transform.position;
-        //desiredVelocity = navAgent.desiredVelocity;
 
-        if (Vector3.Distance(navAgent.destination, transform.position) < 0.1f)
+        if (Vector3.Distance(navAgent.destination, transform.position) < 0.5f)
         {
             AgentActive = false;
-            //this.gameObject.SetActive(false);
         }
     }
 

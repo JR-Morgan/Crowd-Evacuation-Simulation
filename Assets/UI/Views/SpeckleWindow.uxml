@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="/Assets/UI/Styles/Streams.uss" />
+    <Style src="/Assets/UI/Styles/Sub Window Styles.uss" />
+    <ui:VisualElement name="Window" class="stream-window">
+        <ui:VisualElement name="AvailableStreamsHeadder" class="header">
+            <ui:Label text="Available Streams" display-tooltip-when-elided="true" />
+        </ui:VisualElement>
+        <ui:Foldout text="From &lt;servername&gt;&#10;" name="AvailableStreamsList">
+            <ui:ScrollView name="AvailableStreamsParent" />
+        </ui:Foldout>
+        <ui:VisualElement name="ReceiversHeader" class="header">
+            <ui:Label text="Receivers&#10;" display-tooltip-when-elided="true" enable-rich-text="true" />
+        </ui:VisualElement>
+        <ui:ScrollView name="ReceiversList">
+            <ui:VisualElement name="ReceiversParent" />
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>
