@@ -1,7 +1,6 @@
 using Assets.UI.Elements;
 using Speckle.ConnectorUnity;
-using System.Collections.Generic;
-using System.Linq;
+using Speckle.Core.Credentials;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Stream = Speckle.Core.Api.Stream;
@@ -34,10 +33,12 @@ public class ImportController : MonoBehaviour
             return;
         }
 
-        manager.OnReady += Initialise;
+        manager.OnReadyToReceive += Initialise;
+        manager.OnBusyChange += element.SetBusy;
     }
 
-    private void Initialise()
+
+    private void Initialise(UserInfo user, ServerInfo server)
     {
         foreach (Stream stream in manager.StreamList)
         {
@@ -49,6 +50,10 @@ public class ImportController : MonoBehaviour
         manager.OnReceiverAdd += AddReceiver;
         manager.OnReceiverRemove += RemoveReceiver;
         manager.OnReceiverUpdate += UpdateReceiver;
+        manager.OnStreamVisibilityChange += VisiblityChange;
+        manager.OnStreamReceived += StreamReceived;
+
+        element.SetServerName(server.name);
     }
 
 
@@ -61,6 +66,18 @@ public class ImportController : MonoBehaviour
     {
         element.AddReceiver(ToViewModel(stream), () => manager.HideStream(stream), () => manager.UpdateStream(stream), () => manager.RemoveReceiver(stream));
     }
+
+    private void VisiblityChange(Stream stream, Receiver receiver)
+    {
+        bool visible = receiver.gameObject.activeInHierarchy;
+        element.SetVisibility(ToViewModel(stream), visible);
+    }
+
+    private void StreamReceived(Stream stream, Receiver receiver = null)
+    {
+        element.StreamFinished(ToViewModel(stream));
+    }
+
 
     private void UpdateReceiver(Stream stream, Receiver receiver, double progress)
     {

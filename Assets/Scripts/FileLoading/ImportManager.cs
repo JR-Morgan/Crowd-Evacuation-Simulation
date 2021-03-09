@@ -1,3 +1,4 @@
+using Assets.Scripts.FileLoading;
 using Speckle.ConnectorUnity;
 using Speckle.Core.Api;
 using Speckle.Core.Credentials;
@@ -65,44 +66,76 @@ public class ImportManager : MonoBehaviour
         }
         else
         {
-            OnReady.Invoke();
+            OnReadyToReceive.Invoke(defaultAccount.userInfo, defaultAccount.serverInfo);
         }
 
+        busyRecievers = new BusySet<Receiver>();
+        busyRecievers.OnStatusChange += UpdateBusy;
     }
+
+    private BusySet<Receiver> busyRecievers;
+
+    public bool IsBusy { get; private set; } = false;
+    private void UpdateBusy(bool recieverBusy)
+    {
+        bool oldBusy = IsBusy;
+
+        IsBusy = recieverBusy || Receivers.Count <= 0;
+
+        //if (oldBusy != IsBusy)
+        OnBusyChange(IsBusy);
+    }
+    private void UpdateBusy() => UpdateBusy(busyRecievers.IsBusy);
 
     #region Actions
     public void AddReceiver(Stream stream, bool receiveNow = true, bool autoRecieve = false, bool deleteOld = true)
     {
         var streamId = stream.id;
-        var autoReceive = autoRecieve;
+        if(!Receivers.ContainsKey(stream))
+        {
+            var autoReceive = autoRecieve;
 
-        var streamPrefab = Instantiate(streamParentPrefab, Vector3.zero, Quaternion.identity);
-        streamPrefab.name = $"Receiver-{streamId}";
+            var streamPrefab = Instantiate(streamParentPrefab, Vector3.zero, Quaternion.identity);
+            streamPrefab.name = $"Receiver-{streamId}";
 
-        var receiver = streamPrefab.AddComponent<Receiver>();
+            var receiver = streamPrefab.AddComponent<Receiver>();
 
-        receiver.Init(streamId, autoReceive, deleteOld,
-          onDataReceivedAction: (go) =>
-          {
-              // when the stream has finished being received
-              OnReceiverUpdate.Invoke(stream, receiver);
-              Debug.Log($"Finished receiving {stream}");
-          },
-          onTotalChildrenCountKnown: (count) => { receiver.TotalChildrenCount = count; },
-          onProgressAction: (dict) =>
-          {
-            //Run on a dispatcher as GOs can only be retrieved on the main thread
-            Dispatcher.Instance().Enqueue(() =>
+            receiver.Init(streamId, autoReceive, deleteOld,
+              onDataReceivedAction: (go) =>
               {
-                  //When a part of the model has been recieved.
-                  double val = dict.Values.Average() / receiver.TotalChildrenCount;
-                  OnReceiverUpdate.Invoke(stream, receiver, val);
+                  // when the stream has finished being received
+                  Debug.Log($"Finished receiving {stream}");
+                  busyRecievers.RemoveItem(receiver);
+                  OnStreamReceived.Invoke(stream, receiver);
+              
+              },
+              onTotalChildrenCountKnown: (count) => { receiver.TotalChildrenCount = count; },
+              onProgressAction: (dict) =>
+              {
+                //Run on a dispatcher as GOs can only be retrieved on the main thread
+                Dispatcher.Instance().Enqueue(() =>
+                  {
+                      //When a part of the model has been received.
+                      double val = dict.Values.Average() / receiver.TotalChildrenCount;
+                      OnReceiverUpdate.Invoke(stream, receiver, val);
+                  });
               });
-          });
 
-        Receivers.Add(stream, receiver);
-        OnReceiverAdd.Invoke(stream, receiver);
-        if (receiveNow) receiver.Receive();
+            Receivers.Add(stream, receiver);
+            OnReceiverAdd.Invoke(stream, receiver);
+
+            if (receiveNow) Receive(receiver);
+        }
+        else
+        {
+            Debug.LogWarning($"Failed to add {typeof(Receiver)} because one already existed for {nameof(streamId)}:{streamId}");
+        }
+    }
+
+    public void Receive(Receiver receiver)
+    {
+        busyRecievers.AddItem(receiver);
+        receiver.Receive();
     }
 
     /// <summary>
@@ -114,6 +147,8 @@ public class ImportManager : MonoBehaviour
         if (Receivers.TryGetValue(stream, out Receiver receiver))
         {
             Receivers.Remove(stream);
+            busyRecievers.RemoveItem(receiver);
+            UpdateBusy();
             OnReceiverRemove.Invoke(stream, receiver);
             Destroy(receiver.gameObject);
         }
@@ -132,7 +167,7 @@ public class ImportManager : MonoBehaviour
         if (Receivers.TryGetValue(stream, out Receiver receiver))
         {
             receiver.gameObject.SetActive(!receiver.gameObject.activeInHierarchy);
-            OnReceiverUpdate.Invoke(stream, receiver);
+            OnStreamVisibilityChange.Invoke(stream, receiver);
         }
         else
         {
@@ -148,7 +183,7 @@ public class ImportManager : MonoBehaviour
     {
         if (Receivers.TryGetValue(stream, out Receiver receiver))
         {
-            receiver.Receive();
+            Receive(receiver);
         }
         else
         {
@@ -158,14 +193,16 @@ public class ImportManager : MonoBehaviour
     #endregion
 
     #region Events
-
     public delegate void ReceiverTransactionEventHandler(Stream stream, Receiver receiver);
     public event ReceiverTransactionEventHandler OnReceiverRemove;
     public event ReceiverTransactionEventHandler OnReceiverAdd;
+    public event ReceiverTransactionEventHandler OnStreamReceived;
+    public event ReceiverTransactionEventHandler OnStreamVisibilityChange;
 
-    public delegate void ReceiverReceiveUpdate(Stream stream, Receiver receiver, double progress = 1d);
+    public delegate void ReceiverReceiveUpdate(Stream stream, Receiver receiver, double progress);
     public event ReceiverReceiveUpdate OnReceiverUpdate;
 
-    public event Action OnReady;
+    public event Action<UserInfo, ServerInfo> OnReadyToReceive;
+    public event Action<bool> OnBusyChange;
     #endregion
 }

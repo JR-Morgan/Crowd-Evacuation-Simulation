@@ -142,6 +142,7 @@ namespace Speckle.ConnectorUnity
             Destroy(ReceivedData);
           ReceivedData = go;
           OnDataReceivedAction?.Invoke(go);
+            go.transform.SetParent(this.transform);
         });
       }
       catch (Exception e)
@@ -301,7 +302,7 @@ namespace Speckle.ConnectorUnity
 
     private void OnDestroy()
     {
-      Client.CommitCreatedSubscription.Dispose();
+      Client?.CommitCreatedSubscription?.Dispose();
     }
 
     #endregion

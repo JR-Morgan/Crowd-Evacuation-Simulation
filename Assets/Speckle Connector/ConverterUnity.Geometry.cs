@@ -322,16 +322,19 @@ namespace Objects.Converter.Unity
       mesh.RecalculateNormals();
       mesh.RecalculateTangents();
 
-      //generate uvs doesn't work as intended. Leaving out for now
-      //GenerateUVs (ref mesh);
+            //generate uvs doesn't work as intended. Leaving out for now
+            //GenerateUVs (ref mesh);
 
-      //Add mesh collider
-      MeshCollider mc = go.AddComponent<MeshCollider>();
-      mc.sharedMesh = mesh;
-      mc.convex = true;
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+            //Add mesh collider
+            //MeshCollider mc = go.AddComponent<MeshCollider>();
+            //mc.sharedMesh = mesh;
+            //mc.convex = true;
 
-      SetSpeckleData(go, speckleMesh);
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            SetSpeckleData(go, speckleMesh);
       return go;
     }
 

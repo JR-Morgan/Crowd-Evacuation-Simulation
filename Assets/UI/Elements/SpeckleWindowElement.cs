@@ -15,9 +15,25 @@ namespace Assets.UI.Elements
         #region Text Constants
         private const string STREAM_NAME_SEPERATOR = " | ";
         private const string STATUS_PREFIX = "Status: ";
+        private const string SERVER_PREFIX = "From ";
         #endregion
 
-        private Dictionary<string, RecieverElement> recieverElements = new Dictionary<string, RecieverElement>();
+        private readonly Dictionary<string, RecieverElement> recieverElements = new Dictionary<string, RecieverElement>();
+
+        public Button SimulationSetup { get; private set; }
+
+        public void Setup()
+        {
+            SimulationSetup = this.Q<Button>("ButtonSimulationSetup");
+            SimulationSetup.SetEnabled(false);
+        }
+        public void SetBusy(bool isBusy) => SimulationSetup.SetEnabled(!isBusy);
+
+        public void SetServerName(string serverName)
+        {
+            this.Q<Foldout>("AvailableStreamsList").text = SERVER_PREFIX + serverName;
+        }
+
 
         public void AddReceiver(in StreamViewModel viewModel, Action OnHide, Action OnUpdate, Action OnRemove)
         {
@@ -28,6 +44,8 @@ namespace Assets.UI.Elements
             element.Q<Button>("ButtonHide").RegisterCallback<ClickEvent>(ev => OnHide.Invoke());
             element.Q<Button>("ButtonUpdate").RegisterCallback<ClickEvent>(ev => OnUpdate.Invoke());
             element.Q<Button>("ButtonRemove").RegisterCallback<ClickEvent>(ev => OnRemove.Invoke());
+
+            element.Q<Button>("ButtonHide").SetEnabled(false);
 
             this.Q("ReceiversParent").Add(element);
 
@@ -46,6 +64,7 @@ namespace Assets.UI.Elements
                 OnImport.Invoke();
             });
 
+
             this.Q("AvailableStreamsParent").Add(element);
         }
 
@@ -58,10 +77,29 @@ namespace Assets.UI.Elements
             }
         }
 
+        internal void StreamFinished(StreamViewModel viewModel)
+        {
+            if (recieverElements.TryGetValue(viewModel.streamID, out RecieverElement element))
+            {
+                element.Q<Button>("ButtonHide").SetEnabled(true);
+                element.Q<Button>("ButtonUpdate").SetEnabled(true);
+            }
+        }
+
+        internal void SetVisibility(StreamViewModel viewModel, bool visible)
+        {
+            if (recieverElements.TryGetValue(viewModel.streamID, out RecieverElement element))
+            {
+                element.Q<Button>("ButtonHide").text = visible ? "Hide" : "Show";
+            }
+        }
+
         public void UpdateReciever(StreamViewModel viewModel)
         {
             if(recieverElements.TryGetValue(viewModel.streamID, out RecieverElement element))
             {
+                element.Q<Button>("ButtonHide").SetEnabled(false);
+                element.Q<Button>("ButtonUpdate").SetEnabled(false);
                 SetRecieverText(element, viewModel);
             }
         }
@@ -75,6 +113,14 @@ namespace Assets.UI.Elements
         public SpeckleWindowElement()
         {
             Add(window.CloneTree());
+
+            void GeometryChange(GeometryChangedEvent evt)
+            {
+                this.UnregisterCallback<GeometryChangedEvent>(GeometryChange);
+                Setup();
+            }
+
+            this.RegisterCallback<GeometryChangedEvent>(GeometryChange);
         }
 
         #region UXML Factory

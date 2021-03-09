@@ -5,7 +5,7 @@ namespace Assets.UI.Elements
 {
     public class AvailableStreamElement : VisualElement
     {
-        private static readonly VisualTreeAsset view = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/AvaiableStreamView.uxml");
+        private static readonly VisualTreeAsset view = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/AvailableStreamView.uxml");
 
         public AvailableStreamElement()
         {

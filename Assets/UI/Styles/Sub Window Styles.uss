@@ -32,10 +32,17 @@
 }
 
 .large-centered-button:focus {
-    border-left-color: rgb(64, 115, 158);
-    border-right-color: rgb(64, 115, 158);
-    border-top-color: rgb(64, 115, 158);
-    border-bottom-color: rgb(64, 115, 158);
+    border-left-color: rgba(39, 60, 117, 255);
+    border-right-color: rgba(39, 60, 117, 255);
+    border-top-color: rgba(39, 60, 117, 255);
+    border-bottom-color: rgba(39, 60, 117, 255);
+}
+
+.large-centered-button:hover {
+    border-left-color: rgba(64, 115, 158, 255);
+    border-right-color: rgba(64, 115, 158, 255);
+    border-top-color: rgba(64, 115, 158, 255);
+    border-bottom-color: rgba(64, 115, 158, 255);
 }
 
 .large-centered-input > .unity-text-field__input {
@@ -104,4 +111,24 @@
 
 Label {
     color: rgb(220, 221, 225);
+}
+
+.stream-window {
+    flex-grow: 1;
+    background-color: rgb(53, 59, 72);
+}
+
+.header {
+    background-color: rgb(47, 54, 64);
+    flex-shrink: 0;
+}
+
+.header > Label {
+    -unity-text-align: upper-center;
+    font-size: 20px;
+    -unity-font-style: normal;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }

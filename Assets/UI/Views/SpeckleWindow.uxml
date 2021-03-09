@@ -1,5 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="/Assets/UI/Styles/Streams.uss" />
     <Style src="/Assets/UI/Styles/Sub Window Styles.uss" />
     <ui:VisualElement name="Window" class="stream-window">
         <ui:VisualElement name="AvailableStreamsHeadder" class="header">
@@ -14,5 +13,6 @@
         <ui:ScrollView name="ReceiversList">
             <ui:VisualElement name="ReceiversParent" />
         </ui:ScrollView>
+        <ui:Button text="Simulation Setup" display-tooltip-when-elided="true" name="ButtonSimulationSetup" class="large-centered-button" style="bottom: 0; position: absolute; margin-top: 0; margin-bottom: 5px; margin-left: 5px; margin-right: 5px; right: 0; width: 160px; font-size: 14px; padding-left: 1px; padding-right: 1px; padding-top: 4px; padding-bottom: 4px; min-height: 0;" />
     </ui:VisualElement>
 </ui:UXML>

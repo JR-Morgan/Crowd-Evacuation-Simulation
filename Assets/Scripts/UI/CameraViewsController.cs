@@ -19,6 +19,12 @@ public class CameraViewsController : MonoBehaviour
         {
             element.CameraChangeEvent += ChangeCamera;
 
+            ImportManager i = ImportManager.Instance;
+            if(i != null)
+            {
+                i.OnStreamReceived += OnStreamRecieved;
+            }
+
             InitialseUI();
         }
         else
@@ -27,12 +33,14 @@ public class CameraViewsController : MonoBehaviour
         }
     }
 
+    private void OnStreamRecieved<S, R>(S stream = default, R reciever = default) => InitialseUI();
     private void InitialseUI()
     {
+        element.Clear();
         availableCameras = FindObjectsOfType<Camera>(true);
         foreach (Camera cam in availableCameras)
         {
-            element.AddElement(new CameraViewViewModel() { camera = cam, name = cam.name }); //TODO relies of cam.name
+            element.AddElement(new CameraViewViewModel() { camera = cam, name = cam.name });
         }
         
     }

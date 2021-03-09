@@ -68,10 +68,10 @@ public class AgentBehaviour : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
+    //private void FixedUpdate()
+    //{
         //Vector3 velocity = desiredVelocity;
         
-    }
+    //}
 
 }

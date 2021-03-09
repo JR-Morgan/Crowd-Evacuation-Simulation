@@ -5,7 +5,7 @@ namespace Assets.UI.Elements
 {
     public class RecieverElement : VisualElement
     {
-        private static readonly VisualTreeAsset view = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/RecieverView.uxml");
+        private static readonly VisualTreeAsset view = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/ReceiverView.uxml");
 
         public RecieverElement()
         {
