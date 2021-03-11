@@ -1,9 +1,7 @@
 using Assets.Scripts.FileLoading;
 using Speckle.ConnectorUnity;
-using Speckle.Core.Api;
 using Speckle.Core.Credentials;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,32 +10,36 @@ using Stream = Speckle.Core.Api.Stream;
 
 
 
-public class ImportManager : MonoBehaviour
+public class ImportManager : Singleton<ImportManager>
 {
-    #region Singleton
-    private static ImportManager _instance;
-    public static ImportManager Instance { get => _instance; }
+    //#region Singleton
+    //private static ImportManager _instance;
+    //public static ImportManager Instance { get => _instance; }
 
-    private void Awake()
+    protected override void Awake()
     {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _instance = this;
-        }
+        base.Awake();
+        //if (_instance != null && _instance != this)
+        //{
+        //    Destroy(this.gameObject);
+        //}
+        //else
+        //{
+        //    _instance = this;
+        //}
 
         Receivers = new Dictionary<Stream, Receiver>();
 
     }
-    #endregion
+    //#endregion
 
     #region Prefab References
     [SerializeField]
     private GameObject streamParentPrefab;
     #endregion
+
+    [SerializeField]
+    private LayerMask layer;
 
     public List<Stream> StreamList { get; private set; }
 
@@ -50,7 +52,6 @@ public class ImportManager : MonoBehaviour
             Debug.LogError($"{nameof(streamParentPrefab)} was unassigned");
             return;
         }
-
         var defaultAccount = AccountManager.GetDefaultAccount();
         if (defaultAccount == null)
         {
@@ -95,7 +96,7 @@ public class ImportManager : MonoBehaviour
         {
             var autoReceive = autoRecieve;
 
-            var streamPrefab = Instantiate(streamParentPrefab, Vector3.zero, Quaternion.identity);
+            var streamPrefab = Instantiate(streamParentPrefab, Vector3.zero, Quaternion.identity, this.transform);
             streamPrefab.name = $"Receiver-{streamId}";
 
             var receiver = streamPrefab.AddComponent<Receiver>();
@@ -136,6 +137,7 @@ public class ImportManager : MonoBehaviour
     {
         busyRecievers.AddItem(receiver);
         receiver.Receive();
+        receiver.gameObject.layer = (int)(Mathf.Log((uint)layer.value, 2));
     }
 
     /// <summary>

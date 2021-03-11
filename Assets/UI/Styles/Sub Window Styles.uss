@@ -1,6 +1,4 @@
-.window {
-    background-color: rgb(53, 59, 72);
-    color: rgb(245, 246, 250);
+.padded-window {
     flex-grow: 1;
     align-items: center;
     justify-content: center;
@@ -10,42 +8,28 @@
     padding-bottom: 40px;
 }
 
-.large-centered-input {
+TextField {
     margin-top: 7px;
     margin-bottom: 7px;
     width: 80%;
     flex-wrap: wrap;
 }
 
-.large-centered-input > .unity-base-field__label {
+TextField > .unity-base-field__label {
     width: 100%;
     margin-bottom: 4px;
     font-size: 16px;
     color: rgb(245, 246, 250);
 }
 
-.large-centered-input > .unity-text-field__input:focus {
+TextField > .unity-text-field__input:focus {
     border-left-color: rgb(64, 115, 158);
     border-right-color: rgb(64, 115, 158);
     border-top-color: rgb(64, 115, 158);
     border-bottom-color: rgb(64, 115, 158);
 }
 
-.large-centered-button:focus {
-    border-left-color: rgba(39, 60, 117, 255);
-    border-right-color: rgba(39, 60, 117, 255);
-    border-top-color: rgba(39, 60, 117, 255);
-    border-bottom-color: rgba(39, 60, 117, 255);
-}
-
-.large-centered-button:hover {
-    border-left-color: rgba(64, 115, 158, 255);
-    border-right-color: rgba(64, 115, 158, 255);
-    border-top-color: rgba(64, 115, 158, 255);
-    border-bottom-color: rgba(64, 115, 158, 255);
-}
-
-.large-centered-input > .unity-text-field__input {
+TextField > .unity-text-field__input {
     height: 35px;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
@@ -61,25 +45,31 @@
     font-size: 14px;
 }
 
-.large-centered-button {
+Button:focus {
+    border-left-color: rgb(39, 60, 117);
+    border-right-color: rgb(39, 60, 117);
+    border-top-color: rgb(39, 60, 117);
+    border-bottom-color: rgb(39, 60, 117);
+}
+
+Button:hover {
+    border-left-color: rgb(64, 115, 158);
+    border-right-color: rgb(64, 115, 158);
+    border-top-color: rgb(64, 115, 158);
+    border-bottom-color: rgb(64, 115, 158);
+}
+
+Button {
     border-left-color: rgb(113, 128, 147);
     border-right-color: rgb(113, 128, 147);
     border-top-color: rgb(113, 128, 147);
     border-bottom-color: rgb(113, 128, 147);
     background-color: rgb(47, 54, 64);
     color: rgb(245, 246, 250);
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    margin-top: 15px;
-    font-size: 16px;
-    min-width: 60%;
-    min-height: 35px;
-}
-
-.button:hover {
-    background-color: rgb(113, 128, 147);
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
 }
 
 .error-message {
@@ -105,15 +95,11 @@
     align-items: center;
 }
 
-:root {
-    flex-grow: 1;
-}
-
 Label {
     color: rgb(220, 221, 225);
 }
 
-.stream-window {
+.window {
     flex-grow: 1;
     background-color: rgb(53, 59, 72);
 }
@@ -131,4 +117,46 @@ Label {
     padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+.large-element {
+    margin-left: 0;
+    margin-right: 0;
+    flex-wrap: wrap;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+.small-text {
+    font-size: 11px;
+    border-top-left-radius: 1px;
+    border-bottom-left-radius: 1px;
+    border-top-right-radius: 1px;
+    border-bottom-right-radius: 1px;
+}
+
+.med-text {
+    font-size: 14px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.large-text {
+    font-size: 16px;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+}
+
+.super-large-text {
+    font-size: 18px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
 }

@@ -2,6 +2,7 @@
     <Style src="Styles/UI_root.uss" />
     <ui:VisualElement name="windowContainer" class="right">
         <Assets.UI.Elements.SpeckleWindowElement />
+        <Assets.UI.Elements.SimulationSetupElement />
     </ui:VisualElement>
     <ui:VisualElement name="bottom">
         <Assets.UI.Elements.TimelineElement />

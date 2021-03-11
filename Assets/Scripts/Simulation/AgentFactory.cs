@@ -1,64 +1,19 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class AgentManager : MonoBehaviour
+public static class AgentFactory
 {
-    private static AgentManager _instance;
-    public static AgentManager Instance { get => _instance; }
-
-    [SerializeField]
-    private int seed;
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _instance = this;
-            Random.InitState(seed);
-        }
-    }
-
-
-
-    [SerializeField]
-    private GameObject AgentPrefab;
-
-    [SerializeField]
-    private int numberOfAgents;
-    [SerializeField]
-    private GameObject env;
-    [SerializeField]
-    private Transform goal;
-
-    public List<AgentBehaviour> Agents { get; private set; }
-
-    private void Start()
-    {
-        SpawnAllAgents();
-    }
-
-    public void SpawnAllAgents()
-    {
-        Agents = SpawnAllAgents(numberOfAgents, env);
-        WorldStateManager.Instance.Initialise();
-    }
-
-    private List<AgentBehaviour> SpawnAllAgents(int numberOfAgents, GameObject environmentModel, int tries = 100, float distance = 1f)
+    public static List<AgentBehaviour> SpawnAllAgents(Transform agentParent, Transform goal, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel, int tries = 100, float distance = 1f)
     {
         List<AgentBehaviour> agents = new List<AgentBehaviour>();
         Bounds bounds = CalculateLocalBounds(environmentModel);
 
         for (int i = 0; i < numberOfAgents; i++)
         {
-            GameObject agent = Instantiate(AgentPrefab, transform);
-            NavMeshAgent navAgent = agent.transform.GetComponent<NavMeshAgent>();
-            AgentBehaviour agentBehaviour = agent.transform.GetComponent<AgentBehaviour>();
+            GameObject agent = Object.Instantiate(agentPrefab, agentParent);
+            NavMeshAgent navAgent = agent.GetComponent<NavMeshAgent>();
+            AgentBehaviour agentBehaviour = agent.GetComponent<AgentBehaviour>();
 
             bool failed = true;
             for (int j = 0; j < tries; j++)
@@ -79,7 +34,7 @@ public class AgentManager : MonoBehaviour
 
             if (failed)
             {
-                Destroy(agent);
+                Object.Destroy(agent);
                 Debug.LogWarning($"Failed to instantiate agent in a valid location after {tries} tries.");
             }
             else

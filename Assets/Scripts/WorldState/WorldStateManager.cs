@@ -11,33 +11,16 @@ public struct AgentState
     public Vector3 velocity;
 }
 
-public class WorldStateManager : MonoBehaviour
+public class WorldStateManager : Singleton<WorldStateManager>
 {
-    #region Singleton and Unity Methods
-    private static WorldStateManager _instance;
-    public static WorldStateManager Instance => _instance;
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _instance = this;
-        }
-    }
-    #endregion
-
     [SerializeField]
-    private float sFrameFrequency;
+    private float sFrameFrequency = 5;
 
     private List<AgentState[]> agentStates;
 
-    public void Initialise() => Initialise(sFrameFrequency, AgentManager.Instance);
+    public void Initialise() => Initialise(sFrameFrequency, SimulationManager.Instance);
 
-    private void Initialise(float frameFrequency, AgentManager agentManager)
+    private void Initialise(float frameFrequency, SimulationManager simulationManager)
     {
         agentStates = new List<AgentState[]>();
     }
@@ -51,26 +34,30 @@ public class WorldStateManager : MonoBehaviour
 
     public void FixedUpdate()
     {
-        currentTime += Time.fixedDeltaTime;
-        counter++;
-
-        if (counter >= sFrameFrequency)
+        if (agentStates != null)
         {
-            counter = 0;
-            currentS++;
-            
-            AddSFrame(AgentManager.Instance);
+            currentTime += Time.fixedDeltaTime;
+            counter++;
 
-            
+            if (counter >= sFrameFrequency)
+            {
+                counter = 0;
+                currentS++;
+
+                AddSFrame(SimulationManager.Instance);
+
+
+            }
+            OnUpdate.Invoke(currentTime);
         }
-        OnUpdate.Invoke(currentTime);
+
     }
 
-    private void AddSFrame(AgentManager agentManager)
+    private void AddSFrame(SimulationManager simulationManager)
     {
         if(currentS >= agentStates.Count)
         {
-            IList<AgentBehaviour> agents = agentManager.Agents;
+            IList<AgentBehaviour> agents = simulationManager.Agents;
             AgentState[] states = new AgentState[agents.Count];
             for (int i = 0; i < agents.Count; i++)
             {
@@ -93,7 +80,7 @@ public class WorldStateManager : MonoBehaviour
         currentTime = ToTime(position);
         counter = 0;
 
-        IList<AgentBehaviour> agents = AgentManager.Instance.Agents;
+        IList<AgentBehaviour> agents = SimulationManager.Instance.Agents;
         for (int i = 0; i < agents.Count; i++)
         {
             agents[i].State = agentStates[position][i];

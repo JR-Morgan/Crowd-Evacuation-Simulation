@@ -15,8 +15,6 @@ namespace Assets.UI.Elements
     {
         private static readonly VisualTreeAsset cameraView = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/CameraView.uxml");
 
-
-
         private readonly List<CameraViewViewModel> viewModels = new List<CameraViewViewModel>();
 
         public void AddElement(CameraViewViewModel viewModel)
@@ -33,7 +31,7 @@ namespace Assets.UI.Elements
         private VisualElement CreateView(CameraViewViewModel viewModel)
         {
             VisualElement e = cameraView.CloneTree();
-            e.Q<Label>("ViewName").text = viewModel.name;
+            e.Q<Button>("ViewName").text = viewModel.name;
 
             e.RegisterCallback<ClickEvent>(evt =>
             {

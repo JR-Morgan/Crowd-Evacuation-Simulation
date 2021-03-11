@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<engine:UXML
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:engine="UnityEngine.UIElements"
-    xmlns:editor="UnityEditor.UIElements"
-    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
->
-    
-</engine:UXML>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="/Assets/UI/Styles/Sub Window Styles.uss" />
+    <ui:VisualElement name="Body" class="window">
+        <ui:VisualElement name="Header" class="header">
+            <ui:Label text="Simulation Setup" display-tooltip-when-elided="true" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ParameterParent" style="flex-grow: 1;" />
+        <ui:Button text="Run Simulation" display-tooltip-when-elided="true" name="ButtonSubmit" class="med-text" style="bottom: 0; position: relative; margin-right: 30px; margin-left: 30px; margin-bottom: 25px;" />
+    </ui:VisualElement>
+</ui:UXML>

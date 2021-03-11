@@ -22,7 +22,8 @@ public class CameraViewsController : MonoBehaviour
             ImportManager i = ImportManager.Instance;
             if(i != null)
             {
-                i.OnStreamReceived += OnStreamRecieved;
+                i.OnStreamReceived += CameraUpdate;
+                i.OnReceiverRemove += CameraUpdate;
             }
 
             InitialseUI();
@@ -33,7 +34,7 @@ public class CameraViewsController : MonoBehaviour
         }
     }
 
-    private void OnStreamRecieved<S, R>(S stream = default, R reciever = default) => InitialseUI();
+    private void CameraUpdate<S, R>(S stream = default, R reciever = default) => InitialseUI();
     private void InitialseUI()
     {
         element.Clear();
