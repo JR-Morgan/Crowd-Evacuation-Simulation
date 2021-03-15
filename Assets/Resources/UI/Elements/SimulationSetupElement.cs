@@ -110,7 +110,7 @@ namespace Assets.Resources.UI.Elements
 
                 return element;
 
-                static void SetValue<E, S, T>(E element, T value, Convert<T, S> toTarget) where E : BaseField<S>
+                static void SetValue(E element, T value, Convert<T, S> toTarget)
                 {
                     if (toTarget(value, out S newValue))
                     {
