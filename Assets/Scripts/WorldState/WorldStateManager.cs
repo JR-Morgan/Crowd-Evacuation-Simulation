@@ -18,6 +18,13 @@ public class WorldStateManager : Singleton<WorldStateManager>
 
     private List<AgentState[]> agentStates;
 
+    private void OnEnable()
+    {
+        Initialise();
+    }
+
+
+
     public void Initialise() => Initialise(sFrameFrequency, SimulationManager.Instance);
 
     private void Initialise(float frameFrequency, SimulationManager simulationManager)

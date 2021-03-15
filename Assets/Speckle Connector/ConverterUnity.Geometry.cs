@@ -332,6 +332,13 @@ namespace Objects.Converter.Unity
 
 
       SetSpeckleData(go, speckleMesh);
+       
+      if(go.transform.position.magnitude > 1000)
+            {
+                go.transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+                Vector3 pos = go.transform.position;
+                go.transform.position = new Vector3(pos.x * 0.001f, pos.y * 0.001f, pos.z * 0.001f);
+            }
       return go;
     }
 

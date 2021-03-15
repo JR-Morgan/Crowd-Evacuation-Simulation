@@ -1,4 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="/Assets/UI/Styles/Sub Window Styles.uss" />
+    <Style src="/Assets/Resources/UI/Styles/Sub Window Styles.uss" />
     <ui:Button text="Button" display-tooltip-when-elided="true" name="ViewName" class="large-text" style="padding-left: 20px; padding-right: 20px; padding-top: 5px; padding-bottom: 5px;" />
 </ui:UXML>

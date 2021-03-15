@@ -1,4 +1,4 @@
-using Assets.UI.Elements;
+using Assets.Resources.UI.Elements;
 using Speckle.ConnectorUnity;
 using Speckle.Core.Credentials;
 using UnityEngine;
@@ -35,17 +35,16 @@ public class ImportController : MonoBehaviour
         }
 
         manager.OnReadyToReceive += Initialise;
-        manager.OnBusyChange += element.SetBusy;
     }
 
 
     private void Initialise(UserInfo user, ServerInfo server)
     {
-        foreach (Stream stream in manager.StreamList)
+        foreach (Stream stream in manager.Streams)
         {
             element.AddAvaiableStreams(
                 viewModel: ToViewModel(stream),
-                OnImport: () => manager.AddReceiver(stream));
+                OnImport: () => manager.CreateReceiver(stream));
         }
 
         manager.OnReceiverAdd += AddReceiver;
@@ -63,9 +62,9 @@ public class ImportController : MonoBehaviour
         element.RemoveReceiver(ToViewModel(stream));
     }
 
-    private void AddReceiver(Stream stream, Receiver receiver = null)
+    private void AddReceiver(Stream stream, Receiver receiver)
     {
-        element.AddReceiver(ToViewModel(stream), () => manager.HideStream(stream), () => manager.UpdateStream(stream), () => manager.RemoveReceiver(stream));
+        element.AddReceiver(ToViewModel(stream), () => manager.HideReceiver(receiver), () => manager.Receive(receiver), () => manager.RemoveReceiver(receiver));
     }
 
     private void VisiblityChange(Stream stream, Receiver receiver)

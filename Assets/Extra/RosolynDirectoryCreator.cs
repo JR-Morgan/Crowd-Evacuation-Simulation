@@ -10,7 +10,7 @@ namespace Speckle.ConnectorUnity
   /// This code automatically creates it if missing
   /// TODO: remove once it's fixed by Unity
   /// </summary>
-  [InitializeOnLoad]
+  //[InitializeOnLoad]
   internal static class RoslynDirectoryCreator
   {
     static RoslynDirectoryCreator() => Application.logMessageReceived += OnLogMessageReceived;

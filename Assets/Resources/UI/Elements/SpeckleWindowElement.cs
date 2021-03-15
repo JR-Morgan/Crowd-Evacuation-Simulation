@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine.UIElements;
+using Res = UnityEngine.Resources;
 
 
-namespace Assets.UI.Elements
+namespace Assets.Resources.UI.Elements
 {
 
     public class SpeckleWindowElement : VisualElement
     {
 
-        private static readonly VisualTreeAsset window = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/SpeckleWindow.uxml");
+        private static readonly VisualTreeAsset window = Res.Load<VisualTreeAsset>(@"UI/Views/SpeckleWindow");
 
         #region Text Constants
         private const string STREAM_NAME_SEPERATOR = " | ";
@@ -22,12 +23,7 @@ namespace Assets.UI.Elements
 
         public Button SimulationSetup { get; private set; }
 
-        public void Setup()
-        {
-            SimulationSetup = this.Q<Button>("ButtonSimulationSetup");
-            SimulationSetup.SetEnabled(false);
-        }
-        public void SetBusy(bool isBusy) => SimulationSetup.SetEnabled(!isBusy);
+
 
         public void SetServerName(string serverName)
         {
@@ -113,14 +109,6 @@ namespace Assets.UI.Elements
         public SpeckleWindowElement()
         {
             Add(window.CloneTree());
-
-            void GeometryChange(GeometryChangedEvent evt)
-            {
-                this.UnregisterCallback<GeometryChangedEvent>(GeometryChange);
-                Setup();
-            }
-
-            this.RegisterCallback<GeometryChangedEvent>(GeometryChange);
         }
 
         #region UXML Factory

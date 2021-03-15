@@ -141,8 +141,9 @@ namespace Speckle.ConnectorUnity
           //remove previously received object
           if (DeleteOld && ReceivedData != null)
             Destroy(ReceivedData);
-          ReceivedData = go;
-          OnDataReceivedAction?.Invoke(go);
+            ReceivedData = go;
+            OnDataReceivedAction?.Invoke(go);
+            go.transform.SetParent(this.transform);  //I've added this line to parent the stream objects to the recievers gameobject
         });
       }
       catch (Exception e)

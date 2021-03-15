@@ -1,12 +1,12 @@
 using UnityEditor;
 using UnityEngine.UIElements;
+using Res = UnityEngine.Resources;
 
-
-namespace Assets.UI.Elements
+namespace Assets.Resources.UI.Elements
 {
     public class ImportUIElement : VisualElement
     {
-        private static readonly VisualTreeAsset importWindow = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/ImportWindow.uxml");
+        private static readonly VisualTreeAsset importWindow = Res.Load<VisualTreeAsset>(@"UI/Views/ImportWindow");
 
         public ImportUIElement()
         {

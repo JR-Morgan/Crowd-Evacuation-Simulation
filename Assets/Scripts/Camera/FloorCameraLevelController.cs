@@ -1,3 +1,4 @@
+using Speckle.ConnectorUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,16 +25,17 @@ public class FloorCameraLevelController : MonoBehaviour
         set
         {
             _floor = value;
-            SetView();
+            SetView(Floor);
         }
     }
 
     private void OnValidate()
     {
         if(camera == null) camera = GetComponent<Camera>();
-        SetView();
+        SetView(Floor);
     }
 
+    [System.Obsolete]
     private void SetView()
     {
         Vector3 newPosition = camera.transform.position;
@@ -46,6 +48,32 @@ public class FloorCameraLevelController : MonoBehaviour
         camera.farClipPlane = relativeOffset + floorHeight;
 
 
+    }
+
+
+    private void SetView(int level)
+
+    {
+        GameObject environment = GameObject.FindGameObjectWithTag("Environment");
+        SetChildrenActive(environment.transform);
+
+
+    }
+
+    private void SetChildrenActive(Transform parent)
+    {
+        foreach (Transform child in parent)
+        {
+            if(child.TryGetComponent(out SpeckleData data))
+            {
+                if (data.Data.TryGetValue("level", out object @object))
+                {
+                    //TOTO
+                }
+
+            }
+            SetChildrenActive(child);
+        }
     }
 
     void Update()

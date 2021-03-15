@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using Assets.UI.Elements;
+using Assets.Resources.UI.Elements;
 
 [RequireComponent(typeof(UIDocument))]
 public class TimelineController : MonoBehaviour

@@ -63,8 +63,8 @@ namespace Objects.Converter.Unity
           return MeshToNative(o);
         case Brep o:
           return MeshToNative(o.displayValue);
-        // case View3D o:
-        //   return View3DToNative(o);
+         case View3D o:
+           return View3DToNative(o);
         default:
           throw new NotSupportedException();
       }
@@ -110,8 +110,8 @@ namespace Objects.Converter.Unity
           if (o.displayValue != null) ;
           return true;
           return false;
-        // case View3D _:
-        //   return true;
+         case View3D _:
+           return true;
         // case View2D _:
         //   return false;
         default:

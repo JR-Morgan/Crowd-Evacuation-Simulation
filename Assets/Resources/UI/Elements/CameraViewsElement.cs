@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Res = UnityEngine.Resources;
 
-namespace Assets.UI.Elements
+namespace Assets.Resources.UI.Elements
 {
     public struct CameraViewViewModel
     {
@@ -13,7 +14,7 @@ namespace Assets.UI.Elements
 
     public class CameraViewsElement : VisualElement
     {
-        private static readonly VisualTreeAsset cameraView = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/CameraView.uxml");
+        private static readonly VisualTreeAsset cameraView = Res.Load<VisualTreeAsset>(@"UI/Views/CameraView");
 
         private readonly List<CameraViewViewModel> viewModels = new List<CameraViewViewModel>();
 

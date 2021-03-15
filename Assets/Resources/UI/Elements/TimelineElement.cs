@@ -1,13 +1,13 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Res = UnityEngine.Resources;
 
-
-namespace Assets.UI.Elements
+namespace Assets.Resources.UI.Elements
 {
     public class TimelineElement : VisualElement
     {
-        private static readonly VisualTreeAsset timelineSlider = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/TimelineView.uxml");
+        private static readonly VisualTreeAsset timelineSlider = Res.Load<VisualTreeAsset>(@"UI/Views/TimelineView");
 
         #region Fields
         private Slider slider;

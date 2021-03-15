@@ -1,4 +1,4 @@
-using Assets.UI.Elements;
+using Assets.Resources.UI.Elements;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,14 +6,12 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class SetupController : MonoBehaviour
 {
-    private SimulationManager manager;
     private SimulationSetupElement element;
 
     private GameObject environment;
 
     private void Awake()
     {
-        manager = SimulationManager.Instance;
         environment = GameObject.FindGameObjectWithTag("Environment");
     }
 
@@ -29,16 +27,17 @@ public class SetupController : MonoBehaviour
         }
 
 
-        element.OnRun += RunSimulation;
+        element.OnRun = RunSimulation;
+        element.OnCancel = SimulationManager.Instance.CancelSimulation;
         element.SetViewModel();
-        
+        ImportManager.Instance.OnBusyChange += element.SetStatus;
 
     }
 
-    private void RunSimulation(SimulationSettings settings)
+    private bool RunSimulation(SimulationSettings settings)
     {
         if (settings.goal == null) settings.goal = GameObject.FindGameObjectWithTag("Goal").transform;
-        manager.RunSimulation(settings, environment);
+        return SimulationManager.Instance.RunSimulation(settings, environment);
     }
 
 }

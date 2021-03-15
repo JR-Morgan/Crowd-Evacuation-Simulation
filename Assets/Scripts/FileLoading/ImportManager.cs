@@ -9,44 +9,29 @@ using Stream = Speckle.Core.Api.Stream;
 
 
 
-
+/// <summary>
+/// An  <see cref="ImportManager"/> manages <see cref="Speckle.Core.Api.Stream"/>s and <see cref="Speckle.ConnectorUnity.Receiver"/>s
+/// </summary>
 public class ImportManager : Singleton<ImportManager>
 {
-    //#region Singleton
-    //private static ImportManager _instance;
-    //public static ImportManager Instance { get => _instance; }
-
-    protected override void Awake()
-    {
-        base.Awake();
-        //if (_instance != null && _instance != this)
-        //{
-        //    Destroy(this.gameObject);
-        //}
-        //else
-        //{
-        //    _instance = this;
-        //}
-
-        Receivers = new Dictionary<Stream, Receiver>();
-
-    }
-    //#endregion
-
     #region Prefab References
+    [Tooltip("Instances of this prefab will be created with every Receiver")]
     [SerializeField]
     private GameObject streamParentPrefab;
     #endregion
 
     [SerializeField]
+    [Tooltip("The layer that should be applied to stream objects")]
     private LayerMask layer;
 
-    public List<Stream> StreamList { get; private set; }
+    public Dictionary<string, Stream> StreamFromID;
+    public ICollection<Stream> Streams => StreamFromID.Values;
 
-    public Dictionary<Stream, Receiver> Receivers { get; private set; }
+    public Dictionary<string, Receiver> Receivers { get; private set; }
 
     private async void Start()
     {
+        //Initial Checks
         if (streamParentPrefab == null)
         {
             Debug.LogError($"{nameof(streamParentPrefab)} was unassigned");
@@ -59,7 +44,10 @@ public class ImportManager : Singleton<ImportManager>
             return;
         }
 
-        StreamList = await Speckle.ConnectorUnity.Streams.List();
+        //Setup
+        StreamFromID = new Dictionary<string, Stream>();
+        Receivers = new Dictionary<string, Receiver>();
+        List<Stream> StreamList = await Speckle.ConnectorUnity.Streams.List();
         if (!StreamList.Any())
         {
             Debug.Log("There are no streams in your account, please create one online.");
@@ -67,15 +55,22 @@ public class ImportManager : Singleton<ImportManager>
         }
         else
         {
-            OnReadyToReceive.Invoke(defaultAccount.userInfo, defaultAccount.serverInfo);
+            foreach(Stream s in StreamList)
+            {
+                StreamFromID.Add(s.id, s);
+            }
+
+            OnReadyToReceive?.Invoke(defaultAccount.userInfo, defaultAccount.serverInfo);
         }
 
         busyRecievers = new BusySet<Receiver>();
         busyRecievers.OnStatusChange += UpdateBusy;
     }
 
+    #region Busy
     private BusySet<Receiver> busyRecievers;
 
+    /// <summary>True when any receivers are currently receiving</summary>
     public bool IsBusy { get; private set; } = false;
     private void UpdateBusy(bool recieverBusy)
     {
@@ -88,110 +83,137 @@ public class ImportManager : Singleton<ImportManager>
     }
     private void UpdateBusy() => UpdateBusy(busyRecievers.IsBusy);
 
-    #region Actions
-    public void AddReceiver(Stream stream, bool receiveNow = true, bool autoRecieve = false, bool deleteOld = true)
+    #endregion
+
+    #region Create Receiver
+
+    private Receiver CreateReciever(Stream stream, Transform parent, bool autoReceive, bool deleteOld)
     {
-        var streamId = stream.id;
-        if(!Receivers.ContainsKey(stream))
-        {
-            var autoReceive = autoRecieve;
+        string streamID = stream.id;
+        GameObject streamPrefab = Instantiate(streamParentPrefab, Vector3.zero, Quaternion.identity, parent);
 
-            var streamPrefab = Instantiate(streamParentPrefab, Vector3.zero, Quaternion.identity, this.transform);
-            streamPrefab.name = $"Receiver-{streamId}";
+        streamPrefab.name = $"Receiver-{streamID}";
 
-            var receiver = streamPrefab.AddComponent<Receiver>();
+        Receiver receiver = streamPrefab.AddComponent<Receiver>();
 
-            receiver.Init(streamId, autoReceive, deleteOld,
-              onDataReceivedAction: (go) =>
-              {
-                  // when the stream has finished being received
-                  Debug.Log($"Finished receiving {stream}");
-                  busyRecievers.RemoveItem(receiver);
-                  OnStreamReceived.Invoke(stream, receiver);
-              
-              },
-              onTotalChildrenCountKnown: (count) => { receiver.TotalChildrenCount = count; },
-              onProgressAction: (dict) =>
-              {
+        receiver.Init(streamID, autoReceive, deleteOld,
+            onDataReceivedAction: (go) =>
+            {
+                // when the stream has finished being received
+                Debug.Log($"Finished receiving {stream}");
+                busyRecievers.RemoveItem(receiver);
+                OnStreamReceived.Invoke(stream, receiver);
+
+            },
+            onTotalChildrenCountKnown: (count) => { receiver.TotalChildrenCount = count; },
+            onProgressAction: (dict) =>
+            {
                 //Run on a dispatcher as GOs can only be retrieved on the main thread
                 Dispatcher.Instance().Enqueue(() =>
-                  {
-                      //When a part of the model has been received.
-                      double val = dict.Values.Average() / receiver.TotalChildrenCount;
-                      OnReceiverUpdate.Invoke(stream, receiver, val);
-                  });
-              });
+                {
+                    //When a part of the model has been received.
+                    double val = dict.Values.Average() / receiver.TotalChildrenCount;
+                    OnReceiverUpdate.Invoke(stream, receiver, val);
+                });
+            });
 
-            Receivers.Add(stream, receiver);
-            OnReceiverAdd.Invoke(stream, receiver);
 
-            if (receiveNow) Receive(receiver);
-        }
-        else
+
+        return receiver;
+    }
+    #endregion
+
+    #region Actions
+    /// <summary>
+    /// Adds a <paramref name="receiver"/> to the <see cref="ImportManager"/>
+    /// </summary>
+    /// <param name="receiver">The receiver to be added</param>
+    /// <returns>true if the receiver was successfully added</returns>
+    public bool RegisterExisting(Receiver receiver)
+    {
+        string streamID = receiver.StreamId;
+        if (Receivers.ContainsKey(streamID))
         {
-            Debug.LogWarning($"Failed to add {typeof(Receiver)} because one already existed for {nameof(streamId)}:{streamId}");
+            Debug.LogWarning($"Failed to add {typeof(Receiver)} because one already existed for {nameof(streamID)}:{streamID}");
+            return false;
         }
+
+        if (!StreamFromID.ContainsKey(streamID))
+        {
+            Debug.LogWarning($"Failed to add {typeof(Receiver)} because no {typeof(Stream)} with {nameof(streamID)}:{streamID} could be found");
+            return false;
+        }
+
+        Stream stream = StreamFromID[streamID];
+
+
+        Receivers.Add(streamID, receiver);
+        OnReceiverAdd.Invoke(stream, receiver);
+
+        return true;
     }
 
+    /// <summary>
+    /// Creates a new <see cref="Receiver"/> for a specified <paramref name="stream"/>
+    /// </summary>
+    /// <param name="stream">The <see cref="Stream"/> to be associated with the <see cref="Receiver"/></param>
+    /// <param name="receiveNow">When True, the <see cref="Receiver"/> will start receiving once it has been created</param>
+    /// <param name="autoReceive">When True, the <see cref="Receiver"/> will automatically receive updates</param>
+    /// <param name="deleteOld">When True, the old <see cref="Stream"/> data will be remove on <see cref="Receiver.Receive"/></param>
+    /// <returns>True if the <see cref="Receiver"/> was successfully added to the <see cref="ImportManager"/></returns>
+    public bool CreateReceiver(Stream stream, bool receiveNow = true, bool autoReceive = false, bool deleteOld = true)
+    {
+
+        Transform parent = GameObject.FindGameObjectWithTag("Environment").transform;
+
+        Receiver receiver = CreateReciever(stream, parent, autoReceive, deleteOld);
+
+        if (RegisterExisting(receiver))
+        {
+            if (receiveNow) Receive(receiver);
+
+            return true;
+        }
+
+        Destroy(receiver.gameObject);
+        return false;
+
+    }
+
+    /// <summary>
+    /// Calls <see cref="Receiver.Receive"/>
+    /// </summary>
+    /// <param name="receiver"></param>
     public void Receive(Receiver receiver)
     {
         busyRecievers.AddItem(receiver);
         receiver.Receive();
-        receiver.gameObject.layer = (int)(Mathf.Log((uint)layer.value, 2));
     }
 
     /// <summary>
-    /// Removes the receiver associated with a stream
+    /// Removes the <paramref name="receiver"/> from the <see cref="ImportManager"/>
     /// </summary>
-    /// <param name="stream"></param>
-    public void RemoveReceiver(Stream stream)
+    /// <param name="receiver">The <see cref="Receiver"/> to be removed</param>
+    /// <param name="destroyGameObject">When True, the <paramref name="receiver"/>'s <see cref="Component.gameObject"/> will be removed from the scene</param>
+    public void RemoveReceiver(Receiver receiver, bool destroyGameObject = true)
     {
-        if (Receivers.TryGetValue(stream, out Receiver receiver))
-        {
-            Receivers.Remove(stream);
-            busyRecievers.RemoveItem(receiver);
-            UpdateBusy();
-            OnReceiverRemove.Invoke(stream, receiver);
-            Destroy(receiver.gameObject);
-        }
-        else
-        {
-            Debug.Log($"Tried to hide {typeof(Stream)} {stream} that did not exist in {this}.{nameof(Receivers)}");
-        }
+        Receivers.Remove(receiver.StreamId);
+        busyRecievers.RemoveItem(receiver);
+        UpdateBusy();
+        OnReceiverRemove.Invoke(StreamFromID[receiver.StreamId], receiver);
+        if(destroyGameObject) Destroy(receiver.gameObject);
     }
 
     /// <summary>
-    /// Hides the receiver associated with a stream
+    /// Toggles the <paramref name="receiver"/>'s <see cref="Component.gameObject"/> by calling <see cref="GameObject.SetActive(bool)"/>
     /// </summary>
-    /// <param name="stream"></param>
-    public void HideStream(Stream stream)
+    /// <param name="receiver"></param>
+    public void HideReceiver(Receiver receiver)
     {
-        if (Receivers.TryGetValue(stream, out Receiver receiver))
-        {
-            receiver.gameObject.SetActive(!receiver.gameObject.activeInHierarchy);
-            OnStreamVisibilityChange.Invoke(stream, receiver);
-        }
-        else
-        {
-            Debug.Log($"Tried to hide {typeof(Stream)} {stream} that did not exist in {this}.{nameof(Receivers)}");
-        }
+        receiver.gameObject.SetActive(!receiver.gameObject.activeInHierarchy);
+        OnStreamVisibilityChange.Invoke(StreamFromID[receiver.StreamId], receiver);
     }
 
-    /// <summary>
-    /// Updates the receiver associated with a stream
-    /// </summary>
-    /// <param name="stream"></param>
-    public void UpdateStream(Stream stream)
-    {
-        if (Receivers.TryGetValue(stream, out Receiver receiver))
-        {
-            Receive(receiver);
-        }
-        else
-        {
-            Debug.Log($"Tried to receive {typeof(Stream)} {stream} that did not exist in {this}.{nameof(Receivers)}");
-        }
-    }
     #endregion
 
     #region Events

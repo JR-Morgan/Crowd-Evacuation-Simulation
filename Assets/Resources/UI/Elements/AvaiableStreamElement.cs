@@ -1,11 +1,12 @@
 using UnityEditor;
 using UnityEngine.UIElements;
+using Res = UnityEngine.Resources;
 
-namespace Assets.UI.Elements
+namespace Assets.Resources.UI.Elements
 {
     public class AvailableStreamElement : VisualElement
     {
-        private static readonly VisualTreeAsset view = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/AvailableStreamView.uxml");
+        private static readonly VisualTreeAsset view = Res.Load<VisualTreeAsset>(@"UI/Views/AvailableStreamView");//AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/Resources/UI/Views/AvailableStreamView.uxml");
 
         public AvailableStreamElement()
         {

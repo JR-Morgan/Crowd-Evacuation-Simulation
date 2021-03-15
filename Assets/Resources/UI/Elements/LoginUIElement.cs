@@ -1,12 +1,13 @@
 using System;
 using UnityEditor;
 using UnityEngine.UIElements;
+using Res = UnityEngine.Resources;
 
-namespace Assets.UI.Elements
+namespace Assets.Resources.UI.Elements
 {
     public class LoginUIElement : VisualElement
     {
-        private static readonly VisualTreeAsset loginWindow = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(@"Assets/UI/Views/LoginWindow.uxml");
+        private static readonly VisualTreeAsset loginWindow = Res.Load<VisualTreeAsset>(@"UI/Views/LoginWindow");
 
 
         private Label labelError;

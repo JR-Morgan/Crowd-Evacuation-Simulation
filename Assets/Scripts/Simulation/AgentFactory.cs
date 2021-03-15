@@ -2,11 +2,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+
 public static class AgentFactory
 {
+    /// <summary>
+    /// Creates the specified <paramref name="numberOfAgents"/> as children of <paramref name="agentParent"/>.
+    /// </summary>
+    /// <param name="agentParent">The parent transform of all of the new agents</param>
+    /// <param name="goal">The agents goal</param>
+    /// <param name="agentPrefab">The prefab used to create agents</param>
+    /// <param name="numberOfAgents">The number of agents that should be created</param>
+    /// <param name="environmentModel">The agent's environment, used to calculate bounds</param>
+    /// <param name="tries">The number of times to try and instantiate an agent in the environment, Larger environments may require a larger value</param>
+    /// <param name="distance">The size of voxels used to spawn agents, Should be less than or equal to the size of agents.
+    ///     The smaller the more uniform the agent's distribution but the higher chance of a single try failing</param>
+    /// <returns>The list of new agents. May contain null values if some agents failed to spawn within the number of <paramref name="tries"/></returns>
     public static List<AgentBehaviour> SpawnAllAgents(Transform agentParent, Transform goal, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel, int tries = 100, float distance = 1f)
     {
-        List<AgentBehaviour> agents = new List<AgentBehaviour>();
+        List<AgentBehaviour> agents = new List<AgentBehaviour>(numberOfAgents);
         Bounds bounds = CalculateLocalBounds(environmentModel);
 
         for (int i = 0; i < numberOfAgents; i++)
