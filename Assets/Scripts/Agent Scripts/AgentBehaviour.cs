@@ -9,7 +9,7 @@ public class AgentBehaviour : MonoBehaviour
     private NavMeshAgent navAgent;
     private NavMeshPath path  = null;
 
-    public bool CalcualtePath(Vector2 terminalGoal)
+    public bool CalculatePath(Vector2 terminalGoal)
     {
         path = new NavMeshPath();
         navAgent.CalculatePath(terminalGoal, path);
@@ -32,7 +32,17 @@ public class AgentBehaviour : MonoBehaviour
         //navAgent.isStopped = true;
         //if(terminalGoal == null) terminalGoal = GameObject.FindGameObjectWithTag("Goal").transform;
 
-        //if(path == null) CalcualtePath(terminalGoal.position);
+        if (path == null)
+        {
+            GameObject go = GameObject.FindGameObjectWithTag("Goal");
+            if(go != null)
+            {
+                Debug.LogWarning($"{typeof(AgentBehaviour)} was not properly initialised with a {nameof(path)}!, must call {nameof(CalculatePath)} before {nameof(Start)}", this);
+                if (CalculatePath(go.transform.position)) Debug.Log($"{typeof(AgentBehaviour)} found a backup goal {go} by tag", this);
+                else Debug.LogWarning($"{typeof(AgentBehaviour)}  could not find a backup goal {go} by tag", this);
+            }
+
+        }
         if (path != null)
         {
             navAgent.SetPath(path);
@@ -44,6 +54,7 @@ public class AgentBehaviour : MonoBehaviour
         get => new AgentState { active = AgentActive, rotation = this.transform.rotation, position = this.transform.position, velocity = this.navAgent.velocity };
         set {
             AgentActive = value.active;
+            transform.position = value.position;
             navAgent.nextPosition = value.position;
             transform.rotation = value.rotation;
             navAgent.velocity = value.velocity;
@@ -53,28 +64,24 @@ public class AgentBehaviour : MonoBehaviour
 
     private bool AgentActive
     {
-        get => navAgent.obstacleAvoidanceType == ObstacleAvoidanceType.NoObstacleAvoidance;
+        get => navAgent.obstacleAvoidanceType != ObstacleAvoidanceType.NoObstacleAvoidance;
         set => navAgent.obstacleAvoidanceType = value ? ObstacleAvoidanceType.HighQualityObstacleAvoidance : ObstacleAvoidanceType.NoObstacleAvoidance;
     }
 
-    private Vector3 desiredVelocity = Vector3.zero;
 
     private void Update()
     {
-        //navAgent.nextPosition = transform.position;
-        //desiredVelocity = navAgent.desiredVelocity;
 
-        if (Vector3.Distance(navAgent.destination, transform.position) < 0.1f)
+        if (Vector3.Distance(navAgent.destination, transform.position) < 0.5f)
         {
             AgentActive = false;
-            //this.gameObject.SetActive(false);
         }
     }
 
-    private void FixedUpdate()
-    {
+    //private void FixedUpdate()
+    //{
         //Vector3 velocity = desiredVelocity;
         
-    }
+    //}
 
 }

@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="/Assets/UI/Styles/Sub Window Styles.uss" />
+    <ui:VisualElement class="window padded-window">
+        <ui:TextField picking-mode="Ignore" label="Server" text="https://hestia.speckle.works/api" name="InputServer" />
+        <ui:TextField picking-mode="Ignore" label="Email" name="InputEmail" />
+        <ui:TextField picking-mode="Ignore" label="Password" name="InputPassword" password="true" />
+        <ui:Button text="Login To Speckle&#10;" name="ButtonSubmit" class="large-element" />
+        <ui:Label text="This is an error message&#10;" display-tooltip-when-elided="true" name="LabelError" class="error-message" style="color: rgb(225, 177, 44); margin-top: 10px;" />
+    </ui:VisualElement>
+</ui:UXML>

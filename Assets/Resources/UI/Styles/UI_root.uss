@@ -1,0 +1,32 @@
+.right {
+    position: absolute;
+    width: 20%;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+#bottom {
+    width: 80%;
+    position: absolute;
+    bottom: 0;
+}
+
+#top {
+    width: 80%;
+    position: absolute;
+}
+
+.right > * {
+    flex-grow: 1;
+}
+
+#top > * {
+    flex-direction: row;
+}
+
+#windowContainer TemplateContainer {
+    flex-grow: 1;
+}

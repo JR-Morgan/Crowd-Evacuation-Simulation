@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="Styles/UI_root.uss" />
+    <ui:VisualElement name="windowContainer" class="right">
+        <Assets.Resources.UI.Elements.SpeckleWindowElement />
+        <Assets.Resources.UI.Elements.SimulationSetupElement />
+    </ui:VisualElement>
+    <ui:VisualElement name="bottom">
+        <Assets.Resources.UI.Elements.TimelineElement />
+    </ui:VisualElement>
+    <ui:VisualElement name="top">
+        <Assets.Resources.UI.Elements.CameraViewsElement />
+    </ui:VisualElement>
+</ui:UXML>

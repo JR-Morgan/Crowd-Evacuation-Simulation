@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Assets.UI.Elements;
+using Assets.Resources.UI.Elements;
 
 [RequireComponent(typeof(UIDocument))]
 public class CameraViewsController : MonoBehaviour
@@ -19,6 +19,15 @@ public class CameraViewsController : MonoBehaviour
         {
             element.CameraChangeEvent += ChangeCamera;
 
+            ImportManager i = ImportManager.Instance;
+            if(i != null)
+            {
+                i.OnStreamReceived += CameraUpdate;
+                i.OnReceiverRemove += CameraUpdate;
+                i.OnStreamVisibilityChange += CameraUpdate;
+                i.OnReceiverUpdate += CameraUpdate;
+            }
+
             InitialseUI();
         }
         else
@@ -26,15 +35,19 @@ public class CameraViewsController : MonoBehaviour
             Debug.LogWarning($"{this} could not find a {typeof(CameraViewsElement)} in {document}");
         }
     }
-
+    private void CameraUpdate<A, B, C>(A a = default, B b = default, C c = default ) => InitialseUI();
+    private void CameraUpdate<A, B>(A a = default, B b = default) => InitialseUI();
     private void InitialseUI()
     {
+        element.Clear();
         availableCameras = FindObjectsOfType<Camera>(true);
         foreach (Camera cam in availableCameras)
         {
-            element.AddElement(new CameraViewViewModel() { camera = cam, name = cam.name }); //TODO relies of cam.name
-        }
-        
+            if (cam.transform.parent.gameObject.activeInHierarchy)
+            {
+                element.AddElement(new CameraViewViewModel() { camera = cam, name = cam.name });
+            }
+        }        
     }
 
     private void ChangeCamera(Camera cam)

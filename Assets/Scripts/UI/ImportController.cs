@@ -1,102 +1,97 @@
-using Assets.UI.Elements;
-using SpeckleUnity;
+using Assets.Resources.UI.Elements;
+using Speckle.ConnectorUnity;
+using Speckle.Core.Credentials;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Stream = Speckle.Core.Api.Stream;
 
-[RequireComponent(typeof(LoginController))]
+
+public struct StreamViewModel
+{
+    public string streamName, streamID, streamDesc;
+    public string status;
+    public double progress;
+}
+
 [RequireComponent(typeof(UIDocument))]
 public class ImportController : MonoBehaviour
 {
-    public const string WINDOW_CONTAINER = "windowContainer";
-    #region SerialisedFeilds
-    [SerializeField]
-    private bool recieveUpdates = false;
-    [SerializeField]
-    private Transform root;
-    #endregion
-    [HideInInspector]
-    [SerializeField]
-    private SpeckleUnityManager speckle;
 
-    private ImportUIElement element;
+    ImportManager manager;
+    SpeckleWindowElement element;
+
 
     private void Start()
     {
-        //Speckle setup
-        {
-            speckle = GameObject.FindGameObjectWithTag("SpeckleManager").GetComponent<SpeckleUnityManager>(); //TODO singleton reference
-            if (speckle == null)
-            {
-                Debug.LogWarning($"Could not find {typeof(SpeckleUnityManager)} in scene");
-                return;
-            }
-        }
-
-
-    }
-
-    private void OnEnable()
-    {
-        DeleteElement();
+        manager = ImportManager.Instance;
 
         UIDocument document = GetComponent<UIDocument>();
-        element = document.rootVisualElement.Q<ImportUIElement>();
+
+        element = document.rootVisualElement.Q<SpeckleWindowElement>();
         if (element == null)
         {
-            VisualElement windowContainer = document.rootVisualElement.Q<VisualElement>(WINDOW_CONTAINER);
-            if (windowContainer == null)
-            {
-                Debug.LogWarning($"{this} could not find an element of name: \"{WINDOW_CONTAINER}\" in {document}");
-                return;
-            }
-
-            element = new ImportUIElement();
-            windowContainer.Add(element);
-
+            Debug.LogWarning($"{this} could not find a {typeof(SpeckleWindowElement)} in {document}");
+            return;
         }
 
-        element.OnSubmit += ImportModel;
-        element.LogoutEvent += Logout;
+        manager.OnReadyToReceive += Initialise;
     }
 
-    private void OnDisable() => DeleteElement();
 
-    private void OnDestroy() => DeleteElement();
-
-    private void DeleteElement()
+    private void Initialise(UserInfo user, ServerInfo server)
     {
-        if (element != null)
+        foreach (Stream stream in manager.Streams)
         {
-            element.OnSubmit -= ImportModel;
-            element.RemoveFromHierarchy();
+            element.AddAvaiableStreams(
+                viewModel: ToViewModel(stream),
+                OnImport: () => manager.CreateReceiver(stream));
         }
+
+        manager.OnReceiverAdd += AddReceiver;
+        manager.OnReceiverRemove += RemoveReceiver;
+        manager.OnReceiverUpdate += UpdateReceiver;
+        manager.OnStreamVisibilityChange += VisiblityChange;
+        manager.OnStreamReceived += StreamReceived;
+
+        element.SetServerName(server.name);
     }
 
 
-    private void ImportModel(string streamID)
+    private void RemoveReceiver(Stream stream, Receiver receiver = null)
     {
-
-        var speckle = GameObject.FindGameObjectWithTag("SpeckleManager").GetComponent<SpeckleUnityManager>(); //TODO singleton reference
-
-        if (speckle.loggedInUser == null)
-        {
-            speckle.Logout();
-            Logout();
-        }
-        else
-        {
-            speckle.ClearReceivers();
-            speckle.AddReceiverAsync(streamID, root, true, recieveUpdates);
-            speckle.InitializeAllClientsAsync();
-        }
-
+        element.RemoveReceiver(ToViewModel(stream));
     }
 
-
-    private void Logout()
+    private void AddReceiver(Stream stream, Receiver receiver)
     {
-        this.GetComponent<LoginController>().enabled = true;
-        this.enabled = false;
+        element.AddReceiver(ToViewModel(stream), () => manager.HideReceiver(receiver), () => manager.Receive(receiver), () => manager.RemoveReceiver(receiver));
     }
+
+    private void VisiblityChange(Stream stream, Receiver receiver)
+    {
+        bool visible = receiver.gameObject.activeInHierarchy;
+        element.SetVisibility(ToViewModel(stream), visible);
+    }
+
+    private void StreamReceived(Stream stream, Receiver receiver = null)
+    {
+        element.StreamFinished(ToViewModel(stream));
+    }
+
+
+    private void UpdateReceiver(Stream stream, Receiver receiver, double progress)
+    {
+        StreamViewModel s = ToViewModel(stream);
+        s.progress = progress;
+        element.UpdateReciever(s);
+    }
+
+    public static StreamViewModel ToViewModel(Stream stream, double progress = 1d) => new StreamViewModel() {
+        streamName = stream.name,
+        streamID = stream.id,
+        status = "",
+        streamDesc = stream.description,
+        progress = progress,
+    };
 
 }
