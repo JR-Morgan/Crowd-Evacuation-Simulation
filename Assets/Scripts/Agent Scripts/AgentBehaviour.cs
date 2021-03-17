@@ -9,7 +9,7 @@ public class AgentBehaviour : MonoBehaviour
     private NavMeshAgent navAgent;
     private NavMeshPath path  = null;
 
-    public bool CalcualtePath(Vector2 terminalGoal)
+    public bool CalculatePath(Vector2 terminalGoal)
     {
         path = new NavMeshPath();
         navAgent.CalculatePath(terminalGoal, path);
@@ -32,7 +32,17 @@ public class AgentBehaviour : MonoBehaviour
         //navAgent.isStopped = true;
         //if(terminalGoal == null) terminalGoal = GameObject.FindGameObjectWithTag("Goal").transform;
 
-        //if(path == null) CalcualtePath(terminalGoal.position);
+        if (path == null)
+        {
+            GameObject go = GameObject.FindGameObjectWithTag("Goal");
+            if(go != null)
+            {
+                Debug.LogWarning($"{typeof(AgentBehaviour)} was not properly initialised with a {nameof(path)}!, must call {nameof(CalculatePath)} before {nameof(Start)}", this);
+                if (CalculatePath(go.transform.position)) Debug.Log($"{typeof(AgentBehaviour)} found a backup goal {go} by tag", this);
+                else Debug.LogWarning($"{typeof(AgentBehaviour)}  could not find a backup goal {go} by tag", this);
+            }
+
+        }
         if (path != null)
         {
             navAgent.SetPath(path);

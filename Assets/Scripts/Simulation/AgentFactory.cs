@@ -36,7 +36,7 @@ public static class AgentFactory
                 if (!position.Equals(Vector3.positiveInfinity))
                 {
                     navAgent.Warp(position);
-                    if(agentBehaviour.CalcualtePath(goal.position))
+                    if(agentBehaviour.CalculatePath(goal.position))
                     {
                         failed = false;
                         break;

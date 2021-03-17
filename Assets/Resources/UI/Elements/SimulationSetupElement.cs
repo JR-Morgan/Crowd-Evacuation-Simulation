@@ -75,7 +75,7 @@ namespace Assets.Resources.UI.Elements
         public RunEventHandler OnRun;
         public Func<bool> OnCancel;
 
-
+#pragma warning disable CS0642 // Possible mistaken empty statement
         private VisualElement CreateElement(FieldInfo field)
         {
             string label = field.Name;
@@ -96,14 +96,18 @@ namespace Assets.Resources.UI.Elements
 
             E AddCallback<E, S, T>(E element, T value, Convert<S, T> toV, Convert<T, S> toTarget) where E : BaseField<S>
             {
+
                 element.RegisterCallback<ChangeEvent<S>>(e =>
                 {
+
                     if (toV(e.newValue, out T value)) ;
+
                     else if (toV(e.previousValue, out value)) ;
                     else value = default;
 
                     field.SetValue(viewModel, value);
                     SetValue(element, value, toTarget);
+
                 });
 
                 SetValue(element, value, toTarget);
@@ -123,6 +127,7 @@ namespace Assets.Resources.UI.Elements
                 }
             }
 
+
             static bool ToString<T>(T input, out string result)
             {
                 result = input.ToString();
@@ -136,6 +141,8 @@ namespace Assets.Resources.UI.Elements
             }
 
         }
+#pragma warning restore CS0642 // Possible mistaken empty statement
+
         private delegate bool Convert<A,B>(A input, out B result);
 
         #region UXML Factory

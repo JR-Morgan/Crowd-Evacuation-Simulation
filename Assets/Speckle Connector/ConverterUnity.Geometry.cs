@@ -146,10 +146,12 @@ namespace Objects.Converter.Unity
 
       float pointDiameter = 1; //TODO: figure out how best to change this?
 
-      var go = new GameObject();
-      go.name = name;
+            var go = new GameObject
+            {
+                name = name
+            };
 
-      var lineRenderer = go.AddComponent<LineRenderer>();
+            var lineRenderer = go.AddComponent<LineRenderer>();
 
       lineRenderer.positionCount = points.Length;
       lineRenderer.SetPositions(points);
@@ -262,10 +264,12 @@ namespace Objects.Converter.Unity
       }
 
 
-      var go = new GameObject();
-      go.name = speckleMesh.speckle_type;
+            var go = new GameObject
+            {
+                name = speckleMesh.speckle_type
+            };
 
-      var mesh = go.AddComponent<MeshFilter>().mesh;
+            var mesh = go.AddComponent<MeshFilter>().mesh;
       var meshRenderer = go.AddComponent<MeshRenderer>();
 
       //todo support more complex materials
@@ -344,7 +348,7 @@ namespace Objects.Converter.Unity
 
     #endregion
 
-    private void SetSpeckleData(GameObject go, Base @base)
+    public void SetSpeckleData(GameObject go, Base @base)
     {
       var sd = go.AddComponent<SpeckleData>();
       var meshprops = typeof(Mesh).GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x=>x.Name).ToList();

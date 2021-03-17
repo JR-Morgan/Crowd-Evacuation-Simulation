@@ -240,15 +240,15 @@ namespace Speckle.ConnectorUnity
       //it's an unsupported Base, go through each of its property and try convert that
       if (!_converter.CanConvertToNative(@base))
       {
-        var members = @base.GetMemberNames().ToList();
+        List<string> members = @base.GetMemberNames().ToList();
         
         //empty game object with the commit id as name, used to contain all the rest
           var go = new GameObject();
           go.name = @base.speckle_type;
-        var goos = new List<GameObject>();
-        foreach (var member in members)
+          var goos = new List<GameObject>();
+        foreach (string member in members)
         {
-          var goo = RecurseTreeToNative(@base[member]);
+          GameObject goo = RecurseTreeToNative(@base[member]);
           if (goo != null)
           {
             goo.name = member;
@@ -257,11 +257,13 @@ namespace Speckle.ConnectorUnity
           }
         }
         //if no children is valid, return null
-        if (!goos.Any())
-        {
-          Destroy(go);
-          return null;
-        }
+        //if (!goos.Any())
+        //{
+        //  Destroy(go);
+        //  return null;
+        //}
+
+        _converter.SetSpeckleData(go, @base);
 
         return go;
         
@@ -277,8 +279,6 @@ namespace Speckle.ConnectorUnity
            throw new SpeckleException(e.Message, e, true, SentryLevel.Error);
         }
       }
-
-      return null;
     }
 
 

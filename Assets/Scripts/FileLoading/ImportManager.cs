@@ -65,6 +65,14 @@ public class ImportManager : Singleton<ImportManager>
 
         busyRecievers = new BusySet<Receiver>();
         busyRecievers.OnStatusChange += UpdateBusy;
+
+
+        //If there is already a model imported 
+        GameObject environment = GameObject.FindGameObjectWithTag("Environment");
+        if (environment.GetComponentInChildren<Renderer>(false) != null)
+        {
+            OnBusyChange(false);
+        }
     }
 
     #region Busy
@@ -102,6 +110,8 @@ public class ImportManager : Singleton<ImportManager>
                 // when the stream has finished being received
                 Debug.Log($"Finished receiving {stream}");
                 busyRecievers.RemoveItem(receiver);
+                HideReceiver(receiver, true);
+
                 OnStreamReceived.Invoke(stream, receiver);
 
             },
@@ -186,8 +196,11 @@ public class ImportManager : Singleton<ImportManager>
     /// <param name="receiver"></param>
     public void Receive(Receiver receiver)
     {
+        HideReceiver(receiver, false);
+
         busyRecievers.AddItem(receiver);
         receiver.Receive();
+
     }
 
     /// <summary>
@@ -197,11 +210,15 @@ public class ImportManager : Singleton<ImportManager>
     /// <param name="destroyGameObject">When True, the <paramref name="receiver"/>'s <see cref="Component.gameObject"/> will be removed from the scene</param>
     public void RemoveReceiver(Receiver receiver, bool destroyGameObject = true)
     {
+        HideReceiver(receiver, false);
+
         Receivers.Remove(receiver.StreamId);
         busyRecievers.RemoveItem(receiver);
         UpdateBusy();
+
+        if (destroyGameObject) Destroy(receiver.gameObject);
+
         OnReceiverRemove.Invoke(StreamFromID[receiver.StreamId], receiver);
-        if(destroyGameObject) Destroy(receiver.gameObject);
     }
 
     /// <summary>
@@ -210,7 +227,13 @@ public class ImportManager : Singleton<ImportManager>
     /// <param name="receiver"></param>
     public void HideReceiver(Receiver receiver)
     {
-        receiver.gameObject.SetActive(!receiver.gameObject.activeInHierarchy);
+        HideReceiver(receiver, !receiver.gameObject.activeInHierarchy);
+    }
+
+
+    public void HideReceiver(Receiver receiver, bool value)
+    {
+        receiver.gameObject.SetActive(value);
         OnStreamVisibilityChange.Invoke(StreamFromID[receiver.StreamId], receiver);
     }
 

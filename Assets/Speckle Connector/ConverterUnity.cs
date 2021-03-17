@@ -106,10 +106,8 @@ namespace Objects.Converter.Unity
         //   return true;
         case Mesh _:
           return true;
-        case Brep o:
-          if (o.displayValue != null) ;
+        case Brep _:
           return true;
-          return false;
          case View3D _:
            return true;
         // case View2D _:

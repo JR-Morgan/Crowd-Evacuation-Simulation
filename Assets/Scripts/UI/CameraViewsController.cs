@@ -24,6 +24,8 @@ public class CameraViewsController : MonoBehaviour
             {
                 i.OnStreamReceived += CameraUpdate;
                 i.OnReceiverRemove += CameraUpdate;
+                i.OnStreamVisibilityChange += CameraUpdate;
+                i.OnReceiverUpdate += CameraUpdate;
             }
 
             InitialseUI();
@@ -33,17 +35,19 @@ public class CameraViewsController : MonoBehaviour
             Debug.LogWarning($"{this} could not find a {typeof(CameraViewsElement)} in {document}");
         }
     }
-
-    private void CameraUpdate<S, R>(S stream = default, R reciever = default) => InitialseUI();
+    private void CameraUpdate<A, B, C>(A a = default, B b = default, C c = default ) => InitialseUI();
+    private void CameraUpdate<A, B>(A a = default, B b = default) => InitialseUI();
     private void InitialseUI()
     {
         element.Clear();
         availableCameras = FindObjectsOfType<Camera>(true);
         foreach (Camera cam in availableCameras)
         {
-            element.AddElement(new CameraViewViewModel() { camera = cam, name = cam.name });
-        }
-        
+            if (cam.transform.parent.gameObject.activeInHierarchy)
+            {
+                element.AddElement(new CameraViewViewModel() { camera = cam, name = cam.name });
+            }
+        }        
     }
 
     private void ChangeCamera(Camera cam)

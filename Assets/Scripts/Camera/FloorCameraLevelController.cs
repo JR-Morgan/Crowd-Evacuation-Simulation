@@ -1,79 +1,47 @@
+using Objects.BuiltElements.Revit;
 using Speckle.ConnectorUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 public class FloorCameraLevelController : MonoBehaviour
 {
+
     [SerializeField]
     private float floorHeight, groundOffset, relativeOffset;
 
     [SerializeField]
     private int _floor;
-
-    private new Camera camera;
-
-    private void Awake()
-    {
-        camera = GetComponent<Camera>();
-    }
-
-
+    
     public int Floor {
         get => _floor;
         set
         {
             _floor = value;
-            SetView(Floor);
+            SetFloorView(Floor);
         }
     }
+
+    #region Unity Methods
 
     private void OnValidate()
     {
-        if(camera == null) camera = GetComponent<Camera>();
-        SetView(Floor);
+        SetFloorView(Floor);
     }
 
-    [System.Obsolete]
-    private void SetView()
-    {
-        Vector3 newPosition = camera.transform.position;
-
-        newPosition.y = groundOffset + ((Floor + 1) * (floorHeight + relativeOffset));
-
-        camera.transform.position = newPosition;
-
-        camera.nearClipPlane = relativeOffset;
-        camera.farClipPlane = relativeOffset + floorHeight;
-
-
-    }
-
-
-    private void SetView(int level)
-
+    private void OnDisable()
     {
         GameObject environment = GameObject.FindGameObjectWithTag("Environment");
-        SetChildrenActive(environment.transform);
 
-
+        foreach (SpeckleData d in environment.GetComponentsInChildren<SpeckleData>(true))
+        {
+            TrySetActive(d, true);
+        }
     }
 
-    private void SetChildrenActive(Transform parent)
+    private void OnEnable()
     {
-        foreach (Transform child in parent)
-        {
-            if(child.TryGetComponent(out SpeckleData data))
-            {
-                if (data.Data.TryGetValue("level", out object @object))
-                {
-                    //TOTO
-                }
-
-            }
-            SetChildrenActive(child);
-        }
+        SetFloorView(Floor);
     }
 
     void Update()
@@ -87,5 +55,62 @@ public class FloorCameraLevelController : MonoBehaviour
             }
         }
     }
+    #endregion
+
+
+    #region Set Floor View
+    private static void SetFloorView(int floor)
+    {
+        GameObject environment = GameObject.FindGameObjectWithTag("Environment");
+
+        foreach(SpeckleData d in environment.GetComponentsInChildren<SpeckleData>(true))
+        {
+            TrySetActive(d, floor);
+        }
+    }
+
+
+    private static bool TryGetLevel(SpeckleData d, out int startLevel, out int topLevel)
+    {
+        if (d != null
+           && d.Data.TryGetValue("level", out object oStartLevel)
+           && oStartLevel != null
+           && int.TryParse(((RevitLevel)oStartLevel).name, out startLevel))
+        {
+
+            if (!(
+                d.Data.TryGetValue("topLevel", out object oTopLevel)
+                && oTopLevel != null
+                && int.TryParse(((RevitLevel)oTopLevel).name, out topLevel)
+                ))
+            {
+                topLevel = startLevel;
+            }
+
+
+            return true;
+        }
+
+        startLevel = default;
+        topLevel = default;
+        return false;
+    }
+
+    private static void TrySetActive(SpeckleData d, int floor)
+    {
+        if (TryGetLevel(d, out int startLevel, out int topLevel))
+        { 
+            d.gameObject.SetActive(startLevel <= floor && floor <= topLevel);
+        }
+    }
+
+    private static void TrySetActive(SpeckleData d, bool active)
+    {
+        if (TryGetLevel(d, out int _, out int _))
+        {
+            d.gameObject.SetActive(active);
+        }
+    }
+    #endregion
 
 }
