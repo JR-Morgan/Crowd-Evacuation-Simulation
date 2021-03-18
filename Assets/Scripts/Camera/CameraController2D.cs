@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 public class CameraController2D : MonoBehaviour
 {
     [SerializeField]
     private float translateSpeed, mouseTranslateSpeed, zoomSpeed;
 
-    private new Camera camera;
+    private IList<Camera> cameras;
 
     void Awake()
     {
-        camera = GetComponent<Camera>();
+        cameras = GetComponentsInChildren<Camera>();
     }
 
     void Update()
@@ -31,9 +30,15 @@ public class CameraController2D : MonoBehaviour
 
         //Apply Transform
         transform.Translate(translateX, translateZ, 0f);
+        foreach(Camera camera in cameras)
+        {
         camera.orthographicSize -= Input.GetAxis("Scroll") * zoomSpeed * Time.deltaTime;
 
         camera.orthographicSize = Mathf.Max(camera.orthographicSize, 0.01f);
+
+        }
+
+
 
     }
 

@@ -70,7 +70,7 @@ public class SimulationManager : Singleton<SimulationManager>
     }
 
     /// <summary>
-    /// Attempts to initialise and start a simulation with with the <paramref name="settings"/>
+    /// Attempts to initialise and start a simulation with the <paramref name="settings"/>
     /// </summary>
     /// <param name="settings">The <see cref="SimulationSettings"/> that are to be setup</param>
     /// <param name="environment">The <see cref="GameObject"/> that represents the environment of agents</param>

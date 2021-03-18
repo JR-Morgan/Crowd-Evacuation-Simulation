@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Goal
   - Environment
+  - Cameras
   layers:
   - Default
   - TransparentFX
@@ -14,7 +15,7 @@ TagManager:
   - Water
   - UI
   - BuildingMesh
-  - 
+  - Agents
   - 
   - 
   - 

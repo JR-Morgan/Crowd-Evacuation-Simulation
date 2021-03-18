@@ -9,7 +9,7 @@ namespace Assets.Resources.UI.Elements
     public struct CameraViewViewModel
     {
         public string name;
-        public Camera camera;
+        public GameObject cameraGroup;
     }
 
     public class CameraViewsElement : VisualElement
@@ -36,7 +36,7 @@ namespace Assets.Resources.UI.Elements
 
             e.RegisterCallback<ClickEvent>(evt =>
             {
-                CameraChangeEvent.Invoke(viewModel.camera);
+                CameraChangeEvent.Invoke(viewModel.cameraGroup);
             });
 
             return e;
@@ -44,7 +44,7 @@ namespace Assets.Resources.UI.Elements
 
 
         #region Events
-        public delegate void CameraChangeEventHandler(Camera cam);
+        public delegate void CameraChangeEventHandler(GameObject cameraGroup);
         public event CameraChangeEventHandler CameraChangeEvent;
         #endregion
 

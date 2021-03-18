@@ -9,7 +9,7 @@ public class CameraViewsController : MonoBehaviour
 
     private CameraViewsElement element;
 
-    private IList<Camera> availableCameras;
+    private List<GameObject> avaiableCameraGroups;
 
     private void Start()
     {
@@ -40,22 +40,50 @@ public class CameraViewsController : MonoBehaviour
     private void InitialseUI()
     {
         element.Clear();
-        availableCameras = FindObjectsOfType<Camera>(true);
-        foreach (Camera cam in availableCameras)
+        avaiableCameraGroups = new List<GameObject>();
+
+        //Dynamic cameras
+        foreach (GameObject cameraParent in GameObject.FindGameObjectsWithTag("Cameras"))
         {
-            if (cam.transform.parent.gameObject.activeInHierarchy)
+            foreach(Transform child in cameraParent.transform)
             {
-                element.AddElement(new CameraViewViewModel() { camera = cam, name = cam.name });
+                if(child.GetComponentInChildren<Camera>(true) != null || child.GetComponentInChildren<Camera>(true) != null)
+                {
+                    avaiableCameraGroups.Add(child.gameObject);
+                }
+                else
+                {
+                    Debug.LogWarning($"Camera child {child.gameObject} missing {typeof(Camera)} component in self or children", child.gameObject);
+                }
             }
-        }        
+        }
+
+        //Static Cameras
+        foreach (GameObject environment in GameObject.FindGameObjectsWithTag("Environment"))
+        {
+            foreach(Camera cam in environment.GetComponentsInChildren<Camera>(true))
+            {
+                avaiableCameraGroups.Add(cam.gameObject);
+            }
+        }
+
+
+        //Create UI for all cameras
+        foreach (GameObject camGroup in avaiableCameraGroups)
+        {
+            if (camGroup.transform.parent.gameObject.activeInHierarchy)
+            {
+                element.AddElement(new CameraViewViewModel() { cameraGroup = camGroup, name = camGroup.name });
+            }
+        }
     }
 
-    private void ChangeCamera(Camera cam)
+    private void ChangeCamera(GameObject cam)
     {
-        foreach(Camera c in availableCameras)
+        foreach(GameObject c in avaiableCameraGroups)
         {
-            c.gameObject.SetActive(false);
+            c.SetActive(false);
         }
-        cam.gameObject.SetActive(true);
+        cam.SetActive(true);
     }
 }
