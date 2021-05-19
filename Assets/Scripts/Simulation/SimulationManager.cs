@@ -1,124 +1,82 @@
-using System.Collections;
+using PedestrianSimulation.Agent;
+using PedestrianSimulation.Simulation.UpdateStrategies;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-
-//Was a struct but in order to do reflection in SimulationSetupElement, need this to be a class
-public class SimulationSettings
-{
-    public int seed = 255;
-    public int numberOfAgents = 100;
-    public Transform goal;
-
-}
-
-[RequireComponent(typeof(NavMeshSurface))]
-public class SimulationManager : Singleton<SimulationManager>
+namespace PedestrianSimulation.Simulation
 {
 
-    #region Serialized Field
-
-    [Header("Prefab References")]
-    [SerializeField]
-    private GameObject AgentPrefab;
-
-    #endregion;
-
-
-    private NavMeshSurface navMeshSurface;
-
-    public bool IsRunning { get; private set; }
-    public bool HasGenerated => Agents != null;
-    public List<AgentBehaviour> Agents { get; private set; } = null;
-
-    protected override void Awake()
+    [DisallowMultipleComponent]
+    [AddComponentMenu("Simulation/Simulation Manager")]
+    public partial class SimulationManager : Singleton<SimulationManager>, ISimulationManager
     {
-        base.Awake();
-        navMeshSurface = GetComponent<NavMeshSurface>();
-        Initialise();
-    }
+        #region Scene References
+        private NavMeshSurface navMeshSurface;
+        #endregion
 
-
-
-    /// <summary>
-    /// Cancels the running simulation
-    /// </summary>
-    /// <returns>False if the simulation was not running</returns>
-    public bool CancelSimulation()
-    {
-        if (IsRunning) Initialise();
-        return IsRunning;
-    }
-
-    /// <summary>
-    /// (Re)Initialises the Simulation manager. Will remove all agents in the scene.
-    /// </summary>
-    public void Initialise()
-    {
-        if (HasGenerated)
+        [SerializeField]
+        private List<PedestrianAgent> _agents = null;
+        public IList<PedestrianAgent> Agents
         {
-            WorldStateManager.Instance.enabled = false;
-
-            foreach (AgentBehaviour agent in Agents)
+            get => _agents;
+            private set
             {
-                Destroy(agent.gameObject);
+                _agents = value.ToList();
+                AgentStates = Agents.Select(a => a.State);
+                updater?.Initialise(_agents);
             }
-            Agents = null;
         }
-        IsRunning = false;
-    }
 
-    /// <summary>
-    /// Attempts to initialise and start a simulation with the <paramref name="settings"/>
-    /// </summary>
-    /// <param name="settings">The <see cref="SimulationSettings"/> that are to be setup</param>
-    /// <param name="environment">The <see cref="GameObject"/> that represents the environment of agents</param>
-    /// <returns>True if the simulation was successfully setup</returns>
-    public bool RunSimulation(in SimulationSettings settings, GameObject environment)
-    {
-        if (IsRunning)
+        public bool HasGenerated => Agents != null;
+        public bool IsRunning { get; private set; }
+
+
+        public IEnumerable<AgentState> AgentStates { get; private set; }
+
+
+
+        #region Unity Methods
+
+        protected override void Awake()
         {
-            Debug.Log("Unable to start simulation as one is already running!");
-
+            base.Awake();
+            navMeshSurface = GetComponent<NavMeshSurface>();
+            InitialiseManager();
         }
-        else
+
+        #endregion
+
+        #region Simulation
+        /// <summary>
+        /// Cancels the running simulation
+        /// </summary>
+        /// <returns><c>false</c> if the simulation was not running; <c>true</c> otherwise</returns>
+        public bool CancelSimulation()
         {
-            IsRunning = true;
+            if (IsRunning) InitialiseManager();
+            return IsRunning;
+        }
 
-
-            // 1. Random
-            Random.InitState(settings.seed);
-
-            // 2. Prepare Environment
-            Transform[] c = environment.GetComponentsInChildren<Transform>(true);
-            foreach (Transform t in c)
+        /// <summary>
+        /// (Re)Initialises the <see cref="SimulationManager"/>. Will destroy all <see cref="PedestrianAgent"/>s in the scene.
+        /// </summary>
+        private void InitialiseManager()
+        {
+            if (HasGenerated)
             {
-                t.gameObject.layer = (int)(Mathf.Log((uint)navMeshSurface.layerMask.value, 2));
+                //if(WorldStateManager.IsInitialised) WorldStateManager.Instance.enabled = false;
+
+                foreach (PedestrianAgent agent in Agents)
+                {
+                    Destroy(agent.gameObject);
+                }
+                _agents = null;
             }
-            
-            // 2. NavMesh
-            navMeshSurface.BuildNavMesh();
-
-            // 3. Agents
-            Agents = AgentFactory.SpawnAllAgents(
-                agentParent: transform,
-                goal: settings.goal,
-                agentPrefab: AgentPrefab,
-                numberOfAgents: settings.numberOfAgents,
-                environmentModel: environment
-                );
-
-            // 4 World State
-            WorldStateManager.Instance.enabled = true;
-
-            Debug.Log("Simulation has started!");
-
+            IsRunning = false;
         }
-
-        return IsRunning;
+        #endregion
     }
-
-
 
 }

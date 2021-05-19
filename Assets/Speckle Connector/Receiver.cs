@@ -11,6 +11,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Sentry;
 using Sentry.Protocol;
 using UnityEngine;
 
@@ -23,8 +24,10 @@ namespace Speckle.ConnectorUnity
   public class Receiver : MonoBehaviour
   {
     public string StreamId;
+    public string BranchName = "main";
+    public Stream Stream;
     public int TotalChildrenCount = 0;
-    private GameObject ReceivedData;
+    public GameObject ReceivedData;
 
     private bool AutoReceive;
     private bool DeleteOld;
@@ -66,6 +69,12 @@ namespace Speckle.ConnectorUnity
       OnTotalChildrenCountKnown = onTotalChildrenCountKnown;
 
       Client = new Client(account ?? AccountManager.GetDefaultAccount());
+      
+      //using the ApplicationPlaceholderObject to pass materials
+      //available in Assets/Materials to the converters
+      var materials = Resources.LoadAll("Materials", typeof(Material)).Cast<Material>()
+        .Select(x => new ApplicationPlaceholderObject {NativeObject = x}).ToList();
+      _converter.SetContextObjects(materials);
 
       if (AutoReceive)
       {
@@ -74,14 +83,6 @@ namespace Speckle.ConnectorUnity
       }
     }
 
-    /// <summary>
-    /// Initializes the Receiver automatically, with t
-    /// To be used when the StreamId property is set on the Unity ScriptableObject
-    /// </summary>
-    public void Init()
-    {
-      Client = new Client(AccountManager.GetDefaultAccount());
-    }
 
     /// <summary>
     /// Gets and converts the data of the last commit on the Stream
@@ -89,18 +90,22 @@ namespace Speckle.ConnectorUnity
     /// <returns></returns>
     public void Receive()
     {
+      if (Client == null || string.IsNullOrEmpty(StreamId))
+        throw new Exception("Receiver has not been initialized. Please call Init().");
+
       Task.Run(async () =>
       {
         try
         {
-          var branches = await Client.StreamGetBranches(StreamId);
-          var mainBranch = branches.FirstOrDefault(b => b.name == "main");
+          var mainBranch = await Client.BranchGet(StreamId, BranchName, 1);
+          if (!mainBranch.commits.items.Any())
+            throw new Exception("This branch has no commits");
           var commit = mainBranch.commits.items[0];
           GetAndConvertObject(commit.referencedObject, commit.id);
         }
         catch (Exception e)
         {
-           throw new SpeckleException(e.Message, e, true, SentryLevel.Error);
+          throw new SpeckleException(e.Message, e, true, SentryLevel.Error);
         }
       });
     }
@@ -116,8 +121,11 @@ namespace Speckle.ConnectorUnity
     /// <param name="e"></param>
     protected virtual void Client_OnCommitCreated(object sender, CommitInfo e)
     {
-      Debug.Log("Commit created");
-      GetAndConvertObject(e.objectId, e.id);
+      if (e.branchName == BranchName)
+      {
+        Debug.Log("New commit created");
+        GetAndConvertObject(e.objectId, e.id);
+      }
     }
 
 
@@ -141,9 +149,8 @@ namespace Speckle.ConnectorUnity
           //remove previously received object
           if (DeleteOld && ReceivedData != null)
             Destroy(ReceivedData);
-            ReceivedData = go;
-            OnDataReceivedAction?.Invoke(go);
-            go.transform.SetParent(this.transform);  //I've added this line to parent the stream objects to the recievers gameobject
+          ReceivedData = go;
+          OnDataReceivedAction?.Invoke(go);
         });
       }
       catch (Exception e)
@@ -240,15 +247,15 @@ namespace Speckle.ConnectorUnity
       //it's an unsupported Base, go through each of its property and try convert that
       if (!_converter.CanConvertToNative(@base))
       {
-        List<string> members = @base.GetMemberNames().ToList();
-        
+        var members = @base.GetMemberNames().ToList();
+
         //empty game object with the commit id as name, used to contain all the rest
-          var go = new GameObject();
-          go.name = @base.speckle_type;
-          var goos = new List<GameObject>();
-        foreach (string member in members)
+        var go = new GameObject();
+        go.name = @base.speckle_type;
+        var goos = new List<GameObject>();
+        foreach (var member in members)
         {
-          GameObject goo = RecurseTreeToNative(@base[member]);
+          var goo = RecurseTreeToNative(@base[member]);
           if (goo != null)
           {
             goo.name = member;
@@ -256,29 +263,42 @@ namespace Speckle.ConnectorUnity
             goos.Add(goo);
           }
         }
-        //if no children is valid, return null
-        //if (!goos.Any())
-        //{
-        //  Destroy(go);
-        //  return null;
-        //}
 
-        _converter.SetSpeckleData(go, @base);
+        //if no children is valid, return null
+        if (!goos.Any())
+        {
+          Destroy(go);
+          return null;
+        }
 
         return go;
-        
       }
       else
       {
         try
         {
-          return _converter.ConvertToNative(@base) as GameObject;
+          var go = _converter.ConvertToNative(@base) as GameObject;
+          // Some revit elements have nested elements in a "elements" property
+          // for instance hosted families on a wall
+          if (go != null && @base["elements"] is List<Base> l && l.Any())
+          {
+            var goo = RecurseTreeToNative(l);
+            if (goo != null)
+            {
+              goo.name = "elements";
+              goo.transform.parent = go.transform;
+            }
+          }
+
+          return go;
         }
         catch (Exception e)
         {
-           throw new SpeckleException(e.Message, e, true, SentryLevel.Error);
+          throw new SpeckleException(e.Message, e, true, SentryLevel.Error);
         }
       }
+
+      return null;
     }
 
 
@@ -303,7 +323,7 @@ namespace Speckle.ConnectorUnity
 
     private void OnDestroy()
     {
-        Client?.CommitCreatedSubscription?.Dispose();
+      Client.CommitCreatedSubscription.Dispose();
     }
 
     #endregion

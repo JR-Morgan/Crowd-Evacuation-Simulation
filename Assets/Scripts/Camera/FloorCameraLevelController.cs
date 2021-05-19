@@ -33,7 +33,7 @@ public class FloorCameraLevelController : MonoBehaviour
     {
         GameObject environment = GameObject.FindGameObjectWithTag("Environment");
 
-        foreach (SpeckleData d in environment.GetComponentsInChildren<SpeckleData>(true))
+        foreach (SpeckleProperties d in environment.GetComponentsInChildren<SpeckleProperties>(true))
         {
             TrySetActive(d, true);
         }
@@ -63,14 +63,14 @@ public class FloorCameraLevelController : MonoBehaviour
     {
         GameObject environment = GameObject.FindGameObjectWithTag("Environment");
 
-        foreach(SpeckleData d in environment.GetComponentsInChildren<SpeckleData>(true))
+        foreach(SpeckleProperties d in environment.GetComponentsInChildren<SpeckleProperties>(true))
         {
             TrySetActive(d, floor);
         }
     }
 
 
-    private static bool TryGetLevel(SpeckleData d, out int startLevel, out int topLevel)
+    private static bool TryGetLevel(SpeckleProperties d, out int startLevel, out int topLevel)
     {
         if (d != null
            && d.Data.TryGetValue("level", out object oStartLevel)
@@ -96,7 +96,7 @@ public class FloorCameraLevelController : MonoBehaviour
         return false;
     }
 
-    private static void TrySetActive(SpeckleData d, int floor)
+    private static void TrySetActive(SpeckleProperties d, int floor)
     {
         if (TryGetLevel(d, out int startLevel, out int topLevel))
         { 
@@ -104,7 +104,7 @@ public class FloorCameraLevelController : MonoBehaviour
         }
     }
 
-    private static void TrySetActive(SpeckleData d, bool active)
+    private static void TrySetActive(SpeckleProperties d, bool active)
     {
         if (TryGetLevel(d, out int _, out int _))
         {

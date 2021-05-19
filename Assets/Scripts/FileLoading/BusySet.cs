@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Assets.Scripts.FileLoading
+namespace PedestrianSimulation.Import
 {
     public class BusySet<T>
     {

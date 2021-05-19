@@ -28,8 +28,8 @@ namespace Objects.Converter.Unity
       return new Vector3((float) ScaleToNative(x, units), (float) ScaleToNative(z, units),
         (float) ScaleToNative(y, units));
     }
-    
-        public Vector3 VectorFromPoint(Point p)
+
+    public Vector3 VectorFromPoint(Point p)
     {
       // switch y and z
       return new Vector3((float) ScaleToNative(p.x, p.units), (float) ScaleToNative(p.z, p.units),
@@ -58,12 +58,12 @@ namespace Objects.Converter.Unity
     public Vector3[] ArrayToPoints(IEnumerable<double> arr, string units)
     {
       if (arr.Count() % 3 != 0) throw new Exception("Array malformed: length%3 != 0.");
-    
+
       Vector3[] points = new Vector3[arr.Count() / 3];
       var asArray = arr.ToArray();
       for (int i = 2, k = 0; i < arr.Count(); i += 3)
         points[k++] = VectorByCoordinates(asArray[i - 2], asArray[i - 1], asArray[i], units);
-    
+
       return points;
     }
 
@@ -117,10 +117,10 @@ namespace Objects.Converter.Unity
       var mesh = new Mesh();
       // get the speckle data from the go here
       // so that if the go comes from speckle, typed props will get overridden below
-      GetSpeckleData(mesh, go);
+      AttachUnityProperties(mesh, go);
 
       mesh.units = ModelUnits;
-      
+
       var vertices = filter.mesh.vertices;
       foreach (var vertex in vertices)
       {
@@ -130,7 +130,7 @@ namespace Objects.Converter.Unity
         mesh.vertices.Add(sp.y);
         mesh.vertices.Add(sp.z);
       }
-      
+
       mesh.faces = faces;
 
       return mesh;
@@ -146,12 +146,10 @@ namespace Objects.Converter.Unity
 
       float pointDiameter = 1; //TODO: figure out how best to change this?
 
-            var go = new GameObject
-            {
-                name = name
-            };
+      var go = new GameObject();
+      go.name = name;
 
-            var lineRenderer = go.AddComponent<LineRenderer>();
+      var lineRenderer = go.AddComponent<LineRenderer>();
 
       lineRenderer.positionCount = points.Length;
       lineRenderer.SetPositions(points);
@@ -171,12 +169,9 @@ namespace Objects.Converter.Unity
       Vector3 newPt = VectorByCoordinates(point.x, point.y, point.z, point.units);
 
       var go = NewPointBasedGameObject(new Vector3[2] {newPt, newPt}, point.speckle_type);
-      SetSpeckleData(go, point);
       return go;
     }
-    
 
-    
 
     /// <summary>
     /// Converts a Speckle line to a GameObject with a line renderer
@@ -188,7 +183,6 @@ namespace Objects.Converter.Unity
       var points = new List<Vector3> {VectorFromPoint(line.start), VectorFromPoint(line.end)};
 
       var go = NewPointBasedGameObject(points.ToArray(), line.speckle_type);
-      SetSpeckleData(go, line);
       return go;
     }
 
@@ -202,7 +196,6 @@ namespace Objects.Converter.Unity
       var points = polyline.points.Select(x => VectorFromPoint(x));
 
       var go = NewPointBasedGameObject(points.ToArray(), polyline.speckle_type);
-      SetSpeckleData(go, polyline);
       return go;
     }
 
@@ -215,17 +208,29 @@ namespace Objects.Converter.Unity
     {
       var points = ArrayToPoints(curve.points, curve.units);
       var go = NewPointBasedGameObject(points.ToArray(), curve.speckle_type);
-      SetSpeckleData(go, curve);
       return go;
+    }
+
+
+    public GameObject MeshToNative(Base speckleMeshObject)
+    {
+      if (!(speckleMeshObject["displayMesh"] is Mesh))
+        return null;
+
+      return MeshToNative(speckleMeshObject["displayMesh"] as Mesh,
+        speckleMeshObject["renderMaterial"] as RenderMaterial, speckleMeshObject.GetMembers());
     }
 
 
     /// <summary>
     /// Converts a Speckle mesh to a GameObject with a mesh renderer
     /// </summary>
-    /// <param name="speckleMesh"></param>
+    /// <param name="speckleMesh">Mesh to convert</param>
+    /// <param name="renderMaterial">If provided will override the renderMaterial on the mesh itself</param>
+    /// <param name="properties">If provided will override the properties on the mesh itself</param>
     /// <returns></returns>
-    public GameObject MeshToNative(Mesh speckleMesh)
+    public GameObject MeshToNative(Mesh speckleMesh, RenderMaterial renderMaterial = null,
+      Dictionary<string, object> properties = null)
     {
       if (speckleMesh.vertices.Count == 0 || speckleMesh.faces.Count == 0)
       {
@@ -255,48 +260,23 @@ namespace Objects.Converter.Unity
           tris.Add(speckleMesh.faces[i + 3]);
           tris.Add(speckleMesh.faces[i + 2]);
 
-          tris.Add(speckleMesh.faces[i + 3]);
           tris.Add(speckleMesh.faces[i + 1]);
           tris.Add(speckleMesh.faces[i + 4]);
+          tris.Add(speckleMesh.faces[i + 3]);
 
           i += 5;
         }
       }
 
 
-            var go = new GameObject
-            {
-                name = speckleMesh.speckle_type
-            };
+      var go = new GameObject();
+      go.name = speckleMesh.speckle_type;
 
-            var mesh = go.AddComponent<MeshFilter>().mesh;
+      var mesh = go.AddComponent<MeshFilter>().mesh;
       var meshRenderer = go.AddComponent<MeshRenderer>();
 
-      //todo support more complex materials
-      var shader = Shader.Find("Standard");
-      var mat = new Material(shader);
-
-      var speckleMaterial = speckleMesh["renderMaterial"];
-      if (speckleMaterial != null && speckleMaterial is RenderMaterial rm)
-      {
-        // 1. match shader by name, if any
-        shader = Shader.Find(rm.name);
-        if (shader != null)
-        {
-          mat = new Material(shader);
-        }
-        else
-        {
-          // 2. re-create material by setting diffuse color and transparency on standard shaders
-          shader = Shader.Find("Transparent/Diffuse");
-          mat = new Material(shader);
-          var c = rm.diffuse.ToUnityColor();
-          mat.color = new Color(c.r, c.g, c.b, Convert.ToSingle(rm.opacity));
-        }
-      }
-
-      // 3. if not renderMaterial was passed, the default shader will be used 
-      meshRenderer.material = mat;
+      var speckleMaterial = renderMaterial ?? (RenderMaterial)speckleMesh["renderMaterial"];
+      meshRenderer.material = GetMaterial(speckleMaterial);
 
 
       if (verts.Count >= 65535)
@@ -323,8 +303,11 @@ namespace Objects.Converter.Unity
       mesh.vertices = verts.ToArray();
       mesh.triangles = tris.ToArray();
 
+
+      mesh.Optimize();
       mesh.RecalculateNormals();
       mesh.RecalculateTangents();
+
 
       //generate uvs doesn't work as intended. Leaving out for now
       //GenerateUVs (ref mesh);
@@ -332,36 +315,70 @@ namespace Objects.Converter.Unity
       //Add mesh collider
       MeshCollider mc = go.AddComponent<MeshCollider>();
       mc.sharedMesh = mesh;
-      mc.convex = true;
+      //mc.convex = true;
 
 
-      SetSpeckleData(go, speckleMesh);
-       
-      if(go.transform.position.magnitude > 1000)
-            {
-                go.transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
-                Vector3 pos = go.transform.position;
-                go.transform.position = new Vector3(pos.x * 0.001f, pos.y * 0.001f, pos.z * 0.001f);
-            }
+      //attach properties on this very mesh
+      //means the mesh originated in Rhino or similar
+      if (properties == null)
+      {
+        var meshprops = typeof(Mesh).GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x => x.Name)
+          .ToList();
+        properties = speckleMesh.GetMembers()
+          .Where(x => !meshprops.Contains(x.Key))
+          .ToDictionary(x => x.Key, x => x.Value);
+      }
+
+      AttachSpeckleProperties(go, properties);
       return go;
     }
 
     #endregion
 
-    public void SetSpeckleData(GameObject go, Base @base)
+    private Material GetMaterial(RenderMaterial renderMaterial)
     {
-      var sd = go.AddComponent<SpeckleData>();
-      var meshprops = typeof(Mesh).GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x=>x.Name).ToList();
-      
-      //get members, but exclude mesh props to avoid issues down the line 
-      sd.Data = @base.GetMembers()
-        .Where(x=> !meshprops.Contains(x.Key))
-        .ToDictionary(x=>x.Key, x=>x.Value);
+      //todo support more complex materials
+      var shader = Shader.Find("Standard");
+      Material mat = new Material(shader);
+
+      //if a renderMaterial is passed use that, otherwise try get it from the mesh itself
+
+      if (renderMaterial != null)
+      {
+        // 1. match material by name, if any
+        var matByName = ContextObjects.FirstOrDefault(x => ((Material)x.NativeObject).name == renderMaterial.name);
+        if (matByName!=null)
+        {
+          return matByName.NativeObject as Material;
+        }
+        
+        // 2. re-create material by setting diffuse color and transparency on standard shaders
+        if (renderMaterial.opacity < 1)
+        {
+          shader = Shader.Find("Transparent/Diffuse");
+          mat = new Material(shader);
+        }
+
+        var c = renderMaterial.diffuse.ToUnityColor();
+        mat.color = new Color(c.r, c.g, c.b, Convert.ToSingle(renderMaterial.opacity));
+
+        return mat;
+      }
+
+      // 3. if not renderMaterial was passed, the default shader will be used 
+      return mat;
     }
 
-    private void GetSpeckleData(Base @base, GameObject go)
+    private void AttachSpeckleProperties(GameObject go, Dictionary<string, object> properties)
     {
-      var sd = go.GetComponent<SpeckleData>();
+      var sd = go.AddComponent<SpeckleProperties>();
+      sd.Data = properties;
+    }
+
+
+    private void AttachUnityProperties(Base @base, GameObject go)
+    {
+      var sd = go.GetComponent<SpeckleProperties>();
       if (sd == null || sd.Data == null)
         return;
       foreach (var key in sd.Data.Keys)

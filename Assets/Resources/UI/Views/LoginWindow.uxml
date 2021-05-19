@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="/Assets/UI/Styles/Sub Window Styles.uss" />
+    <Style src="../Styles/Sub Window Styles.uss" />
     <ui:VisualElement class="window padded-window">
         <ui:TextField picking-mode="Ignore" label="Server" text="https://hestia.speckle.works/api" name="InputServer" />
         <ui:TextField picking-mode="Ignore" label="Email" name="InputEmail" />

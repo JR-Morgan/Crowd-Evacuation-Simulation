@@ -1,9 +1,11 @@
+using PedestrianSimulation.Agent;
+using PedestrianSimulation.Simulation;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public struct AgentState
+public struct AgentStateModel
 {
     public bool active;
     public Vector3 position;
@@ -11,12 +13,13 @@ public struct AgentState
     public Vector3 velocity;
 }
 
+[System.Obsolete]
 public class WorldStateManager : Singleton<WorldStateManager>
 {
     [SerializeField]
     private float sFrameFrequency = 5;
 
-    private List<AgentState[]> agentStates;
+    private List<AgentStateModel[]> agentStates;
 
     private void OnEnable()
     {
@@ -25,11 +28,11 @@ public class WorldStateManager : Singleton<WorldStateManager>
 
 
 
-    public void Initialise() => Initialise(sFrameFrequency, SimulationManager.Instance);
+    public void Initialise() => Initialise(sFrameFrequency);
 
-    private void Initialise(float frameFrequency, SimulationManager simulationManager)
+    private void Initialise(float frameFrequency)
     {
-        agentStates = new List<AgentState[]>();
+        agentStates = new List<AgentStateModel[]>();
     }
 
 
@@ -51,7 +54,7 @@ public class WorldStateManager : Singleton<WorldStateManager>
                 counter = 0;
                 currentS++;
 
-                AddSFrame(SimulationManager.Instance);
+                AddSFrame(LegacySimulationManager.Instance);
 
 
             }
@@ -60,12 +63,12 @@ public class WorldStateManager : Singleton<WorldStateManager>
 
     }
 
-    private void AddSFrame(SimulationManager simulationManager)
+    private void AddSFrame(LegacySimulationManager simulationManager)
     {
         if(currentS >= agentStates.Count)
         {
-            IList<AgentBehaviour> agents = simulationManager.Agents;
-            AgentState[] states = new AgentState[agents.Count];
+            IList<LegacyPedestrianAgent> agents = simulationManager.Agents;
+            AgentStateModel[] states = new AgentStateModel[agents.Count];
             for (int i = 0; i < agents.Count; i++)
             {
                 states[i] = agents[i].State;
@@ -87,7 +90,7 @@ public class WorldStateManager : Singleton<WorldStateManager>
         currentTime = ToTime(position);
         counter = 0;
 
-        IList<AgentBehaviour> agents = SimulationManager.Instance.Agents;
+        IList<LegacyPedestrianAgent> agents = LegacySimulationManager.Instance.Agents;
         for (int i = 0; i < agents.Count; i++)
         {
             agents[i].State = agentStates[position][i];
