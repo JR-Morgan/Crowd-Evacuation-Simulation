@@ -9,7 +9,7 @@ using Stream = Speckle.Core.Api.Stream;
 
 namespace PedestrianSimulation.UI.Controllers
 {
-    [AddComponentMenu("Simulation/Managers/Import Controller"), DisallowMultipleComponent]
+    [AddComponentMenu("Simulation/UI/Import Controller"), DisallowMultipleComponent]
     [RequireComponent(typeof(UIDocument))]
     public class ImportController : MonoBehaviour
     {

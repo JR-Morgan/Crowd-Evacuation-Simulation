@@ -123,6 +123,36 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &302934811
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 302934812}
+  m_Layer: 0
+  m_Name: Visualisations
+  m_TagString: Visualisations
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &302934812
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 302934811}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 993649594}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &311235699
 GameObject:
   m_ObjectHideFlags: 0
@@ -274,7 +304,7 @@ GameObject:
   - component: {fileID: 579513003}
   m_Layer: 7
   m_Name: Agents
-  m_TagString: Untagged
+  m_TagString: Agent Parent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -384,6 +414,7 @@ GameObject:
   - component: {fileID: 673389815}
   - component: {fileID: 673389816}
   - component: {fileID: 673389817}
+  - component: {fileID: 673389818}
   m_Layer: 5
   m_Name: UI
   m_TagString: Untagged
@@ -479,6 +510,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e4b6e490634fb14f8bd15d56788a6fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &673389818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 673389810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97d9abea7306d6f44bf97c7aed28efc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &692780231
@@ -990,6 +1033,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heatmapMaterial: {fileID: 2100000, guid: ae04799ea2ae8424db293397b4bd22a0, type: 2}
   AgentPrefab: {fileID: 1832499695379590527, guid: cc4a84fe6255d1c459f04499133bc9d9, type: 3}
+  _onSimulationStart:
+    m_PersistentCalls:
+      m_Calls: []
+  _onSimulationStop:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &885079288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1066,6 +1115,7 @@ Transform:
   - {fileID: 1821470193}
   - {fileID: 673389813}
   - {fileID: 908066288}
+  - {fileID: 302934812}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

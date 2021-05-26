@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 namespace PedestrianSimulation.Simulation
 {
@@ -14,6 +15,16 @@ namespace PedestrianSimulation.Simulation
     {
         #region Scene References
         private NavMeshSurface navMeshSurface;
+        #endregion
+
+        #region Events
+        [SerializeField]
+        private UnityEvent _onSimulationStart;
+        public UnityEvent OnSimulationStart => _onSimulationStart;
+
+        [SerializeField]
+        private UnityEvent _onSimulationStop;
+        public UnityEvent OnSimulationStop => _onSimulationStop;
         #endregion
 
         [SerializeField]
@@ -36,7 +47,6 @@ namespace PedestrianSimulation.Simulation
         public IEnumerable<AgentInternalState> AgentStates { get; private set; }
 
 
-
         #region Unity Methods
 
         protected override void Awake()
@@ -55,7 +65,11 @@ namespace PedestrianSimulation.Simulation
         /// <returns><c>false</c> if the simulation was not running; <c>true</c> otherwise</returns>
         public bool CancelSimulation()
         {
-            if (IsRunning) InitialiseManager();
+            if (IsRunning)
+            {
+                InitialiseManager();
+                OnSimulationStop.Invoke();
+            }
             return IsRunning;
         }
 

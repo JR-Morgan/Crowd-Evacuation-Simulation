@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace PedestrianSimulation.UI.Controllers
 {
-    [AddComponentMenu("Simulation/Managers/Setup Controller"), DisallowMultipleComponent]
+    [AddComponentMenu("Simulation/UI/Setup Controller"), DisallowMultipleComponent]
     [RequireComponent(typeof(UIDocument))]
     public class SetupController : MonoBehaviour
     {

@@ -3,7 +3,11 @@
   <xs:import schemaLocation="UnityEngine.UIElements.xsd" namespace="UnityEngine.UIElements" />
   <xs:import schemaLocation="UnityEditor.UIElements.xsd" namespace="UnityEditor.UIElements" />
   <xs:import schemaLocation="UnityEditor.UIElements.Debugger.xsd" namespace="UnityEditor.UIElements.Debugger" />
+  <xs:import schemaLocation="Unity.Entities.Editor.xsd" namespace="Unity.Entities.Editor" />
+  <xs:import schemaLocation="PedestrianSimulation.UI.Elements.xsd" namespace="PedestrianSimulation.UI.Elements" />
+  <xs:import schemaLocation="Unity.Editor.Bridge.xsd" namespace="Unity.Editor.Bridge" />
+  <xs:import schemaLocation="Unity.Properties.UI.xsd" namespace="Unity.Properties.UI" />
   <xs:import schemaLocation="Unity.UI.Builder.xsd" namespace="Unity.UI.Builder" />
-  <xs:import schemaLocation="Assets.UI.Elements.xsd" namespace="Assets.UI.Elements" />
+  <xs:import schemaLocation="UnityEngine.UIExtras.xsd" namespace="UnityEngine.UIExtras" />
   <xs:import schemaLocation="UnityEditor.PackageManager.UI.xsd" namespace="UnityEditor.PackageManager.UI" />
 </xs:schema>

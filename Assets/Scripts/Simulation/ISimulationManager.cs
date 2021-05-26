@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace PedestrianSimulation.Simulation
 {
@@ -12,6 +13,9 @@ namespace PedestrianSimulation.Simulation
     { 
         bool RunSimulation(SimulationSettings settings, GameObject environment);
         bool CancelSimulation();
+
+        UnityEvent OnSimulationStart { get; }
+        UnityEvent OnSimulationStop { get; }
 
     }
 }

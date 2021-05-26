@@ -1,3 +1,4 @@
+using PedestrianSimulation.Simulation;
 using UnityEngine;
 using UnityEngine.AI;
 

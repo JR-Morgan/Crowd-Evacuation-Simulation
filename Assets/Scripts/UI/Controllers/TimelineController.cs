@@ -1,10 +1,11 @@
+using PedestrianSimulation.Simulation;
 using PedestrianSimulation.UI.Elements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace PedestrianSimulation.UI.Controllers
 {
-    [AddComponentMenu("Simulation/Managers/Timeline Controller"), DisallowMultipleComponent]
+    [AddComponentMenu("Simulation/UI/Timeline Controller"), DisallowMultipleComponent]
     [RequireComponent(typeof(UIDocument))]
     public class TimelineController : MonoBehaviour
     {

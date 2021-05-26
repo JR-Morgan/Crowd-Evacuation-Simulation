@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace PedestrianSimulation.UI.Controllers
 {
-    [AddComponentMenu("Simulation/Managers/Camera Views Controller"), DisallowMultipleComponent]
+    [AddComponentMenu("Simulation/UI/Camera Views Controller"), DisallowMultipleComponent]
     [RequireComponent(typeof(UIDocument))]
     public class CameraViewsController : MonoBehaviour
     {

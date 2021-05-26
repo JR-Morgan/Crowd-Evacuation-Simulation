@@ -56,7 +56,7 @@ namespace PedestrianSimulation.Simulation
 
             Debug.Log("Simulation has started!");
 
-
+            OnSimulationStart.Invoke();
             return IsRunning;
         }
 
