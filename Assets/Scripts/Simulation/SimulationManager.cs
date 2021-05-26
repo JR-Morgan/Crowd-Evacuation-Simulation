@@ -10,7 +10,7 @@ namespace PedestrianSimulation.Simulation
 
     [DisallowMultipleComponent]
     [AddComponentMenu("Simulation/Simulation Manager")]
-    public partial class SimulationManager : Singleton<SimulationManager>, ISimulationManager
+    public partial class SimulationManager : Singleton<SimulationManager>, ISimulationManager<PedestrianAgent>
     {
         #region Scene References
         private NavMeshSurface navMeshSurface;
@@ -33,7 +33,7 @@ namespace PedestrianSimulation.Simulation
         public bool IsRunning { get; private set; }
 
 
-        public IEnumerable<AgentState> AgentStates { get; private set; }
+        public IEnumerable<AgentInternalState> AgentStates { get; private set; }
 
 
 

@@ -1,32 +1,33 @@
 using PedestrianSimulation.Agent;
 using PedestrianSimulation.Simulation.Initialisation;
-using System.Collections;
+using PedestrianSimulation.Visualisation;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-
-
 
 namespace PedestrianSimulation.Simulation
 {
     [RequireComponent(typeof(NavMeshSurface))]
-    public class LegacySimulationManager : Singleton<LegacySimulationManager>, ISimulationManager
+    public class LegacySimulationManager : Singleton<LegacySimulationManager>, ISimulationManager<LegacyPedestrianAgent>
     {
 
         #region Serialized Field
-
+        [Header("Asset References")]
+        [SerializeField]
+        private Material heatmapMaterial;
         [Header("Prefab References")]
         [SerializeField]
         private GameObject AgentPrefab;
 
         #endregion;
 
-
+        private GameObject visualSurface;
         private NavMeshSurface navMeshSurface;
 
         public bool IsRunning { get; private set; }
         public bool HasGenerated => Agents != null;
-        public List<LegacyPedestrianAgent> Agents { get; private set; } = null;
+        public IList<LegacyPedestrianAgent> Agents { get; private set; } = null;
 
         protected override void Awake()
         {
@@ -36,11 +37,10 @@ namespace PedestrianSimulation.Simulation
         }
 
 
-
         /// <summary>
         /// Cancels the running simulation
         /// </summary>
-        /// <returns>False if the simulation was not running</returns>
+        /// <returns><c>false</c> if the simulation was not running; otherwise <c>true</c></returns>
         public bool CancelSimulation()
         {
             if (IsRunning) Initialise();
@@ -48,7 +48,7 @@ namespace PedestrianSimulation.Simulation
         }
 
         /// <summary>
-        /// (Re)Initialises the Simulation manager. Will remove all agents in the scene.
+        /// (Re)Initialises the <see cref="LegacySimulationManager"/>. Will remove all <see cref="LegacyPedestrianAgent"/>s in the scene.
         /// </summary>
         public void Initialise()
         {
@@ -56,21 +56,24 @@ namespace PedestrianSimulation.Simulation
             {
                 WorldStateManager.Instance.enabled = false;
 
-                foreach (LegacyPedestrianAgent agent in Agents)
+                foreach (Component agent in Agents)
                 {
                     Destroy(agent.gameObject);
                 }
+
+                if (visualSurface != null) Destroy(visualSurface);
+
                 Agents = null;
             }
             IsRunning = false;
         }
 
         /// <summary>
-        /// Attempts to initialise and start a simulation with the <paramref name="settings"/>
+        /// Attempts to initialise and start a simulation with the given <paramref name="settings"/>
         /// </summary>
         /// <param name="settings">The <see cref="SimulationSettings"/> that are to be setup</param>
         /// <param name="environment">The <see cref="GameObject"/> that represents the environment of agents</param>
-        /// <returns>True if the simulation was successfully setup</returns>
+        /// <returns><c>true</c> if the simulation was successfully setup; otherwise, <c>false</c></returns>
         public bool RunSimulation(SimulationSettings settings, GameObject environment)
         {
             if (IsRunning)
@@ -95,6 +98,7 @@ namespace PedestrianSimulation.Simulation
 
                 // 2. NavMesh
                 navMeshSurface.BuildNavMesh();
+                visualSurface = InstantiateVisualSurfaceMesh(heatmapMaterial);
 
                 // 3. Agents
                 Agents = UniformAgentDistribution<LegacyPedestrianAgent>.InstantiateAgents(
@@ -108,6 +112,8 @@ namespace PedestrianSimulation.Simulation
                 // 4 World State
                 WorldStateManager.Instance.enabled = true;
 
+                
+
                 Debug.Log("Simulation has started!");
 
             }
@@ -115,6 +121,29 @@ namespace PedestrianSimulation.Simulation
             return IsRunning;
         }
 
+        private static GameObject InstantiateVisualSurfaceMesh(Material material, string name = "Visual Surface")
+        {
+            GameObject visualSurfaceGO = new GameObject(name);
+
+            NavMeshTriangulation navmesh = NavMesh.CalculateTriangulation();
+            Mesh mesh = new Mesh
+            {
+                vertices = navmesh.vertices,
+                triangles = navmesh.indices
+            };
+
+            //Add Components
+
+            MeshFilter filter = visualSurfaceGO.AddComponent<MeshFilter>();
+            filter.mesh = mesh;
+            MeshRenderer renderer = visualSurfaceGO.AddComponent<MeshRenderer>();
+            renderer.material = material;
+
+            visualSurfaceGO.AddComponent<VisualSurface>();
+
+            return visualSurfaceGO;
+
+        }
 
 
     }

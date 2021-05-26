@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 namespace PedestrianSimulation.Simulation.Initialisation
 {
-    public class UniformAgentDistribution<T> : IAgentDistribution<T> where T : Component, IAgent
+    public class UniformAgentDistribution<T> : IAgentDistribution<T> where T : AbstractAgent
     {
         protected const int DEFAULT_TRIES = 100;
         protected const float DEFAULT_DISTANCE = 1f;

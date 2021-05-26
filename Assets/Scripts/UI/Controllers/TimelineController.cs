@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace PedestrianSimulation.UI.Controllers
 {
-    [System.Obsolete]
+    [AddComponentMenu("Simulation/Managers/Timeline Controller"), DisallowMultipleComponent]
     [RequireComponent(typeof(UIDocument))]
     public class TimelineController : MonoBehaviour
     {
@@ -13,16 +13,11 @@ namespace PedestrianSimulation.UI.Controllers
             UIDocument document = GetComponent<UIDocument>();
 
             TimelineElement t = document.rootVisualElement.Q<TimelineElement>();
-            if (t != null)
-            {
-                t.OnJump += (time) => WorldStateManager.Instance.JumpNearest(time);
+            Debug.Assert(t != null, $"{typeof(TimelineController)} could not find a {typeof(TimelineElement)} in {document}", this);
 
-                WorldStateManager.Instance.OnUpdate.AddListener(t.Update);
-            }
-            else
-            {
-                Debug.LogWarning($"{this} could not find a {typeof(TimelineElement)} in {document}");
-            }
+            t.OnJump += (time) => t.Value = WorldStateManager.Instance.JumpNearest(time);
+
+            WorldStateManager.Instance.OnUpdate.AddListener(t.Update);
 
         }
     }

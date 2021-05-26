@@ -1,10 +1,12 @@
 using PedestrianSimulation.Agent;
 using PedestrianSimulation.Simulation;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[Serializable]
 public struct AgentStateModel
 {
     public bool active;
@@ -13,12 +15,11 @@ public struct AgentStateModel
     public Vector3 velocity;
 }
 
-[System.Obsolete]
 public class WorldStateManager : Singleton<WorldStateManager>
 {
-    [SerializeField]
+    [SerializeField,Range(0,byte.MaxValue)]
     private float sFrameFrequency = 5;
-
+    [SerializeField]
     private List<AgentStateModel[]> agentStates;
 
     private void OnEnable()
@@ -79,7 +80,7 @@ public class WorldStateManager : Singleton<WorldStateManager>
 
     public float JumpNearest(float time)
     {
-        int position = Nearest(time);
+        int position = NearestSFrame(time);
         Jump(position);
         return ToTime(position);
     }
@@ -97,7 +98,7 @@ public class WorldStateManager : Singleton<WorldStateManager>
         }
     }
 
-    private int Nearest(float time) => Mathf.Max(Mathf.Min(Mathf.RoundToInt(time / (Time.fixedDeltaTime * sFrameFrequency)), agentStates.Count - 1), 0);
+    private int NearestSFrame(float time) => Mathf.Max(Mathf.Min(Mathf.RoundToInt(time / (Time.fixedDeltaTime * sFrameFrequency)), agentStates.Count - 1), 0);
     private float ToTime(int position) => position * (Time.fixedDeltaTime * sFrameFrequency);
 
     public UnityEvent<float> OnUpdate { get; } = new UnityEvent<float>();

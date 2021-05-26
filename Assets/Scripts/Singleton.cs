@@ -9,6 +9,13 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
     #region Singleton
     private static T _instance;
+
+    /// <summary>
+    /// Static accessor for the singleton reference of <typeparamref name="T"/>.<br/>
+    /// Will throw <see cref="global::UninitialisedSingletonException"/> if the <see cref="_instance"/> has not been set.
+    /// Ensure call has been made after the <see cref="Awake"/> function and that there exists an instance of <typeparamref name="T"/>
+    /// or wrap call in <c>if(<see cref="IsSingletonInitialised"/>)</c>
+    /// </summary>
     public static T Instance {
         get
         {

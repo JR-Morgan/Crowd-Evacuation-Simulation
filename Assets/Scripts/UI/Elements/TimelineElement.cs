@@ -14,6 +14,8 @@ namespace PedestrianSimulation.UI.Elements
         private EventCallback<ChangeEvent<float>> callback;
         #endregion
 
+        public float Value { get => slider.value; set { slider.value = value; } }
+
 
         public TimelineElement()
         {

@@ -5,7 +5,7 @@ namespace PedestrianSimulation.Agent.Behaviour.LocalAvoidance
 {
     public static class SocialForceModel
     {
-        public static Vector3 DrivingForce(in AgentState agent)
+        public static Vector3 DrivingForce(in AgentInternalState agent)
         {
             const float relaxationT = 0.54f; //Value based on Moussaid et al., 2009 (agrees with trinhthanhtrung)
 
@@ -15,7 +15,7 @@ namespace PedestrianSimulation.Agent.Behaviour.LocalAvoidance
             return drivingForce;
         }
 
-        public static Vector3 InteractionForce(in AgentState agent, in IEnumerable<AgentState> neighbours)
+        public static Vector3 InteractionForce(in AgentInternalState agent, in IEnumerable<AgentInternalState> neighbours)
         {
             const float observableRadiusSquared = 10f * 10f;
             const float lambda = 2f;
@@ -30,7 +30,7 @@ namespace PedestrianSimulation.Agent.Behaviour.LocalAvoidance
             Vector3 interactionForce = Vector3.zero;
 
 
-            foreach (AgentState neighbour in neighbours)
+            foreach (AgentInternalState neighbour in neighbours)
             {
                 if (agent.id == neighbour.id) continue;
 

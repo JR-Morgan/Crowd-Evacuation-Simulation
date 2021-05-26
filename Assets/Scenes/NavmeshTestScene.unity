@@ -452,7 +452,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 673389810}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 940b51ebba23dfe4b9cfaac12940cdb6, type: 3}
   m_Name: 
@@ -817,7 +817,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 731923209}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: 0}
+  m_LocalPosition: {x: 0, y: 4, z: -0.409}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 908066288}
@@ -988,6 +988,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28ad46d95b020474b93b0d2865ba7fdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  heatmapMaterial: {fileID: 2100000, guid: ae04799ea2ae8424db293397b4bd22a0, type: 2}
   AgentPrefab: {fileID: 1832499695379590527, guid: cc4a84fe6255d1c459f04499133bc9d9, type: 3}
 --- !u!114 &885079288
 MonoBehaviour:
@@ -1001,7 +1002,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2473a9e403dbe4f468f01276250b782b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sFrameFrequency: 0
+  sFrameFrequency: 60
 --- !u!1 &908066287
 GameObject:
   m_ObjectHideFlags: 0

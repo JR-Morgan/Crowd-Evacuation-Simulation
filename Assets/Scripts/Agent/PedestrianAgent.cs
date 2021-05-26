@@ -6,21 +6,21 @@ namespace PedestrianSimulation.Agent
 {
     [SelectionBase, DisallowMultipleComponent]
     [AddComponentMenu("Simulation/Pedestrian Agent")]
-    public class PedestrianAgent : MonoBehaviour, IAgent
+    public class PedestrianAgent : AbstractAgent
     {
         private const float GOAL_RADIUS = 0.5f;
         private const float DEFAULT_AGENT_SPEED = 3.5f;
 
         [SerializeField]
-        private AgentState _state;
-        public AgentState State { get => _state; private set => _state = value; }
+        private AgentInternalState _state;
+        public AgentInternalState State { get => _state; private set => _state = value; }
 
         public Vector3 IntendedVelocity { get; private set; }
 
         private int cornerIndex = 0;
         private Vector3[] path = null;
 
-        public bool SetGoal(Vector3 terminalGoal)
+        public override bool SetGoal(Vector3 terminalGoal)
         {
             NavMeshPath p = new NavMeshPath();
             NavMesh.CalculatePath(transform.position, terminalGoal, NavMesh.AllAreas, p);
@@ -32,10 +32,10 @@ namespace PedestrianSimulation.Agent
             return p.status == NavMeshPathStatus.PathComplete;
         }
 
-        public void Initialise(int id)
+        public override void Initialise(int id)
         {
-            this.name = $"{typeof(PedestrianAgent)} {id}";
-            State = new AgentState(
+            this.name = $"{nameof(PedestrianAgent)} {id}";
+            State = new AgentInternalState(
                 id: id,
                 desiredSpeed: DEFAULT_AGENT_SPEED,
                 goal: CalculateCurrentGoal(transform.position),
@@ -73,7 +73,7 @@ namespace PedestrianSimulation.Agent
         {
             transform.position += IntendedVelocity;
 
-            State = new AgentState(
+            State = new AgentInternalState(
                 id: State.id,
                 desiredSpeed: State.desiredSpeed,
                 goal: CalculateCurrentGoal(transform.position),
@@ -83,9 +83,9 @@ namespace PedestrianSimulation.Agent
 
 
 
-        private static Vector3 CalculateNextVelocity(in AgentState current, float timeStep) //TODO calibrate timeStep to ms
+        private static Vector3 CalculateNextVelocity(in AgentInternalState current, float timeStep) //TODO calibrate timeStep to ms
         {
-            var states = Simulation.SimulationManager.Instance.AgentStates; //TODO Singleton reference is costly
+            var states = Simulation.SimulationManager.Instance.AgentStates; //TODO Singleton reference is costly on every update
 
             Vector3 drivingForce = SocialForceModel.DrivingForce(current);
             Vector3 interactionForce = SocialForceModel.InteractionForce(current, states);

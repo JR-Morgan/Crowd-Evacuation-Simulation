@@ -6,18 +6,18 @@ namespace PedestrianSimulation.Agent
     [SelectionBase, DisallowMultipleComponent]
     [RequireComponent(typeof(NavMeshAgent))]
     [AddComponentMenu("Simulation/Legacy/Pedestrian Agent")]
-    public class LegacyPedestrianAgent : MonoBehaviour, IAgent
+    public class LegacyPedestrianAgent : AbstractAgent
     {
-
+        private const float GOAL_DISTANCE_THREASHOLD = 2f;
         private NavMeshAgent navAgent;
         private NavMeshPath path = null;
 
-        public void Initialise(int id)
+        public override void Initialise(int id)
         {
-            this.name = $"{typeof(PedestrianAgent)} {id}";
+            this.name = $"{nameof(LegacyPedestrianAgent)} {id}";
         }
 
-        public bool SetGoal(Vector3 terminalGoal)
+        public override bool SetGoal(Vector3 terminalGoal)
         {
             path = new NavMeshPath();
             navAgent.CalculatePath(terminalGoal, path);
@@ -35,7 +35,7 @@ namespace PedestrianSimulation.Agent
 
         void Start()
         {
-            //NavMesh.avoidancePredictionTime = 5f;
+            NavMesh.avoidancePredictionTime = 5f;
             //Disable automatic agent movement so that we can apply it's desired velocity in Tick();
             //navAgent.isStopped = true;
             //if(terminalGoal == null) terminalGoal = GameObject.FindGameObjectWithTag("Goal").transform;
@@ -75,14 +75,18 @@ namespace PedestrianSimulation.Agent
         private bool AgentActive
         {
             get => navAgent.obstacleAvoidanceType != ObstacleAvoidanceType.NoObstacleAvoidance;
-            set => navAgent.obstacleAvoidanceType = value ? ObstacleAvoidanceType.HighQualityObstacleAvoidance : ObstacleAvoidanceType.NoObstacleAvoidance;
+            set
+            {
+                navAgent.obstacleAvoidanceType = value ? ObstacleAvoidanceType.HighQualityObstacleAvoidance : ObstacleAvoidanceType.NoObstacleAvoidance;
+                this.enabled = value;
+            }
         }
 
 
         private void Update()
         {
 
-            if (Vector3.Distance(navAgent.destination, transform.position) < 0.5f)
+            if (Vector3.Distance(navAgent.destination, transform.position) < GOAL_DISTANCE_THREASHOLD)
             {
                 AgentActive = false;
             }

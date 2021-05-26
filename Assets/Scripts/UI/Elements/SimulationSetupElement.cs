@@ -25,13 +25,14 @@ namespace PedestrianSimulation.UI.Elements
 
         public void SetStatus(bool isBusy) => runSimulation.SetEnabled(!isBusy);
 
+
         public void SetViewModel()
         {
             VisualElement parameterParent = this.Q<VisualElement>("ParameterParent");
             parameterParent.Clear();
             foreach (FieldInfo field in viewModel.GetType().GetFields(BindingFlags.Instance |
                                                  BindingFlags.NonPublic |
-                                                 BindingFlags.Public))
+                                                 BindingFlags.Public)) //TODO custom attribute
             {
                 VisualElement v = CreateElement(field);
                 if(v != null)
@@ -76,7 +77,6 @@ namespace PedestrianSimulation.UI.Elements
         public RunEventHandler OnRun;
         public Func<bool> OnCancel;
 
-#pragma warning disable CS0642 // Possible mistaken empty statement
         private VisualElement CreateElement(FieldInfo field)
         {
             string label = field.Name;
@@ -100,11 +100,12 @@ namespace PedestrianSimulation.UI.Elements
 
                 element.RegisterCallback<ChangeEvent<S>>(e =>
                 {
-
+                                                                    #pragma warning disable CS0642 // Possible mistaken empty statement
                     if (toV(e.newValue, out T value)) ;
 
                     else if (toV(e.previousValue, out value)) ;
                     else value = default;
+                                                                    #pragma warning restore CS0642
 
                     field.SetValue(viewModel, value);
                     SetValue(element, value, toTarget);
@@ -142,7 +143,6 @@ namespace PedestrianSimulation.UI.Elements
             }
 
         }
-#pragma warning restore CS0642 // Possible mistaken empty statement
 
         private delegate bool Convert<A,B>(A input, out B result);
 

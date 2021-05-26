@@ -5,7 +5,7 @@ namespace PedestrianSimulation.Agent
 {
     [Serializable]
 #if UNITY_EDITOR
-    public struct AgentState
+    public struct AgentInternalState
     {
         public int id;
 
@@ -25,7 +25,7 @@ namespace PedestrianSimulation.Agent
         public readonly Vector3 position;
         public readonly Vector3 velocity;
 #endif
-        internal AgentState(int id, float desiredSpeed, Vector3 goal, Vector3 position, Vector3 velocity)
+        internal AgentInternalState(int id, float desiredSpeed, Vector3 goal, Vector3 position, Vector3 velocity)
         {
             this.id = id;
             this.desiredSpeed = desiredSpeed;
