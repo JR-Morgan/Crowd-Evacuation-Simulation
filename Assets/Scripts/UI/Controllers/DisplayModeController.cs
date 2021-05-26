@@ -51,7 +51,6 @@ namespace PedestrianSimulation.UI.Controllers
 
         private void SetDisplayPanelVisible(bool visible)
         {
-            Debug.Log(visible);
             if (displayPanel != null) displayPanel.SetEnabled(visible);
             if (!visible) Reset();
         }
@@ -64,11 +63,9 @@ namespace PedestrianSimulation.UI.Controllers
                 {
                     t.value = true;
 
-                    using (var evt = new ClickEvent())
-                    {
-                        evt.target = t;
-                        t.SendEvent(evt);
-                    }
+                    using var evt = new ClickEvent();
+                    evt.target = t;
+                    t.SendEvent(evt);
                 }
             }
         }

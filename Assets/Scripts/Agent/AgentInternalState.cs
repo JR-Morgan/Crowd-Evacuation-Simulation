@@ -15,7 +15,7 @@ namespace PedestrianSimulation.Agent
         public Vector3 position;
         public Vector3 velocity;
 #else
-    public readonly struct AgentState
+    public readonly struct AgentInternalState
     {
         public readonly int id;
 
