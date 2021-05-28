@@ -1,10 +1,7 @@
 {
   "dependencies": {
     "com.unity.ai.navigation.components": "1.0.0-exp.1",
-    "com.unity.dots.editor": "0.12.0-preview.6",
-    "com.unity.entities": "0.17.0-preview.41",
     "com.unity.ide.visualstudio": "2.0.8",
-    "com.unity.rendering.hybrid": "0.11.0-preview.42",
     "com.unity.test-framework": "1.1.26",
     "com.unity.timeline": "1.5.4",
     "com.unity.ui": "1.0.0-preview.14",
