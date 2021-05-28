@@ -77,8 +77,6 @@ namespace PedestrianSimulation.Simulation
                     Destroy(agent.gameObject);
                 }
 
-                if (visualSurface != null) Destroy(visualSurface);
-
                 Agents = null;
             }
             IsRunning = false;
@@ -98,6 +96,9 @@ namespace PedestrianSimulation.Simulation
             }
             else
             {
+                // 0. Cleanup any data from last run
+                if (visualSurface != null) Destroy(visualSurface);
+
                 IsRunning = true;
 
                 // 1. Initialise Random

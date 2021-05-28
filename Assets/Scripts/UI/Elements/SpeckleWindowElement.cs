@@ -19,7 +19,7 @@ namespace PedestrianSimulation.UI.Elements
         private const string SERVER_PREFIX = "From ";
         #endregion
 
-        private readonly Dictionary<string, RecieverElement> recieverElements = new Dictionary<string, RecieverElement>();
+        private readonly Dictionary<string, ReceiverElement> recieverElements = new Dictionary<string, ReceiverElement>();
 
         public Button SimulationSetup { get; private set; }
 
@@ -33,7 +33,7 @@ namespace PedestrianSimulation.UI.Elements
 
         public void AddReceiver(in StreamViewModel viewModel, Action OnHide, Action OnUpdate, Action OnRemove)
         {
-            RecieverElement element = new RecieverElement();
+            ReceiverElement element = new ReceiverElement();
 
             SetRecieverText(element, viewModel);
 
@@ -66,7 +66,7 @@ namespace PedestrianSimulation.UI.Elements
 
         public void RemoveReceiver(StreamViewModel viewModel)
         {
-            if (recieverElements.TryGetValue(viewModel.streamID, out RecieverElement element))
+            if (recieverElements.TryGetValue(viewModel.streamID, out ReceiverElement element))
             {
                 recieverElements.Remove(viewModel.streamID);
                 element.RemoveFromHierarchy();
@@ -75,7 +75,7 @@ namespace PedestrianSimulation.UI.Elements
 
         internal void StreamFinished(StreamViewModel viewModel)
         {
-            if (recieverElements.TryGetValue(viewModel.streamID, out RecieverElement element))
+            if (recieverElements.TryGetValue(viewModel.streamID, out ReceiverElement element))
             {
                 element.Q<Button>("ButtonHide").SetEnabled(true);
                 element.Q<Button>("ButtonUpdate").SetEnabled(true);
@@ -84,7 +84,7 @@ namespace PedestrianSimulation.UI.Elements
 
         internal void SetVisibility(StreamViewModel viewModel, bool visible)
         {
-            if (recieverElements.TryGetValue(viewModel.streamID, out RecieverElement element))
+            if (recieverElements.TryGetValue(viewModel.streamID, out ReceiverElement element))
             {
                 element.Q<Button>("ButtonHide").text = visible ? "Hide" : "Show";
             }
@@ -92,7 +92,7 @@ namespace PedestrianSimulation.UI.Elements
 
         public void UpdateReciever(StreamViewModel viewModel)
         {
-            if(recieverElements.TryGetValue(viewModel.streamID, out RecieverElement element))
+            if(recieverElements.TryGetValue(viewModel.streamID, out ReceiverElement element))
             {
                 element.Q<Button>("ButtonHide").SetEnabled(false);
                 element.Q<Button>("ButtonUpdate").SetEnabled(false);
@@ -100,7 +100,7 @@ namespace PedestrianSimulation.UI.Elements
             }
         }
 
-        private static void SetRecieverText(RecieverElement element, StreamViewModel viewModel)
+        private static void SetRecieverText(ReceiverElement element, StreamViewModel viewModel)
         {
             element.Q<Label>("LabelStreamStatus").text = Math.Round(viewModel.progress, 2).ToString();
             element.Q<Label>("LabelStreamName").text = viewModel.streamName + STREAM_NAME_SEPERATOR + viewModel.streamID;

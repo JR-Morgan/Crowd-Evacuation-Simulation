@@ -37,6 +37,8 @@ Shader "Unlit/Test Shader"
 				float3 worldPos : TEXCOORD0;
 			};
 
+			Buffer<float4> positionData;
+
 			v2f vert(appdata v)
 			{
 				v2f o;
@@ -47,7 +49,7 @@ Shader "Unlit/Test Shader"
 			}
 
 			int numOfAgents; //Should never be greater than 1023
-			float4 positions[1023];
+			//float4 positions[1023];
 
 			float _AgentSize;
 			float _Spread;
@@ -117,7 +119,7 @@ Shader "Unlit/Test Shader"
 
 				for (int j = 0; j < numOfAgents; j++)
 				{
-					intensity += Intensity(distance(positions[j], i.worldPos) / _AgentSize) / _Spread;
+					intensity += Intensity(distance(positionData[j], i.worldPos) / _AgentSize) / _Spread;
 				}
 
 				return MapToColor(intensity);

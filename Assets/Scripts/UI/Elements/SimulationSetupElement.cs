@@ -1,6 +1,8 @@
 using PedestrianSimulation.Simulation;
 using System;
+using System.Globalization;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Res = UnityEngine.Resources;
@@ -77,9 +79,15 @@ namespace PedestrianSimulation.UI.Elements
         public RunEventHandler OnRun;
         public Func<bool> OnCancel;
 
+        private static string FormatLabelString(string label)
+        {
+            TextInfo t = CultureInfo.CurrentCulture.TextInfo;
+            return t.ToTitleCase(Regex.Replace(label, "([A-Z])", " $1").Trim());
+        }
+
         private VisualElement CreateElement(FieldInfo field)
         {
-            string label = field.Name;
+            string label = FormatLabelString(field.Name);
             object viewModel = this.viewModel; //Box
             return (field.GetValue(viewModel)) switch
             {

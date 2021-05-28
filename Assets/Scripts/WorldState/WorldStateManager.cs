@@ -3,6 +3,7 @@ using PedestrianSimulation.Simulation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -15,14 +16,17 @@ namespace PedestrianSimulation.Simulation
         public Vector3 position;
         public Quaternion rotation;
         public Vector3 velocity;
+        public int t;
     }
 
     public class WorldStateManager : Singleton<WorldStateManager>
     {
         [SerializeField, Range(0, byte.MaxValue)]
         private float sFrameFrequency = 5;
-        [SerializeField]
-        private List<AgentStateModel[]> agentStates;
+
+        public List<IEnumerable<AgentStateModel>> AgentStates { get; private set; }
+
+        public List<AgentStateModel> FlatAgentStates { get; private set; }
 
         private void OnEnable()
         {
@@ -35,7 +39,8 @@ namespace PedestrianSimulation.Simulation
 
         private void Initialise(float frameFrequency)
         {
-            agentStates = new List<AgentStateModel[]>();
+            AgentStates = new List<IEnumerable<AgentStateModel>>();
+            FlatAgentStates = new List<AgentStateModel>();
         }
 
 
@@ -47,7 +52,7 @@ namespace PedestrianSimulation.Simulation
 
         public void FixedUpdate()
         {
-            if (agentStates != null)
+            if (AgentStates != null)
             {
                 currentTime += Time.fixedDeltaTime;
                 counter++;
@@ -68,15 +73,13 @@ namespace PedestrianSimulation.Simulation
 
         private void AddSFrame(LegacySimulationManager simulationManager)
         {
-            if (currentS >= agentStates.Count)
+            if (currentS >= AgentStates.Count)
             {
                 IList<LegacyPedestrianAgent> agents = simulationManager.Agents;
-                AgentStateModel[] states = new AgentStateModel[agents.Count];
-                for (int i = 0; i < agents.Count; i++)
-                {
-                    states[i] = agents[i].State;
-                }
-                agentStates.Add(states);
+                var states = agents.Select(a => a.State);
+
+                AgentStates.Add(states);
+                FlatAgentStates.AddRange(states);
             }
         }
 
@@ -94,13 +97,15 @@ namespace PedestrianSimulation.Simulation
             counter = 0;
 
             IList<LegacyPedestrianAgent> agents = LegacySimulationManager.Instance.Agents;
-            for (int i = 0; i < agents.Count; i++)
+
+            int i = 0;
+            foreach(AgentStateModel s in AgentStates[position])
             {
-                agents[i].State = agentStates[position][i];
+                agents[i].State = s;
             }
         }
 
-        private int NearestSFrame(float time) => Mathf.Max(Mathf.Min(Mathf.RoundToInt(time / (Time.fixedDeltaTime * sFrameFrequency)), agentStates.Count - 1), 0);
+        private int NearestSFrame(float time) => Mathf.Max(Mathf.Min(Mathf.RoundToInt(time / (Time.fixedDeltaTime * sFrameFrequency)), AgentStates.Count - 1), 0);
         private float ToTime(int position) => position * (Time.fixedDeltaTime * sFrameFrequency);
 
         public UnityEvent<float> OnUpdate { get; } = new UnityEvent<float>();

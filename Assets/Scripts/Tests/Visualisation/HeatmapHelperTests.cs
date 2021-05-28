@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Linq;
 using UnityEngine;
 using RangeAttribute = NUnit.Framework.RangeAttribute;
 
@@ -8,12 +9,12 @@ namespace PedestrianSimulation.Visualisation.Tests
     [TestFixture]
     public class HeatmapHelperTests
     {
-        [Test]
-        public void ReturnSize_Test([Random(0, HeatmapHelper.MAX_ARRAY_SIZE, 10)] int size)
-        {
-            Vector4[] r = HeatmapHelper.GeneratePositionArray(new Transform[0], size);
-            Assert.AreEqual(r.Length, size);
-        }
+        //[Test]
+        //public void ReturnSize_Test([Random(0, HeatmapHelper.MAX_ARRAY_SIZE, 10)] int size)
+        //{
+        //    Vector4[] r = HeatmapHelper.GeneratePositionArray(new Transform[0], size);
+        //    Assert.AreEqual(r.Length, size);
+        //}
 
         [TestCase(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f, 3)]
         [TestCase(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f, 4)]
@@ -39,7 +40,7 @@ namespace PedestrianSimulation.Visualisation.Tests
 
             Transform[] transforms = new Transform[] { g0.transform, g1.transform, g2.transform };
 
-            Vector4[] r = HeatmapHelper.GeneratePositionArray(transforms, i);
+            Vector4[] r = ShaderHelper.ToHomogeneousCoordinates(transforms).ToArray();
 
             Vector4 r0 = r[0], r1 = r[1], r2 = r[2];
 

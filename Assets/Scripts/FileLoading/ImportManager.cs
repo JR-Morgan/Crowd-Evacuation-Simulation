@@ -35,7 +35,7 @@ namespace PedestrianSimulation.Import.Speckle
             //Initial Checks
             if (streamParentPrefab == null)
             {
-                Debug.LogError($"{nameof(streamParentPrefab)} was unassigned");
+                Debug.LogError($"{nameof(streamParentPrefab)} was unassigned", this);
                 return;
             }
             var defaultAccount = AccountManager.GetDefaultAccount();
@@ -109,10 +109,11 @@ namespace PedestrianSimulation.Import.Speckle
                 onDataReceivedAction: (go) =>
                 {
                     // when the stream has finished being received
+                    go.transform.parent = receiver.transform;
+
                     Debug.Log($"Finished receiving {stream}");
                     busyRecievers.RemoveItem(receiver);
                     HideReceiver(receiver, true);
-
                     OnStreamReceived.Invoke(stream, receiver);
 
                 },
