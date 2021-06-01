@@ -111,6 +111,13 @@ namespace PedestrianSimulation.Import.Speckle
                     // when the stream has finished being received
                     go.transform.parent = receiver.transform;
 
+                    { //Dissable revit group objects
+                        Transform room = go.transform.Find("@Rooms");
+                        if(room) room.gameObject.SetActive(false);
+                        Transform model = go.transform.Find("@Model Groups");
+                        if (model) model.gameObject.SetActive(false);
+                    }
+
                     Debug.Log($"Finished receiving {stream}");
                     busyRecievers.RemoveItem(receiver);
                     HideReceiver(receiver, true);

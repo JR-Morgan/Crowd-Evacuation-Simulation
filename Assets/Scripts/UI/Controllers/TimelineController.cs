@@ -20,6 +20,9 @@ namespace PedestrianSimulation.UI.Controllers
 
             WorldStateManager.Instance.OnUpdate.AddListener(t.Update);
 
+            LegacySimulationManager.Instance.OnSimulationStop.AddListener(() => t.Reset());
+            
+
         }
     }
 }

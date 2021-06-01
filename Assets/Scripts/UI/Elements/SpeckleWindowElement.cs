@@ -31,21 +31,35 @@ namespace PedestrianSimulation.UI.Elements
         }
 
 
-        public void AddReceiver(in StreamViewModel viewModel, Action OnHide, Action OnUpdate, Action OnRemove)
+        public ReceiverElement AddReceiver(in StreamViewModel viewModel, Action OnHide, Action OnUpdate, Action OnRemove, bool enabled = false)
         {
             ReceiverElement element = new ReceiverElement();
 
             SetRecieverText(element, viewModel);
 
-            element.Q<Button>("ButtonHide").RegisterCallback<ClickEvent>(ev => OnHide.Invoke());
-            element.Q<Button>("ButtonUpdate").RegisterCallback<ClickEvent>(ev => OnUpdate.Invoke());
-            element.Q<Button>("ButtonRemove").RegisterCallback<ClickEvent>(ev => OnRemove.Invoke());
 
-            element.Q<Button>("ButtonHide").SetEnabled(false);
+            AddCallback(OnHide, element.Q<Button>("ButtonHide"));
+            AddCallback(OnUpdate, element.Q<Button>("ButtonUpdate"));
+            AddCallback(OnRemove, element.Q<Button>("ButtonRemove"));
+
+            element.Q<Button>("ButtonHide").SetEnabled(enabled);
 
             this.Q("ReceiversParent").Add(element);
 
             recieverElements.Add(viewModel.streamID, element);
+            return element;
+
+            static void AddCallback(Action callback, Button button)
+            {
+                if (callback != null)
+                {
+                    button.RegisterCallback<ClickEvent>(ev => callback.Invoke());
+                }
+                else
+                {
+                    button.RemoveFromHierarchy();
+                }
+            }
         }
 
 

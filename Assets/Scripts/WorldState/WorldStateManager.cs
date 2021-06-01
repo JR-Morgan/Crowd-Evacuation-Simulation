@@ -19,6 +19,7 @@ namespace PedestrianSimulation.Simulation
         public int t;
     }
 
+    [AddComponentMenu("Simulation/Managers/World State Manager"), DisallowMultipleComponent]
     public class WorldStateManager : Singleton<WorldStateManager>
     {
         [SerializeField, Range(0, byte.MaxValue)]
@@ -26,13 +27,14 @@ namespace PedestrianSimulation.Simulation
 
         public List<IEnumerable<AgentStateModel>> AgentStates { get; private set; }
 
-        public List<AgentStateModel> FlatAgentStates { get; private set; }
+        [SerializeField]
+        private List<AgentStateModel> agentStates;
+        public List<AgentStateModel> FlatAgentStates { get => agentStates; private set => agentStates = value; }
 
         private void OnEnable()
         {
             Initialise();
         }
-
 
 
         public void Initialise() => Initialise(sFrameFrequency);
@@ -78,7 +80,7 @@ namespace PedestrianSimulation.Simulation
                 IList<LegacyPedestrianAgent> agents = simulationManager.Agents;
                 var states = agents.Select(a => a.State);
 
-                AgentStates.Add(states);
+                AgentStates.Add(states.ToList());
                 FlatAgentStates.AddRange(states);
             }
         }
@@ -92,16 +94,20 @@ namespace PedestrianSimulation.Simulation
 
         private void Jump(int position)
         {
-            currentS = position;
-            currentTime = ToTime(position);
-            counter = 0;
-
-            IList<LegacyPedestrianAgent> agents = LegacySimulationManager.Instance.Agents;
-
-            int i = 0;
-            foreach(AgentStateModel s in AgentStates[position])
+            if (this.enabled)
             {
-                agents[i].State = s;
+                currentS = position;
+                currentTime = ToTime(position);
+                counter = 0;
+
+                IList<LegacyPedestrianAgent> agents = LegacySimulationManager.Instance.Agents;
+
+                int i = 0;
+                Debug.Log($"Jumping to {currentTime} setting {AgentStates[position].Count()} agent states");
+                foreach (AgentStateModel s in AgentStates[position])
+                {
+                    agents[i++].State = s;
+                }
             }
         }
 

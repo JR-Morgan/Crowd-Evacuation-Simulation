@@ -37,6 +37,11 @@ namespace PedestrianSimulation.UI.Elements
             slider.RegisterCallback(callback);
         }
 
+        public void Reset()
+        {
+            slider.value = 0;
+            slider.highValue = 0;
+        }
 
         public void Update(float time)
         {

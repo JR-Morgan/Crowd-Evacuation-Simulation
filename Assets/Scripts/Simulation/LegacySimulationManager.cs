@@ -9,6 +9,7 @@ using UnityEngine.Events;
 
 namespace PedestrianSimulation.Simulation
 {
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(NavMeshSurface))]
     public class LegacySimulationManager : Singleton<LegacySimulationManager>, ISimulationManager<LegacyPedestrianAgent>
     {
@@ -142,8 +143,9 @@ namespace PedestrianSimulation.Simulation
         private static GameObject InstantiateVisualSurfaceMesh(Material material, Transform parent = null, string name = "Visual Surface")
         {
             GameObject visualSurfaceGO = new GameObject(name);
+            visualSurfaceGO.transform.position = new Vector3(0f, 0.001f, 0f); //Small Y offset to stop Z fighting
 
-            if(parent != null) visualSurfaceGO.transform.parent = parent;
+            if (parent != null) visualSurfaceGO.transform.parent = parent;
 
             NavMeshTriangulation navmesh = NavMesh.CalculateTriangulation();
             Mesh mesh = new Mesh

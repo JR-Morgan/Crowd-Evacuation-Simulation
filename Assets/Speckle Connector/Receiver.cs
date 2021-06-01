@@ -323,7 +323,7 @@ namespace Speckle.ConnectorUnity
 
     private void OnDestroy()
     {
-      Client.CommitCreatedSubscription.Dispose();
+      Client.CommitCreatedSubscription?.Dispose();
     }
 
     #endregion

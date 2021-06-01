@@ -13,18 +13,25 @@ namespace PedestrianSimulation.UI.Controllers
     {
         private DisplayPanelElement displayPanel;
 
+        private List<Toggle> showOnlyWhileSimulating;
+
         private void Start()
         {
             UIDocument uiDocument = GetComponent<UIDocument>();
             displayPanel = uiDocument.rootVisualElement.Q<DisplayPanelElement>();
 
+            showOnlyWhileSimulating = new List<Toggle>
+            {
+                AddGameObjectActiveToggle(GameObject.FindGameObjectWithTag("Environment"), "Environment", HideRenderers),
+                AddGameObjectActiveToggle(GameObject.FindGameObjectWithTag("Agent Parent"), "Agents", HideRenderers),
+            };
+
+            AddGameObjectActiveToggle(GameObject.FindGameObjectWithTag("Visualisations"), "Heat-map", EnableChildren);
+
+
             LegacySimulationManager.Instance.OnSimulationStart.AddListener(() => SetDisplayPanelVisible(true));
             LegacySimulationManager.Instance.OnSimulationStop.AddListener(() => SetDisplayPanelVisible(false));
             SetDisplayPanelVisible(LegacySimulationManager.Instance.IsRunning);
-
-            AddGameObjectActiveToggle(GameObject.FindGameObjectWithTag("Environment"), "Environment", HideRenderers);
-            AddGameObjectActiveToggle(GameObject.FindGameObjectWithTag("Agent Parent"), "Agents", HideRenderers);
-            AddGameObjectActiveToggle(GameObject.FindGameObjectWithTag("Visualisations"), "Heat-map", SetActive);
         }
 
 
@@ -45,15 +52,35 @@ namespace PedestrianSimulation.UI.Controllers
                 r.enabled = b;
             }
         }
+
+        private void EnableChildren(bool b, GameObject parent)
+        {
+            foreach (Transform child in parent.transform)
+            {
+                child.gameObject.SetActive(b);
+            }
+        }
         #endregion
 
         #region Enabled/Disabled
 
         private void SetDisplayPanelVisible(bool visible)
         {
-            if (displayPanel != null) displayPanel.SetEnabled(visible);
+            if (displayPanel != null)
+            {
+                //displayPanel.SetEnabled(visible);
+                foreach(Toggle t in showOnlyWhileSimulating)
+                {
+                    t.SetEnabled(visible);
+                }
+            }
+
+
             if (!visible) Reset();
         }
+
+
+
 
         private void Reset()
         {

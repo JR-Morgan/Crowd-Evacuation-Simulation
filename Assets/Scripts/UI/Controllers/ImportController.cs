@@ -31,6 +31,33 @@ namespace PedestrianSimulation.UI.Controllers
                 return;
             }
 
+
+            foreach(Transform child in GameObject.FindGameObjectWithTag("Environment").transform)
+            {
+                StreamViewModel streamViewModel = new StreamViewModel()
+                {
+                    streamID = "local" + child.GetInstanceID(),
+                    streamName = child.name
+                };
+                ReceiverElement e = element.AddReceiver(
+                    viewModel: streamViewModel,
+                    OnHide: () => {
+                        child.gameObject.SetActive(!child.gameObject.activeInHierarchy);
+                        element.SetVisibility(streamViewModel, child.gameObject.activeInHierarchy);
+                        },
+                    OnUpdate: null,
+                    OnRemove: null,
+                    enabled: true
+                    );
+
+                element.SetVisibility(streamViewModel, child.gameObject.activeInHierarchy);
+            }
+            
+
+
+
+
+
             manager.OnReadyToReceive += Initialise;
         }
 
@@ -52,33 +79,35 @@ namespace PedestrianSimulation.UI.Controllers
 
             element.SetServerName(server.name);
         }
-
-
-        private void RemoveReceiver(Stream stream, Receiver receiver = null)
-        {
-            element.RemoveReceiver(ToViewModel(stream));
-        }
-
         private void AddReceiver(Stream stream, Receiver receiver)
         {
             element.AddReceiver(ToViewModel(stream), () => manager.HideReceiver(receiver), () => manager.Receive(receiver), () => manager.RemoveReceiver(receiver));
         }
 
-        private void VisiblityChange(Stream stream, Receiver receiver)
+        private void RemoveReceiver(Stream stream, Receiver receiver = null) => RemoveReceiver(ToViewModel(stream));
+        private void RemoveReceiver(StreamViewModel stream)
+        {
+            element.RemoveReceiver(stream);
+        }
+
+
+        private void VisiblityChange(Stream stream, Receiver receiver) => VisiblityChange(ToViewModel(stream), receiver);
+        private void VisiblityChange(StreamViewModel stream, Component receiver)
         {
             bool visible = receiver.gameObject.activeInHierarchy;
-            element.SetVisibility(ToViewModel(stream), visible);
+            element.SetVisibility(stream, visible);
         }
 
-        private void StreamReceived(Stream stream, Receiver receiver = null)
+        private void StreamReceived(Stream stream, Receiver receiver = null) => StreamReceived(ToViewModel(stream));
+        private void StreamReceived(StreamViewModel stream)
         {
-            element.StreamFinished(ToViewModel(stream));
+            element.StreamFinished(stream);
         }
 
-
-        private void UpdateReceiver(Stream stream, Receiver receiver, double progress)
+        private void UpdateReceiver(Stream stream, Receiver receiver, double progress) => UpdateReceiver(ToViewModel(stream), receiver, progress);
+        private void UpdateReceiver(StreamViewModel stream, Component receiver, double progress)
         {
-            StreamViewModel s = ToViewModel(stream);
+            StreamViewModel s = stream;
             s.progress = progress;
             element.UpdateReciever(s);
         }

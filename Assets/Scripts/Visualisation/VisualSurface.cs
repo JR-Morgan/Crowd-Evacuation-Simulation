@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PedestrianSimulation.Visualisation
 {
-
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(MeshRenderer))]
     public class VisualSurface : MonoBehaviour
     {

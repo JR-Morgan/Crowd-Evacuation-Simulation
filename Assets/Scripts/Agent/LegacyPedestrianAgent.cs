@@ -65,10 +65,12 @@ namespace PedestrianSimulation.Agent
             set
             {
                 AgentActive = value.active;
+                //navAgent.Warp(value.position);
                 transform.position = value.position;
                 navAgent.nextPosition = value.position;
                 transform.rotation = value.rotation;
                 navAgent.velocity = value.velocity;
+                //navAgent.SetDestination(navAgent.destination);
             }
         }
 
