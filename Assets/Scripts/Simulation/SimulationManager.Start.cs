@@ -39,7 +39,7 @@ namespace PedestrianSimulation.Simulation
 
             // 3. Agents
 
-            Agents = settings.agentDistribution.InstantiateAgents(
+            Agents = settings.NewDistribution<PedestrianAgent>().InstantiateAgents(
                 agentParent: transform,
                 agentsGoal: settings.goal,
                 agentPrefab: AgentPrefab,
@@ -48,7 +48,7 @@ namespace PedestrianSimulation.Simulation
                 );
 
 
-            InitialiseUpdater(Agents, settings.NewUpdater());
+            InitialiseUpdater(Agents, settings.NewUpdater<PedestrianAgent>());
 
 
             // 4 World State

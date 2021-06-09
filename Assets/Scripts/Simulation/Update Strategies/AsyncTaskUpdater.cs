@@ -4,23 +4,23 @@ using System.Threading.Tasks;
 
 namespace PedestrianSimulation.Simulation.UpdateStrategies
 {
-    public class AsyncTaskUpdater : IAgentUpdater<PedestrianAgent>
+    public class AsyncTaskUpdater<T> : IAgentUpdater<T> where T : AbstractAgent
     {
         private List<Task> updateTasks;
         private float timeStep;
 
-        public void Initialise(ICollection<PedestrianAgent> agents)
+        public void Initialise(ICollection<T> agents)
         {
             updateTasks = new List<Task>(agents.Count);
             AddRange(agents);
         }
 
-        public void Add(PedestrianAgent agent)
+        public void Add(T agent)
         {
             updateTasks.Add(Task.Run(() => agent.UpdateIntentions(timeStep)));
         }
 
-        public void AddRange(IEnumerable<PedestrianAgent> agents)
+        public void AddRange(IEnumerable<T> agents)
         {
             foreach (var a in agents)
             {
@@ -28,7 +28,7 @@ namespace PedestrianSimulation.Simulation.UpdateStrategies
             }
         }
 
-        public void Tick(float timeStep, IEnumerable<PedestrianAgent> _ = null)
+        public void Tick(float timeStep, IEnumerable<T> _ = null)
         {
             Task t = TickAsync(timeStep);
             //t.Start();

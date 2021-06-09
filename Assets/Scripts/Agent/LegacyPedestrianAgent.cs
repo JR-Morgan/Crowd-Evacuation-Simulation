@@ -70,6 +70,7 @@ namespace PedestrianSimulation.Agent
                 navAgent.nextPosition = value.position;
                 transform.rotation = value.rotation;
                 navAgent.velocity = value.velocity;
+
                 //navAgent.SetDestination(navAgent.destination);
             }
         }
@@ -95,11 +96,10 @@ namespace PedestrianSimulation.Agent
             }
         }
 
-        //private void FixedUpdate()
-        //{
-        //Vector3 velocity = desiredVelocity;
-
-        //}
+        public override void UpdateIntentions(float timeStep)
+        {
+            //TODO
+        }
 
     }
 }

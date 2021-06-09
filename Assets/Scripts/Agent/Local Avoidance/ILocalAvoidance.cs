@@ -2,17 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ILocalAvoidance : MonoBehaviour
+namespace PedestrianSimulation.Agent.LocalAvoidance
 {
-    // Start is called before the first frame update
-    void Start()
+    public interface ILocalAvoidance
     {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

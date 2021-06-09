@@ -1,4 +1,5 @@
 using PedestrianSimulation.Agent.Behaviour.LocalAvoidance;
+using PedestrianSimulation.Agent.Behaviour.LocalAvoidance.SFM;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,7 +11,7 @@ namespace PedestrianSimulation.Agent
     {
         private const float GOAL_RADIUS = 0.5f;
         private const float DEFAULT_AGENT_SPEED = 3.5f;
-
+        private const float AGENT_RADIUS = 0.2f;
         [SerializeField]
         private AgentInternalState _state;
         public AgentInternalState State { get => _state; private set => _state = value; }
@@ -37,6 +38,7 @@ namespace PedestrianSimulation.Agent
             this.name = $"{nameof(PedestrianAgent)} {id}";
             State = new AgentInternalState(
                 id: id,
+                radius: AGENT_RADIUS,
                 desiredSpeed: DEFAULT_AGENT_SPEED,
                 goal: CalculateCurrentGoal(transform.position),
                 position: transform.position,
@@ -44,7 +46,7 @@ namespace PedestrianSimulation.Agent
         }
 
 
-        public void UpdateIntentions(float timeStep)
+        public override void UpdateIntentions(float timeStep)
         {
             Vector3 desiredGoal = CalculateCurrentGoal(State.position);
             if (State.goal != desiredGoal)
@@ -75,6 +77,7 @@ namespace PedestrianSimulation.Agent
 
             State = new AgentInternalState(
                 id: State.id,
+                radius: AGENT_RADIUS,
                 desiredSpeed: State.desiredSpeed,
                 goal: CalculateCurrentGoal(transform.position),
                 position: transform.position,

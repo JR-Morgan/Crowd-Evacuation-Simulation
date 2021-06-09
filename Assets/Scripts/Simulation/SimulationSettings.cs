@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace PedestrianSimulation.Simulation
 {
-    //TODO can't be a struct in order to do reflection in SimulationSetupElement, need this to be a class
+    //TODO can't be a struct in order to do reflection in SimulationSetupElement, need this to be a reference type
     [Serializable]
     public class SimulationSettings
     {
@@ -16,19 +16,30 @@ namespace PedestrianSimulation.Simulation
         public Transform goal;
 
 
-        public IAgentDistribution<PedestrianAgent> agentDistribution = new UniformAgentDistribution<PedestrianAgent>(); //TODO
+        #region Distribution Strategy
+        public DistributionStrategy agentDistribution;
+        public IAgentDistribution<T> NewDistribution<T>() where T : AbstractAgent => NewDistribution<T>(agentDistribution) ;
+        public static IAgentDistribution<T> NewDistribution<T>(DistributionStrategy agentDistribution) where T : AbstractAgent
+        {
+            return agentDistribution switch
+            {
+                DistributionStrategy.Uniform => new UniformAgentDistribution<T>(),
+                _ => throw new NotImplementedException($"No {typeof(DistributionStrategy)} implementation for {typeof(DistributionStrategy)}.{agentDistribution}"),
+            };
+        }
+        #endregion
 
         #region Update Strategy
         public UpdateStrategy updateStrategy;
-        public IAgentUpdater<PedestrianAgent> NewUpdater() => NewUpdater(updateStrategy);
-        public static IAgentUpdater<PedestrianAgent> NewUpdater(UpdateStrategy updateStrategy)
+        public IAgentUpdater<T> NewUpdater<T>() where T : AbstractAgent => NewUpdater<T>(updateStrategy);
+        public static IAgentUpdater<T> NewUpdater<T>(UpdateStrategy updateStrategy) where T : AbstractAgent
         {
             return updateStrategy switch
             {
-                UpdateStrategy.Task => new AsyncTaskUpdater(),
-                UpdateStrategy.Parallel => new ParralelForUpdater(),
-                UpdateStrategy.Synchronous => new SynchronousUpdater(),
-                _ => throw new NotImplementedException($"No {nameof(UpdateStrategy)} implementation for {nameof(UpdateStrategy)}.{updateStrategy}"),
+                UpdateStrategy.Task => new AsyncTaskUpdater<T>(),
+                UpdateStrategy.Parallel => new ParralelForUpdater<T>(),
+                UpdateStrategy.Synchronous => new SynchronousUpdater<T>(),
+                _ => throw new NotImplementedException($"No {typeof(UpdateStrategy)} implementation for {typeof(UpdateStrategy)}.{updateStrategy}"),
             };
         }
         #endregion
@@ -40,5 +51,10 @@ namespace PedestrianSimulation.Simulation
         Task,
         Parallel,
         Synchronous
+    }
+
+    public enum DistributionStrategy
+    {
+        Uniform,
     }
 }

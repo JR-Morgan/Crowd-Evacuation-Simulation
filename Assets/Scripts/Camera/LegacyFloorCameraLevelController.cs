@@ -2,63 +2,66 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
-public class LegacyFloorCameraLevelController : MonoBehaviour
+namespace PedestrianSimulation.World
 {
-    [SerializeField]
-    private float floorHeight, groundOffset, relativeOffset;
-
-    [SerializeField]
-    private int _floor;
-
-    private new Camera camera;
-
-    private void Awake()
+    [RequireComponent(typeof(Camera))]
+    public class LegacyFloorCameraLevelController : MonoBehaviour
     {
-        camera = GetComponent<Camera>();
-    }
+        [SerializeField]
+        private float floorHeight, groundOffset, relativeOffset;
 
+        [SerializeField]
+        private int _floor;
 
-    public int Floor
-    {
-        get => _floor;
-        set
+        private new Camera camera;
+
+        private void Awake()
         {
-            _floor = value;
-            SetView();
+            camera = GetComponent<Camera>();
         }
-    }
-
-    private void OnValidate()
-    {
-        if (camera == null) camera = GetComponent<Camera>();
-        SetView();
-    }
-
-    private void SetView()
-    {
-        Vector3 newPosition = camera.transform.position;
-
-        newPosition.y = groundOffset + ((Floor + 1) * (floorHeight + relativeOffset));
-
-        camera.transform.position = newPosition;
-
-        camera.nearClipPlane = relativeOffset;
-        camera.farClipPlane = relativeOffset + floorHeight;
 
 
-    }
-
-    void Update()
-    {
-        for (int i = 0; i < 10; i++)
+        public int Floor
         {
-            KeyCode key = KeyCode.Alpha0 + i;
-            if (Input.GetKeyDown(key))
+            get => _floor;
+            set
             {
-                Floor = i;
+                _floor = value;
+                SetView();
             }
         }
-    }
 
+        private void OnValidate()
+        {
+            if (camera == null) camera = GetComponent<Camera>();
+            SetView();
+        }
+
+        private void SetView()
+        {
+            Vector3 newPosition = camera.transform.position;
+
+            newPosition.y = groundOffset + ((Floor + 1) * (floorHeight + relativeOffset));
+
+            camera.transform.position = newPosition;
+
+            camera.nearClipPlane = relativeOffset;
+            camera.farClipPlane = relativeOffset + floorHeight;
+
+
+        }
+
+        void Update()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                KeyCode key = KeyCode.Alpha0 + i;
+                if (Input.GetKeyDown(key))
+                {
+                    Floor = i;
+                }
+            }
+        }
+
+    }
 }

@@ -1,8 +1,6 @@
 using PedestrianSimulation.Agent;
-using PedestrianSimulation.Simulation.Initialisation;
 using PedestrianSimulation.Visualisation;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -120,9 +118,9 @@ namespace PedestrianSimulation.Simulation
                 visualSurface = InstantiateVisualSurfaceMesh(heatmapMaterial, parent);
 
                 // 4. Initialise Agents
-                Agents = UniformAgentDistribution<LegacyPedestrianAgent>.InstantiateAgents(
+                Agents = settings.NewDistribution<LegacyPedestrianAgent>().InstantiateAgents(
                     agentParent: transform,
-                    goal: settings.goal,
+                    agentsGoal: settings.goal,
                     agentPrefab: AgentPrefab,
                     numberOfAgents: settings.numberOfAgents,
                     environmentModel: environment
