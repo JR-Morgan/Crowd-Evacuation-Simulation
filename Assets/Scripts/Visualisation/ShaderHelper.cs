@@ -1,3 +1,4 @@
+using PedestrianSimulation.Agent;
 using PedestrianSimulation.Simulation;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace PedestrianSimulation.Visualisation
 
     public static class ShaderHelper
     {
-        public static IEnumerable<Vector4> ToHomogeneousCoordinates(IEnumerable<AgentStateModel> agents)
+        public static IEnumerable<Vector4> ToHomogeneousCoordinates(IEnumerable<AgentState> agents)
         {
             return agents.Select(a => ToHomogeneousCoordinates(a.position));
         }

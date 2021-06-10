@@ -18,6 +18,6 @@ namespace PedestrianSimulation.Simulation.Initialisation
         /// <param name="numberOfAgents">The number of agents that should be instantiated</param>
         /// <param name="environmentModel">The agent's environment, used to calculate bounds</param>
         /// <returns>The list of new agents of size <paramref name="numberOfAgents"/> - May contain <c>null</c> values if some agents failed to be instantiated</returns>
-        IList<T> InstantiateAgents(Transform agentParent, Transform agentsGoal, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel);
+        List<T> InstantiateAgents(Transform agentParent, Transform agentsGoal, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel);
     }
 }

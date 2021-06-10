@@ -9,27 +9,17 @@ using UnityEngine.Events;
 
 namespace PedestrianSimulation.Simulation
 {
-    [Serializable]
-    public struct AgentStateModel
-    {
-        public bool active;
-        public Vector3 position;
-        public Quaternion rotation;
-        public Vector3 velocity;
-        public int t;
-    }
-
     [AddComponentMenu("Simulation/Managers/World State Manager"), DisallowMultipleComponent]
     public class WorldStateManager : Singleton<WorldStateManager>
     {
         [SerializeField, Range(0, byte.MaxValue)]
         private float sFrameFrequency = 5;
 
-        public List<IEnumerable<AgentStateModel>> AgentStates { get; private set; }
+        public List<IEnumerable<AgentState>> AgentStates { get; private set; }
 
         [SerializeField]
-        private List<AgentStateModel> agentStates;
-        public List<AgentStateModel> FlatAgentStates { get => agentStates; private set => agentStates = value; }
+        private List<AgentState> agentStates;
+        public List<AgentState> FlatAgentStates { get => agentStates; private set => agentStates = value; }
 
         private void OnEnable()
         {
@@ -41,8 +31,8 @@ namespace PedestrianSimulation.Simulation
 
         private void Initialise(float frameFrequency)
         {
-            AgentStates = new List<IEnumerable<AgentStateModel>>();
-            FlatAgentStates = new List<AgentStateModel>();
+            AgentStates = new List<IEnumerable<AgentState>>();
+            FlatAgentStates = new List<AgentState>();
         }
 
 
@@ -64,7 +54,7 @@ namespace PedestrianSimulation.Simulation
                     counter = 0;
                     currentS++;
 
-                    AddSFrame(LegacySimulationManager.Instance);
+                    AddSFrame(SimulationManager.Instance);
 
 
                 }
@@ -73,11 +63,11 @@ namespace PedestrianSimulation.Simulation
 
         }
 
-        private void AddSFrame(LegacySimulationManager simulationManager)
+        private void AddSFrame(SimulationManager simulationManager)
         {
             if (currentS >= AgentStates.Count)
             {
-                IList<LegacyPedestrianAgent> agents = simulationManager.Agents;
+                var agents = simulationManager.Agents;
                 var states = agents.Select(a => a.State);
 
                 AgentStates.Add(states.ToList());
@@ -100,11 +90,11 @@ namespace PedestrianSimulation.Simulation
                 currentTime = ToTime(position);
                 counter = 0;
 
-                IList<LegacyPedestrianAgent> agents = LegacySimulationManager.Instance.Agents;
+                var agents = SimulationManager.Instance.Agents;
 
                 int i = 0;
                 Debug.Log($"Jumping to {currentTime} setting {AgentStates[position].Count()} agent states");
-                foreach (AgentStateModel s in AgentStates[position])
+                foreach (AgentState s in AgentStates[position])
                 {
                     agents[i++].State = s;
                 }

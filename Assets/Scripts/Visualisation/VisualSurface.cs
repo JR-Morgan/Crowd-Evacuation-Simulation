@@ -28,14 +28,14 @@ namespace PedestrianSimulation.Visualisation
         private void Start()
         {
             //LegacySimulationManager.Instance.OnSimulationStart.AddListener(SimulationStartHandler);
-            LegacySimulationManager.Instance.OnSimulationStop.AddListener(SimulationStopHandler);
+            SimulationManager.Instance.OnSimulationStop.AddListener(SimulationStopHandler);
             //this.enabled = false;
             SimulationStartHandler();
         }
 
         private void SimulationStartHandler()
         {
-            var simulationManager = LegacySimulationManager.Instance;
+            var simulationManager = SimulationManager.Instance;
 
             CreateComputeBuffer(simulationManager.Agents.Count);
 
@@ -50,11 +50,15 @@ namespace PedestrianSimulation.Visualisation
         {
             var worldState = WorldStateManager.Instance;
 
-            CreateComputeBuffer(worldState.FlatAgentStates.Count);
+            int count = worldState.FlatAgentStates.Count;
+            if(count > 0)
+            {
+                CreateComputeBuffer(worldState.FlatAgentStates.Count);
 
-            Vector4[] pos = ShaderHelper.ToHomogeneousCoordinates(worldState.FlatAgentStates).ToArray();
-            GetPositions = () => pos;
-            this.enabled = true;
+                Vector4[] pos = ShaderHelper.ToHomogeneousCoordinates(worldState.FlatAgentStates).ToArray();
+                GetPositions = () => pos;
+                this.enabled = true;
+            }
         }
 
         private void CreateComputeBuffer(int count, int stride = sizeof(float) * 4)

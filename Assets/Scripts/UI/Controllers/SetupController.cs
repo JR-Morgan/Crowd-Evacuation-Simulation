@@ -34,33 +34,16 @@ namespace PedestrianSimulation.UI.Controllers
 
             element.OnRun = RunSimulation;
 
-            element.OnCancel = SimulationManager.CancelSimulation;
+            element.OnCancel = SimulationManager.Instance.CancelSimulation;
 
-            element.SetViewModel();
+            element.SetViewModel(SimulationManager.Instance.Settings);
             ImportManager.Instance.OnBusyChange += element.SetStatus;
 
         }
 
-        private bool RunSimulation(SimulationSettings settings)
+        private bool RunSimulation()
         {
-            if (settings.goal == null) settings.goal = GameObject.FindGameObjectWithTag("Goal").transform;
-            return SimulationManager.RunSimulation(settings, environment);
-        }
-
-        private static ISimulationManager SimulationManager
-        {
-            get
-            {
-                try
-                {
-                    return Simulation.SimulationManager.Instance;
-                }
-                catch (UninitialisedSingletonException<SimulationManager> e)
-                {
-                    if (LegacySimulationManager.IsSingletonInitialised) return LegacySimulationManager.Instance;
-                    else throw e;
-                }
-            }
+            return SimulationManager.Instance.RunSimulation(environment);
         }
     }
 

@@ -29,9 +29,9 @@ namespace PedestrianSimulation.UI.Controllers
             AddGameObjectActiveToggle(GameObject.FindGameObjectWithTag("Visualisations"), "Heat-map", EnableChildren);
 
 
-            LegacySimulationManager.Instance.OnSimulationStart.AddListener(() => SetDisplayPanelVisible(true));
-            LegacySimulationManager.Instance.OnSimulationStop.AddListener(() => SetDisplayPanelVisible(false));
-            SetDisplayPanelVisible(LegacySimulationManager.Instance.IsRunning);
+            SimulationManager.Instance.OnSimulationStart.AddListener(() => SetDisplayPanelVisible(true));
+            SimulationManager.Instance.OnSimulationStop.AddListener(() => SetDisplayPanelVisible(false));
+            SetDisplayPanelVisible(SimulationManager.Instance.IsRunning);
         }
 
 

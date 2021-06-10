@@ -12,11 +12,11 @@ namespace PedestrianSimulation.Simulation
 
     public interface ISimulationManager
     { 
-        bool RunSimulation(SimulationSettings settings, GameObject environment);
+        bool RunSimulation(GameObject environment);
         bool CancelSimulation();
 
         UnityEvent OnSimulationStart { get; }
         UnityEvent OnSimulationStop { get; }
-
+        SimulationSettings Settings { get; }
     }
 }

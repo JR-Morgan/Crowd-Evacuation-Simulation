@@ -1,4 +1,6 @@
+using PedestrianSimulation.Agent.LocalAvoidance;
 using PedestrianSimulation.Simulation;
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,9 +14,10 @@ namespace PedestrianSimulation.Agent
         private const float GOAL_DISTANCE_THREASHOLD = 2f;
         private NavMeshAgent navAgent;
         private NavMeshPath path = null;
-
-        public override void Initialise(int id)
+        private int id;
+        public override void Initialise(int id, ILocalAvoidance localAvoidance, AgentEnvironmentModel initialEnvironmentModel)
         {
+            this.id = id;
             this.name = $"{nameof(LegacyPedestrianAgent)} {id}";
         }
 
@@ -59,19 +62,33 @@ namespace PedestrianSimulation.Agent
 
         }
 
-        public AgentStateModel State
+        public override AgentState State
         {
-            get => new AgentStateModel { active = AgentActive, rotation = this.transform.rotation, position = this.transform.position, velocity = this.navAgent.velocity };
-            set
+            get
             {
+                return new AgentState(
+                    id: this.id,
+                    active: this.enabled,
+                    radius: navAgent.radius,
+                    desiredSpeed: navAgent.speed,
+                    goal: navAgent.destination,
+                    position: transform.position,
+                    rotation: transform.rotation,
+                    velocity: navAgent.desiredVelocity);
+            }
+            internal set
+            {
+                Debug.Assert(this.id == value.id, $"Error, ID: {{{value.id}}} does not match ID: {{{this.id}}} of this {typeof(LegacyPedestrianAgent)}", this);
+                
                 AgentActive = value.active;
-                //navAgent.Warp(value.position);
+                //navAgent.radius = value.radius;
+                navAgent.speed = value.desiredSpeed;
+
                 transform.position = value.position;
                 navAgent.nextPosition = value.position;
+
                 transform.rotation = value.rotation;
                 navAgent.velocity = value.velocity;
-
-                //navAgent.SetDestination(navAgent.destination);
             }
         }
 

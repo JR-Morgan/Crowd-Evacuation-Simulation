@@ -6,14 +6,8 @@ using UnityEngine;
 
 namespace PedestrianSimulation.Simulation
 {
-    partial class SimulationManager
+    partial class SFMSimulationManager
     {
-        [Header("Updater")]
-        [SerializeField]
-        private UpdateStrategy updateStrategy;
-        [SerializeField]
-        private float timeStep = 1f;
-
         private void InitialiseUpdater(ICollection<PedestrianAgent> agents, IAgentUpdater<PedestrianAgent> updateStrategy)
         {
             updater = updateStrategy;
@@ -26,7 +20,7 @@ namespace PedestrianSimulation.Simulation
         private void Step()
         {
             //Asynchronously update agents intentions
-            updater.Tick(timeStep, Agents);
+            updater.Tick(Settings.timeStep, Agents);
 
             //Synchronously update agents state
             foreach (var a in Agents)

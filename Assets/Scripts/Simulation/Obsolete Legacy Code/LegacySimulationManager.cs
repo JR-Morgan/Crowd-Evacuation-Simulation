@@ -7,6 +7,7 @@ using UnityEngine.Events;
 
 namespace PedestrianSimulation.Simulation
 {
+    [System.Obsolete]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(NavMeshSurface))]
     public class LegacySimulationManager : Singleton<LegacySimulationManager>, ISimulationManager<LegacyPedestrianAgent>
@@ -20,8 +21,10 @@ namespace PedestrianSimulation.Simulation
         [SerializeField]
         private GameObject AgentPrefab;
 
+        [SerializeField]
+        private SimulationSettings settings;
+        public SimulationSettings Settings => settings;
         #endregion;
-
 
         #region Events
         [SerializeField]
@@ -36,15 +39,15 @@ namespace PedestrianSimulation.Simulation
         private GameObject visualSurface;
         private NavMeshSurface navMeshSurface;
 
-        public bool IsRunning { get; private set; }
         public bool HasGenerated => Agents != null;
-        public IList<LegacyPedestrianAgent> Agents { get; private set; } = null;
+        public bool IsRunning { get; private set; }
+        public IList<LegacyPedestrianAgent> Agents { get; private set; } = null; //This is done slightly differently in non-legacy
 
         protected override void Awake()
         {
             base.Awake();
             navMeshSurface = GetComponent<NavMeshSurface>();
-            Initialise();
+            InitialiseManager();
         }
 
 
@@ -56,7 +59,7 @@ namespace PedestrianSimulation.Simulation
         {
             if (IsRunning)
             {
-                Initialise();
+                InitialiseManager();
                 OnSimulationStop.Invoke();
             }
             return IsRunning;
@@ -65,11 +68,11 @@ namespace PedestrianSimulation.Simulation
         /// <summary>
         /// (Re)Initialises the <see cref="LegacySimulationManager"/>. Will remove all <see cref="LegacyPedestrianAgent"/>s in the scene.
         /// </summary>
-        public void Initialise()
+        public void InitialiseManager()
         {
             if (HasGenerated)
             {
-                WorldStateManager.Instance.enabled = false;
+                if (WorldStateManager.IsSingletonInitialised) WorldStateManager.Instance.enabled = false;
 
                 foreach (Component agent in Agents)
                 {
@@ -84,10 +87,10 @@ namespace PedestrianSimulation.Simulation
         /// <summary>
         /// Attempts to initialise and start a simulation with the given <paramref name="settings"/>
         /// </summary>
-        /// <param name="settings">The <see cref="SimulationSettings"/> that are to be setup</param>
+        /// <param name="settings">The <see cref="settings"/> that are to be setup</param>
         /// <param name="environment">The <see cref="GameObject"/> that represents the environment of agents</param>
         /// <returns><c>true</c> if the simulation was successfully setup; otherwise, <c>false</c></returns>
-        public bool RunSimulation(SimulationSettings settings, GameObject environment)
+        public bool RunSimulation(GameObject environment)
         {
             if (IsRunning)
             {
@@ -97,6 +100,7 @@ namespace PedestrianSimulation.Simulation
             {
                 // 0. Cleanup any data from last run
                 if (visualSurface != null) Destroy(visualSurface);
+                if (settings.goal == null) settings.goal = GameObject.FindGameObjectWithTag("Goal").transform;
 
                 IsRunning = true;
 

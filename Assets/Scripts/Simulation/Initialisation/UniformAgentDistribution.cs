@@ -20,7 +20,7 @@ namespace PedestrianSimulation.Simulation.Initialisation
             Distance = distance;
         }
 
-        public IList<T> InstantiateAgents(Transform agentParent, Transform agentsGoal, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel)
+        public List<T> InstantiateAgents(Transform agentParent, Transform agentsGoal, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel)
         {
             return InstantiateAgents(agentParent, agentsGoal, agentPrefab, numberOfAgents, environmentModel, this.Tries, this.Distance);
         }
@@ -50,7 +50,8 @@ namespace PedestrianSimulation.Simulation.Initialisation
             {
                 GameObject agentGameObject = Object.Instantiate(agentPrefab, agentParent);
                 NavMeshAgent navAgent = agentGameObject.GetComponent<NavMeshAgent>();
-                T agent = agentGameObject.GetComponent<T>();
+
+                if (!agentGameObject.TryGetComponent<T>(out T agent)) agent = agentGameObject.AddComponent<T>();
 
                 bool failed = true;
                 for (int j = 0; j < tries; j++)
@@ -78,7 +79,6 @@ namespace PedestrianSimulation.Simulation.Initialisation
                 }
                 else
                 {
-                    agent.Initialise(i);
                     agents.Add(agent);
                 }
 

@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace PedestrianSimulation.Agent.Behaviour.LocalAvoidance
+namespace PedestrianSimulation.Agent.LocalAvoidance
 {
+    // This class has been adapted from https://github.com/fawwazbmn/SocialForceModel C++ SFM
+    // Licence: BSD 3-Clause License https://github.com/fawwazbmn/SocialForceModel/blob/master/LICENSE
     public class Wall
     {
         private readonly struct Line

@@ -1,25 +1,29 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace PedestrianSimulation.Agent.Behaviour.LocalAvoidance.SFM
+namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
 {
     // This class has been adapted from https://github.com/fawwazbmn/SocialForceModel C++ SFM
     // Licence: BSD 3-Clause License https://github.com/fawwazbmn/SocialForceModel/blob/master/LICENSE
     //
     // With changes inspired by https://github.com/trinhthanhtrung/unity-pedestrian-sim 
     // Licence: MIT License https://github.com/trinhthanhtrung/unity-pedestrian-sim/blob/master/LICENSE
+    //
+    // With SMF parameters from Moussaïd et al. (2009). https://doi.org/10.1098/rspb.2009.0405
     public static class SocialForceModel
     {
+        //TODO benchmark in referance paramteres
 
-        public static Vector3 Velocity(in AgentInternalState agent, in IEnumerable<AgentInternalState> neighbours, IEnumerable<Wall> walls)
+
+        public static Vector3 CalculateNextVelocity(AgentState agent, AgentEnvironmentModel model)
         {
             Vector3 drivingForce = DrivingForce(agent);
-            Vector3 interactionForce = neighbours != null? InteractionForce(agent, neighbours) : Vector3.zero;
-            Vector3 obstacleInteractionForce = walls != null ? ObstacleInteractionForce(agent, walls) : Vector3.zero;
+            Vector3 interactionForce = model.Neighbours != null? InteractionForce(agent, model.Neighbours) : Vector3.zero;
+            Vector3 obstacleInteractionForce = model.Walls != null ? ObstacleInteractionForce(agent, model.Walls) : Vector3.zero;
 
             return drivingForce + interactionForce + obstacleInteractionForce;
         }
-        public static Vector3 DrivingForce(in AgentInternalState agent)
+        public static Vector3 DrivingForce(AgentState agent)
         {
             const float relaxationT = 0.54f; // 0.54 Moussaïd and Trịnh Thành Trung
 
@@ -29,7 +33,7 @@ namespace PedestrianSimulation.Agent.Behaviour.LocalAvoidance.SFM
             return drivingForce;
         }
 
-        public static Vector3 InteractionForce(in AgentInternalState agent, in IEnumerable<AgentInternalState> neighbours)
+        public static Vector3 InteractionForce(AgentState agent, IEnumerable<AgentState> neighbours)
         {
             const float observableRadiusSquared = 10f * 10f;
             const float lambda = 2f;
@@ -44,7 +48,7 @@ namespace PedestrianSimulation.Agent.Behaviour.LocalAvoidance.SFM
             Vector3 interactionForce = Vector3.zero;
 
 
-            foreach (AgentInternalState neighbour in neighbours)
+            foreach (AgentState neighbour in neighbours)
             {
                 if (agent.id == neighbour.id) continue;
 
@@ -76,7 +80,7 @@ namespace PedestrianSimulation.Agent.Behaviour.LocalAvoidance.SFM
             return interactionForce;
         }
 
-        public static Vector3 ObstacleInteractionForce(in AgentInternalState agent, IEnumerable<Wall> walls)
+        public static Vector3 ObstacleInteractionForce(AgentState agent, IEnumerable<Wall> walls)
         {
             //const float repulsionRange = 0.3f;	// Repulsion range based on (Moussaïd et al., 2009)
             const int a = 3;
