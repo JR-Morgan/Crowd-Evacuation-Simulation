@@ -2,6 +2,7 @@ using PedestrianSimulation.Agent;
 using PedestrianSimulation.Simulation.UpdateStrategies;
 using System.Collections.Generic;
 using System.Linq;
+using JMTools;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -9,7 +10,7 @@ using UnityEngine.Events;
 namespace PedestrianSimulation.Simulation
 {
 
-
+    [System.Obsolete]
     public partial class SFMSimulationManager : Singleton<SFMSimulationManager>, ISimulationManager<PedestrianAgent>
     {
         #region Scene References

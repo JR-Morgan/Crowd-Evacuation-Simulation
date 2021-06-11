@@ -17,6 +17,7 @@ namespace PedestrianSimulation.Visualisation
         public static IEnumerable<Vector4> ToHomogeneousCoordinates<T>(IEnumerable<T> agents) where T : Component
         {
             return agents.Select(a => ToHomogeneousCoordinates(a.transform.position));
+
         }
 
         public static IEnumerable<Vector4> ToHomogeneousCoordinates(IEnumerable<Vector3> positions) => positions.Select(ToHomogeneousCoordinates);

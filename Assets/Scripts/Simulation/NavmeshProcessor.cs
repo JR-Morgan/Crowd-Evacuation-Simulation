@@ -7,7 +7,7 @@ namespace PedestrianSimulation
 {
     public static class NavmeshProcessor
     {
-        public static List<Wall> GetNavmeshBoundary(NavMeshTriangulation navMeshTriangulation)
+        public static List<Wall> GetNavmeshBoundaryEdges(NavMeshTriangulation navMeshTriangulation)
         {
             IEnumerable<Vector2Int> boundaryEdges = GetBoundaryEdges(navMeshTriangulation.indices);
             List<Wall> walls = new List<Wall>();
@@ -27,7 +27,7 @@ namespace PedestrianSimulation
 
             var singleEdges = new HashSet<Vector2Int>();
 
-            for(int t = 0; t < indecies.Count; t++)
+            for(int t = 0; t < indecies.Count / 3; t++)
             {
                 int index = t * n;
 

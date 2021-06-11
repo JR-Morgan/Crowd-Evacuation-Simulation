@@ -43,7 +43,7 @@ namespace PedestrianSimulation.Agent
 
         /// <param name="max">The max value</param>
         /// <param name="pivot">The pivot value</param>
-        /// <param name="proportion">The proportion between <paramref name="pivot"/> and <paramref name="max"/>
+        /// <param name="proportion">The proportion between <paramref name="pivot"/> and <paramref name="max"/></param>
         private static float CalculateMin(float max, float pivot, float proportion) => ((max - pivot) / proportion) * (1 - proportion);
 
 

@@ -1,6 +1,8 @@
 using PedestrianSimulation.Agent;
 using PedestrianSimulation.Visualisation;
 using System.Collections.Generic;
+using PedestrianSimulation.Agent.LocalAvoidance;
+using JMTools;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -55,7 +57,9 @@ namespace PedestrianSimulation.Simulation
             {
                 InitialiseManager();
                 OnSimulationStop.Invoke();
+                Debug.Log("Simulation canceled!", this);
             }
+
             return IsRunning;
         }
 
@@ -65,7 +69,7 @@ namespace PedestrianSimulation.Simulation
             {
                 if (WorldStateManager.IsSingletonInitialised) WorldStateManager.Instance.enabled = false;
 
-                foreach (Component agent in Agents)
+                foreach (var agent in Agents)
                 {
                     Destroy(agent.gameObject);
                 }
@@ -77,10 +81,9 @@ namespace PedestrianSimulation.Simulation
 
         public bool RunSimulation(GameObject environment)
         {
-            if (settings.useLegacyAgents)
-                return RunSimulation<LegacyPedestrianAgent>(environment);
-            else
-                return RunSimulation<PedestrianAgent>(environment);
+            return settings.useLegacyAgents
+                ? RunSimulation<LegacyPedestrianAgent>(environment)
+                : RunSimulation<PedestrianAgent>(environment);
         }
 
         private bool RunSimulation<T>(GameObject environment) where T : AbstractAgent
@@ -91,45 +94,70 @@ namespace PedestrianSimulation.Simulation
             }
             else
             {
-                // 0. Cleanup any data from last run
-                if (visualSurface != null) Destroy(visualSurface);
-                if (settings.goal == null) settings.goal = GameObject.FindGameObjectWithTag("Goal").transform;
-
                 IsRunning = true;
-
-                // 1. Initialise Random
-                Random.InitState(settings.seed);
-
-                // 2. Prepare Environment
-                Transform[] c = environment.GetComponentsInChildren<Transform>(true);
-                foreach (Transform t in c)
-                {
-                    t.gameObject.layer = (int)(Mathf.Log((uint)navMeshSurface.layerMask.value, 2));
+                
+                { // 0. Cleanup from potential last run
+                    if (visualSurface != null) Destroy(visualSurface);
+                    if (settings.goal == null) settings.goal = GameObject.FindGameObjectWithTag("Goal").transform;
                 }
 
-                // 2. Build NavMesh
-                navMeshSurface.BuildNavMesh();
 
-                // 3. Setup Visual Surface
-                var parent = GameObject.FindGameObjectWithTag("Visualisations").transform;
-                visualSurface = InstantiateVisualSurfaceMesh(heatmapMaterial, parent);
+                { // 1. Initialise Random
 
-                // 4. Initialise Agents
-                Agents = settings.NewDistribution<T>().InstantiateAgents(
-                    agentParent: transform,
-                    agentsGoal: settings.goal,
-                    agentPrefab: agentPrefab,
-                    numberOfAgents: settings.numberOfAgents,
-                    environmentModel: environment
+                    Random.InitState(settings.seed);
+                }
+
+                { // 2. Prepare Environment
+                    Transform[] c = environment.GetComponentsInChildren<Transform>(true);
+                    foreach (Transform t in c)
+                    {
+                        t.gameObject.layer = (int)(Mathf.Log((uint)navMeshSurface.layerMask.value, 2));
+                    }
+                }
+
+                { // 2. Build NavMesh
+                    navMeshSurface.BuildNavMesh();
+                }
+
+                { // 3. Setup Visual Surface
+                    
+                    var parent = GameObject.FindGameObjectWithTag("Visualisations").transform;
+                    visualSurface = InstantiateVisualSurfaceMesh(heatmapMaterial, parent);
+                }
+
+                { // 4.1 Instantiate Agents
+                    Agents = settings.NewDistribution<T>().InstantiateAgents(
+                        agentParent: transform,
+                        agentsGoal: settings.goal,
+                        agentPrefab: agentPrefab,
+                        numberOfAgents: settings.numberOfAgents,
+                        environmentModel: environment
                     ).AsReadOnly();
+                }
+                
+                { // 4.2 Initialise Agents
+                    NavMeshTriangulation navmeshTriangulation = NavMesh.CalculateTriangulation();
+                    IList<Wall> walls = NavmeshProcessor.GetNavmeshBoundaryEdges(navmeshTriangulation);
+                    AgentEnvironmentModel initialEnvironmentModel = new AgentEnvironmentModel(walls); //TODO for now this is the same for all agents
+                    
+                    ILocalAvoidance localAvoidance = Settings.NewLocalAvoidance();
+                    
+                    int i = 0;
+                    foreach(var agent in Agents)
+                    {
+                        agent.Initialise(i++, localAvoidance, initialEnvironmentModel);
+                    }
+                }
+                
 
-                // 5. Enable World State
-                WorldStateManager.Instance.enabled = true;
+                { // 5. Enable World State
+                    WorldStateManager.Instance.enabled = true;
+                }
 
-                // 6. Invoke Event
-                OnSimulationStart.Invoke();
-
-                Debug.Log("Simulation has started!", this);
+                { // 6. Invoke Event
+                    OnSimulationStart.Invoke();
+                    Debug.Log("Simulation has started!", this);
+                }
             }
 
             return IsRunning;

@@ -1,11 +1,7 @@
 {
-    "name": "PedestrianSimulation",
-    "rootNamespace": "PedestrianSimulation",
-    "references": [
-        "Speckle",
-        "NavMeshComponents",
-        "JMTools"
-    ],
+    "name": "JMTools",
+    "rootNamespace": "JMTools",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

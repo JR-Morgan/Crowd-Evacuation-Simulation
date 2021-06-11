@@ -1,4 +1,5 @@
 
+using System;
 using PedestrianSimulation.Agent.LocalAvoidance;
 using UnityEngine;
 using UnityEngine.AI;
@@ -59,6 +60,15 @@ namespace PedestrianSimulation.Agent
             environmentModel = initialEnvironmentModel;
         }
 
+        public void Update()
+        {
+            UpdateIntentions(Time.deltaTime);
+        }
+
+        public void LateUpdate()
+        {
+            CommitAction();
+        }
 
         public override void UpdateIntentions(float timeStep)
         {

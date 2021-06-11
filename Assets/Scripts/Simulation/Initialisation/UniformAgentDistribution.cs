@@ -1,5 +1,10 @@
+#nullable enable
 using PedestrianSimulation.Agent;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using JMTools;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -11,8 +16,8 @@ namespace PedestrianSimulation.Simulation.Initialisation
         protected const float DEFAULT_DISTANCE = 1f;
 
         #region Instance Members
-        public int Tries { get; set; }
-        public float Distance { get; set; }
+        public int Tries { get; }
+        public float Distance { get; }
 
         public UniformAgentDistribution(int tries = DEFAULT_TRIES, float distance = DEFAULT_DISTANCE)
         {
@@ -27,8 +32,6 @@ namespace PedestrianSimulation.Simulation.Initialisation
         #endregion
 
         #region Static Members
-
-
         /// <summary>
         /// Creates the specified <paramref name="numberOfAgents"/> as children of <paramref name="agentParent"/>.
         /// </summary>
@@ -44,30 +47,34 @@ namespace PedestrianSimulation.Simulation.Initialisation
         public static List<T> InstantiateAgents(Transform agentParent, Transform goal, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel, int tries = DEFAULT_TRIES, float distance = DEFAULT_DISTANCE)
         {
             List<T> agents = new List<T>(numberOfAgents);
-            Bounds bounds =  CalculateLocalBounds(environmentModel);
+            Bounds bounds =  environmentModel.CalculateRendererBounds();
 
             for (int i = 0; i < numberOfAgents; i++)
             {
                 GameObject agentGameObject = Object.Instantiate(agentPrefab, agentParent);
-                NavMeshAgent navAgent = agentGameObject.GetComponent<NavMeshAgent>();
+                NavMeshAgent? navAgent = agentGameObject.GetComponent<NavMeshAgent>();
 
-                if (!agentGameObject.TryGetComponent<T>(out T agent)) agent = agentGameObject.AddComponent<T>();
+                if (!agentGameObject.TryGetComponent(out T agent)) agent = agentGameObject.AddComponent<T>();
+ 
+                if (agentGameObject.GetComponentDependants<NavMeshAgent>().Count == 0)
+                {
+                    Object.Destroy(navAgent);
+                }
 
                 bool failed = true;
                 for (int j = 0; j < tries; j++)
                 {
-
                     Vector3 position = GetRandomPointOnNavMesh(bounds, environmentModel.transform, distance);
-                    if (!position.Equals(Vector3.positiveInfinity))
-                    {
-                        if (navAgent != null) navAgent.Warp(position);
-                        else agentGameObject.transform.position = position;
+                    
+                    if (position.Equals(Vector3.positiveInfinity)) continue;
+                    
+                    if (navAgent != null) navAgent.Warp(position); //TODO consider doing this check in agent
+                    else agentGameObject.transform.position = position;
 
-                        if (agent.SetGoal(goal.position))
-                        {
-                            failed = false;
-                            break;
-                        }
+                    if (agent.SetGoal(goal.position))
+                    {
+                        failed = false;
+                        break;
                     }
 
                 }
@@ -84,27 +91,6 @@ namespace PedestrianSimulation.Simulation.Initialisation
 
             }
             return agents;
-        }
-
-        protected static Bounds CalculateLocalBounds(GameObject model)
-        {
-            Quaternion currentRotation = model.transform.rotation;
-            model.transform.rotation = Quaternion.Euler(Vector3.zero);
-
-            Bounds bounds = new Bounds(model.transform.position, Vector3.one);
-
-            foreach (Renderer renderer in model.GetComponentsInChildren<Renderer>())
-            {
-                bounds.Encapsulate(renderer.bounds);
-            }
-
-            Vector3 localCenter = bounds.center - model.transform.position;
-            bounds.center = localCenter;
-
-            model.transform.rotation = currentRotation;
-
-
-            return bounds;
         }
 
 

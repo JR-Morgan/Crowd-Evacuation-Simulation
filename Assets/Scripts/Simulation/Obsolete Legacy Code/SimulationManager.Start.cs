@@ -53,7 +53,7 @@ namespace PedestrianSimulation.Simulation
                     environmentModel: environment
                     );
                 NavMeshTriangulation navmeshTriangulation = NavMesh.CalculateTriangulation();
-                var walls = NavmeshProcessor.GetNavmeshBoundary(navmeshTriangulation);
+                var walls = NavmeshProcessor.GetNavmeshBoundaryEdges(navmeshTriangulation);
                 AgentEnvironmentModel initialEnvironmentModel = new AgentEnvironmentModel(walls); //TODO for now this is the same for all agents
                 ILocalAvoidance localAvoidance = Settings.NewLocalAvoidance();
 

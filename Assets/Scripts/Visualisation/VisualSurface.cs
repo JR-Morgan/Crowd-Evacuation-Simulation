@@ -15,7 +15,7 @@ namespace PedestrianSimulation.Visualisation
         private int numOfAgentsProp, bufferProp;
         private ComputeBuffer _buffer;
 
-        private Func<Vector4[]> GetPositions;
+        private Func<Vector4[]> getPositions;
 
         private void Awake()
         {
@@ -37,9 +37,16 @@ namespace PedestrianSimulation.Visualisation
         {
             var simulationManager = SimulationManager.Instance;
 
-            CreateComputeBuffer(simulationManager.Agents.Count);
+            int agentCount = simulationManager.Agents.Count;
+            if(agentCount <= 0 )
+            {
+                this.enabled = false;
+                return;
+            }
+            
+            CreateComputeBuffer(agentCount);
 
-            GetPositions = () =>
+            getPositions = () =>
             {
                 return ShaderHelper.ToHomogeneousCoordinates(simulationManager.Agents).ToArray();
             };
@@ -49,16 +56,19 @@ namespace PedestrianSimulation.Visualisation
         private void SimulationStopHandler()
         {
             var worldState = WorldStateManager.Instance;
-
-            int count = worldState.FlatAgentStates.Count;
-            if(count > 0)
+            
+            int agentCount = worldState.FlatAgentStates.Count;
+            if(agentCount <= 0 )
             {
-                CreateComputeBuffer(worldState.FlatAgentStates.Count);
-
-                Vector4[] pos = ShaderHelper.ToHomogeneousCoordinates(worldState.FlatAgentStates).ToArray();
-                GetPositions = () => pos;
-                this.enabled = true;
+                this.enabled = false;
+                return;
             }
+            
+            CreateComputeBuffer(agentCount);
+
+            Vector4[] pos = ShaderHelper.ToHomogeneousCoordinates(worldState.FlatAgentStates).ToArray();
+            getPositions = () => pos;
+            this.enabled = true;
         }
 
         private void CreateComputeBuffer(int count, int stride = sizeof(float) * 4)
@@ -71,7 +81,7 @@ namespace PedestrianSimulation.Visualisation
 
         private void LateUpdate()
         {
-            _buffer.SetData(GetPositions());
+            _buffer.SetData(getPositions());
 
             _renderer.material.SetInt(numOfAgentsProp, _buffer.count);
 

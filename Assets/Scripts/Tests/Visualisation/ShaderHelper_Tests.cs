@@ -6,8 +6,8 @@ using RangeAttribute = NUnit.Framework.RangeAttribute;
 namespace PedestrianSimulation.Visualisation.Tests
 {
 
-    [TestFixture]
-    public class HeatmapHelperTests
+    [TestFixture, TestOf(typeof(ShaderHelper))]
+    public class ShaderHelper_Tests
     {
         //[Test]
         //public void ReturnSize_Test([Random(0, HeatmapHelper.MAX_ARRAY_SIZE, 10)] int size)
@@ -18,7 +18,7 @@ namespace PedestrianSimulation.Visualisation.Tests
 
         [TestCase(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f)]
         [TestCase(2f, 16f, 128f, 4f, 32f, 256f, 8f, 64f, 512f)]
-        [TestCase(0.2f, 0.16f, 0.128f, 0.4f, 0.32f, 0.256f, 0.8f, 0.64f, 0.512f, 3)]
+        [TestCase(0.2f, 0.16f, 0.128f, 0.4f, 0.32f, 0.256f, 0.8f, 0.64f, 0.512f)]
         [Test]
         public void ReturnValues_Test(
             float x0, float y0, float z0,

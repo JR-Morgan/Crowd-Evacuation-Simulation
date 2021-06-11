@@ -1,0 +1,13 @@
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/contentModel.xml
+/projectSettingsUpdater.xml
+/modules.xml
+/.idea.Evacuation Simulation.iml
+# Datasource local storage ignored files
+/../../../../../../:\Unity Projects\Evacuation Simulation\.idea\.idea.Evacuation Simulation\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/

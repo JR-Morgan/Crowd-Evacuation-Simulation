@@ -3,6 +3,7 @@ using Speckle.Core.Credentials;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JMTools;
 using UnityEngine;
 using SpeckleStream = Speckle.Core.Api.Stream;
 using SpeckleStreams = Speckle.ConnectorUnity.Streams;
@@ -11,7 +12,7 @@ using SpeckleStreams = Speckle.ConnectorUnity.Streams;
 namespace PedestrianSimulation.Import.Speckle
 {
     /// <summary>
-    /// An  <see cref="ImportManager"/> manages <see cref="Speckle.Core.Api.Stream"/>s and <see cref="Speckle.ConnectorUnity.Receiver"/>s
+    /// An  <see cref="ImportManager"/> manages <see cref="Speckle.Core.Api.Stream"/>s and <see cref="Receiver"/>s
     /// </summary>
     public class ImportManager : Singleton<ImportManager>
     {

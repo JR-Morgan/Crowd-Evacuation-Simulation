@@ -1003,7 +1003,7 @@ MonoBehaviour:
   m_TileSize: 256
   m_OverrideVoxelSize: 1
   m_VoxelSize: 0.05
-  m_NavMeshData: {fileID: 23800000, guid: f0b392f5dbff7a34fbc8202bca801a5f, type: 2}
+  m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
 --- !u!4 &885079286
 Transform:
@@ -1031,14 +1031,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44927af99927a9448d0e222a0805c8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heatmapMaterial: {fileID: 0}
-  AgentPrefab: {fileID: 0}
+  heatmapMaterial: {fileID: 2100000, guid: ae04799ea2ae8424db293397b4bd22a0, type: 2}
+  agentPrefab: {fileID: 1832499695379590527, guid: cc4a84fe6255d1c459f04499133bc9d9, type: 3}
   settings:
     seed: 255
     numberOfAgents: 100
     goal: {fileID: 0}
     timeStep: 0.033333335
-    useLegacyAgents: 0
+    useLegacyAgents: 1
     agentDistribution: 0
     updateStrategy: 0
     localAvoidanceStrategy: 0
