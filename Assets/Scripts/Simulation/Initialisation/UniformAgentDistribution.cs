@@ -1,10 +1,7 @@
 #nullable enable
 using PedestrianSimulation.Agent;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using JMTools;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.AI;
 

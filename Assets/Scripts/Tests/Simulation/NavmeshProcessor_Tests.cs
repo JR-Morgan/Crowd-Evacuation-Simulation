@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -10,44 +12,84 @@ namespace PedestrianSimulation.Simulation.Tests
     [TestFixture, TestOf(typeof(NavmeshProcessor))]
     public class NavmeshProcessor_Tests
     {
+        private const int t = 3; //Number of vertices in triangle (to avoid magic numbers)
+        private const int q = 4; //Number of vertices in quad
         
-        [Test]
-        public void GetBoundaryEdges_Triangle()
+        private struct MockMesh
         {
-            const int n = 3; //Number of vertices in triangle
+            public List<int> indices;
+            public List<Vector3> vertices;
+        }
+
+        private static MockMesh Quad(int offset = 0)
+        {
+            List<int> indices = new List<int>();
+            indices.AddRange(Enumerable.Range(q * offset, t));
+            indices.AddRange(Enumerable.Range(q * offset + 1, t));
             
-            IList<int> triangle = Enumerable.Range(0, n).ToList();
-            var boundaryEdges = NavmeshProcessor.GetBoundaryEdges(triangle).ToArray();
-            
-            Assert.That(boundaryEdges.Length == n);
-            
-            Assert.Contains(new Vector2Int(0, 1), boundaryEdges);
-            Assert.Contains(new Vector2Int(0, 2), boundaryEdges);
-            Assert.Contains(new Vector2Int(1, 2), boundaryEdges);
+            return new MockMesh()
+            {
+                indices = indices,
+                vertices = new List<Vector3>()
+                {
+                    new Vector3(offset,     offset),
+                    new Vector3(offset + 1, offset),
+                    new Vector3(offset,     offset + 1),
+                    new Vector3(offset + 1, offset + 1),
+                },
+            };
+        }
+        private static MockMesh Polygon(int numberOfQuads)
+        {
+            MockMesh mesh = new MockMesh {indices = new List<int>(), vertices = new List<Vector3>()};
+            for (int i = 0; i < numberOfQuads; i++)
+            {
+                MockMesh quad = Quad(i);
+                mesh.indices.AddRange(quad.indices);
+                mesh.vertices.AddRange(quad.vertices);
+            }
+            return mesh;
         }
         
+
         [Test]
-        public void GetBoundaryEdges_Quad()
+        public void GetBoundaryEdges_Polygon([NUnit.Framework.Range(1,5)] int numberOfQuads)
         {
-            const int n = 3; //Number of vertices in triangle
-            const int q = 4; //Number of vertices in quad
+            MockMesh mesh = Polygon(numberOfQuads);
+            var boundaryEdges = NavmeshProcessor.GetBoundaryEdges(mesh.indices, mesh.vertices).ToArray();
             
-            IList<int> t1 = Enumerable.Range(0, n).ToList();
-            IList<int> t2 = Enumerable.Range(1, n).ToList();
+            for (int i = 0; i < numberOfQuads; i++)
+            {
+                var v0 = new Vector3(i,     0);
+                var v1 = new Vector3(i + 1, 0);
+                var v2 = new Vector3(i,     1);
+                var v3 = new Vector3(i + 1, 1);
+                
+                //Assert Contains top and bottom edge
+                AssertContainsOne(boundaryEdges, true, (v0, v1), (v1, v0));
+                AssertContainsOne(boundaryEdges, true, (v2, v3), (v3, v2));
+                
+                //Assert Doesn't contain diagonal edge
+                AssertContainsOne(boundaryEdges, false, (v1, v2), (v2, v1));
+                
+                //Assert If beginning -> contains left edge
+                AssertContainsOne(boundaryEdges, i == 0, (v0,v2), (v2, v0));
+                //Assert If end -> contains right edge
+                AssertContainsOne(boundaryEdges, i + 1 == numberOfQuads, (v1,v3), (v3, v1));
+            }
             
-            List<int> quad = new List<int>();
-            quad.AddRange(t1);
-            quad.AddRange(t2);
+            //Assert Is of expected length
+            Assert.AreEqual(2 * numberOfQuads + 2, boundaryEdges.Length);
             
-            var boundaryEdges = NavmeshProcessor.GetBoundaryEdges(quad).ToArray();
+        }
+        
+        private static void AssertContainsOne<T>(IEnumerable<T> collection, bool shouldContain, params T[] values)
+        {
+            Assert.AreEqual(collection.Intersect(values).Count(), shouldContain ? 1 : 0,
+                message: $"Expected collection to {Negative()} contain a value from {FormatCollection(values)}\n but was {FormatCollection(collection)}");
             
-            Assert.That(boundaryEdges.Length == q);
-            
-            Assert.Contains(new Vector2Int(0, 1) ,boundaryEdges);
-            Assert.Contains(new Vector2Int(0, 2) ,boundaryEdges);
-            Assert.That(boundaryEdges, Has.No.Member(new Vector2Int(1, 2)));
-            Assert.Contains(new Vector2Int(1, 3) ,boundaryEdges);
-            Assert.Contains(new Vector2Int(2, 3) ,boundaryEdges);
+            string Negative() => shouldContain ? "" : "not";
+            string FormatCollection(IEnumerable<T> collection) => $"{{{String.Join(", ", collection.ToArray())}}}";
         }
         
     }

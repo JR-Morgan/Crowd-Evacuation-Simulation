@@ -32,30 +32,20 @@ namespace PedestrianSimulation.Agent.LocalAvoidance
 
         public Vector3 GetNearestPoint(Vector3 position_i)
         {
-            Vector3 relativeEnd, relativePos, relativeEndScal, relativePosScal;
-            float dotProduct;
-            Vector3 nearestPoint;
-
             // Create Vector Relative to Wall's 'start'
-            relativeEnd = wall.end - wall.start;    // Vector from wall's 'start' to 'end'
-            relativePos = position_i - wall.start;  // Vector from wall's 'start' to agent i 'position'
+            Vector3 relativeEnd = wall.end - wall.start;    // Vector from wall's 'start' to 'end'
+            Vector3 relativePos = position_i - wall.start;  // Vector from wall's 'start' to agent i 'position'
 
             // Scale Both Vectors by the Length of the Wall
-            relativeEndScal = relativeEnd;
-            relativeEndScal = relativeEndScal.normalized;
+            Vector3 relativeEndScale = Vector3.Normalize(relativeEnd);
 
-            relativePosScal = relativePos * (1.0F / relativeEnd.magnitude);
+            Vector3 relativePosScale = relativePos * (1.0F / relativeEnd.magnitude);
 
             // Compute Dot Product of Scaled Vectors
-            dotProduct = Vector3.Dot(relativeEndScal, relativePosScal);
-
-            if (dotProduct < 0.0)       // Position of Agent i located before wall's 'start'
-                nearestPoint = wall.start;
-            else if (dotProduct > 1.0)  // Position of Agent i located after wall's 'end'
-                nearestPoint = wall.end;
-            else                        // Position of Agent i located between wall's 'start' and 'end'
-                nearestPoint = (relativeEnd * dotProduct) + wall.start;
-
+            float dotProduct = Vector3.Dot(relativeEndScale, relativePosScale);
+            
+            Vector3 nearestPoint = Vector3.Lerp(wall.start,wall.end, dotProduct);
+            
             return nearestPoint;
         }
 

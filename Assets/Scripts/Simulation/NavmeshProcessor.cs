@@ -1,58 +1,59 @@
+using System;
 using PedestrianSimulation.Agent.LocalAvoidance;
 using System.Collections.Generic;
+using System.Linq;
+using JMTools;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace PedestrianSimulation
+namespace PedestrianSimulation.Simulation
 {
     public static class NavmeshProcessor
     {
         public static List<Wall> GetNavmeshBoundaryEdges(NavMeshTriangulation navMeshTriangulation)
         {
-            IEnumerable<Vector2Int> boundaryEdges = GetBoundaryEdges(navMeshTriangulation.indices);
+            IEnumerable<(Vector3,Vector3)> boundaryEdges = GetBoundaryEdges(navMeshTriangulation.indices, navMeshTriangulation.vertices);
+            
             List<Wall> walls = new List<Wall>();
-
-            foreach(Vector2Int edge in boundaryEdges)
+            foreach((Vector3 a,Vector3 b) in boundaryEdges)
             {
-                Vector3 v1 = navMeshTriangulation.vertices[edge.x];
-                Vector3 v2 = navMeshTriangulation.vertices[edge.y];
-                walls.Add(new Wall(v1, v2));
+                walls.Add(new Wall(a, b));
             }
             return walls;
         }
-
-        public static HashSet<Vector2Int> GetBoundaryEdges(IList<int> indecies)
+        
+        public static IEnumerable<(Vector3,Vector3)> GetBoundaryEdges(IList<int> indices, IList<Vector3> vertices)
         {
             const int n = 3; //number of verts in triangle
 
-            var singleEdges = new HashSet<Vector2Int>();
+            var singleEdges = new Dictionary<(Vector3,Vector3), int>();
 
-            for(int t = 0; t < indecies.Count / 3; t++)
+            for(int t = 0; t < indices.Count / n; t++)
             {
                 int index = t * n;
 
-                int i_1 = indecies[index++];
-                int i_2 = indecies[index++];
-                int i_3 = indecies[index++];
+                int i_1 = indices[index++];
+                int i_2 = indices[index++];
+                int i_3 = indices[index++];
 
-                CheckVisited(new Vector2Int(i_1, i_2));
-                CheckVisited(new Vector2Int(i_1, i_3));
-                CheckVisited(new Vector2Int(i_2, i_3));
+                CheckVisited(i_1, i_2);
+                CheckVisited(i_1, i_3);
+                CheckVisited(i_2, i_3);
             }
-
-            return singleEdges;
-
-
-            void CheckVisited(Vector2Int edge)
+            
+            return singleEdges.Keys.Where(x => singleEdges[x] == 1);
+            
+            void CheckVisited(int a, int b)
             {
-                //We assume that an edge is at most, shared between two triangles
-                if (!singleEdges.Remove(edge))
-                {
-                    singleEdges.Add(edge);
-                }
+                Vector3 aPos = vertices[a];//.Round(4);
+                Vector3 bPos = vertices[b];//.Round(4);
+
+                var edge = aPos.GetHashCode() < bPos.GetHashCode() ? (aPos, bPos) : (bPos, aPos);
+                
+                singleEdges.TryGetValue(edge, out int occurence);
+                singleEdges[edge] = occurence + 1;
             }
-
         }
-
+        
     }
 }

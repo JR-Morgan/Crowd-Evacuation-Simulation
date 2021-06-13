@@ -20,8 +20,14 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
             Vector3 drivingForce = DrivingForce(agent);
             Vector3 interactionForce = model.Neighbours != null? InteractionForce(agent, model.Neighbours) : Vector3.zero;
             Vector3 obstacleInteractionForce = model.Walls != null ? ObstacleInteractionForce(agent, model.Walls) : Vector3.zero;
-
-            return drivingForce + interactionForce + obstacleInteractionForce;
+            
+            Debug.DrawLine(agent.position, agent.position + drivingForce, Color.red);
+            Debug.DrawLine(agent.position, agent.position + interactionForce, Color.cyan);
+            Debug.DrawLine(agent.position, agent.position + obstacleInteractionForce, Color.yellow);
+            
+            return drivingForce +
+                   interactionForce +
+                   obstacleInteractionForce;
         }
         public static Vector3 DrivingForce(AgentState agent)
         {
@@ -91,6 +97,7 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
             
             foreach(Wall wall in walls)
             {
+                if (agent.id == 0) Debug.DrawLine(wall.StartPoint, wall.EndPoint); //This is just for debug purposes
                 Vector3 nearestPoint = agent.position - wall.GetNearestPoint(agent.position);
                 float sqrDistance = nearestPoint.sqrMagnitude;
 
@@ -102,9 +109,9 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
                 }
             }
 
-            float distanceToNearestObsticle = Mathf.Sqrt(sqrMinDistance) - agent.radius;    // Distance between wall and agent i
+            float distanceToNearestObstacle = Mathf.Sqrt(sqrMinDistance) - agent.radius;    // Distance between wall and agent i
 
-            float interactionForce = a * Mathf.Exp(-distanceToNearestObsticle / b);
+            float interactionForce = a * Mathf.Exp(-distanceToNearestObstacle / b);
             minDistanceVector.Normalize();
 
             return interactionForce * minDistanceVector;

@@ -13,11 +13,11 @@ namespace PedestrianSimulation.World
         [SerializeField]
         private int _floor;
 
-        private new Camera camera;
+        private Camera _camera;
 
         private void Awake()
         {
-            camera = GetComponent<Camera>();
+            _camera = GetComponent<Camera>();
         }
 
 
@@ -33,20 +33,20 @@ namespace PedestrianSimulation.World
 
         private void OnValidate()
         {
-            if (camera == null) camera = GetComponent<Camera>();
+            if (_camera == null) _camera = GetComponent<Camera>();
             SetView();
         }
 
         private void SetView()
         {
-            Vector3 newPosition = camera.transform.position;
+            Vector3 newPosition = _camera.transform.position;
 
             newPosition.y = groundOffset + ((Floor + 1) * (floorHeight + relativeOffset));
 
-            camera.transform.position = newPosition;
+            _camera.transform.position = newPosition;
 
-            camera.nearClipPlane = relativeOffset;
-            camera.farClipPlane = relativeOffset + floorHeight;
+            _camera.nearClipPlane = relativeOffset;
+            _camera.farClipPlane = relativeOffset + floorHeight;
 
 
         }

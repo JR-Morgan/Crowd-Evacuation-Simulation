@@ -80,7 +80,7 @@ namespace PedestrianSimulation.Agent
 
             //TODO use Time step
 
-            IntendedVelocity = localAvoidance.NextVelocity(State, environmentModel);
+            IntendedVelocity = localAvoidance.NextVelocity(State, environmentModel) * timeStep;
         }
         public void CommitAction()
         {
