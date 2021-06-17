@@ -2,6 +2,7 @@ using PedestrianSimulation.Import.Speckle;
 using PedestrianSimulation.Simulation;
 using PedestrianSimulation.UI.Elements;
 using System;
+using PedestrianSimulation.Environment;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,40 +12,35 @@ namespace PedestrianSimulation.UI.Controllers
     [RequireComponent(typeof(UIDocument))]
     public class SetupController : MonoBehaviour
     {
-        private SimulationSetupElement element;
-
-        private GameObject environment;
-
-        private void Awake()
-        {
-            environment = GameObject.FindGameObjectWithTag("Environment");
-        }
+        private EnvironmentManager environment;
+        
 
         private void Start()
         {
-            UIDocument document = GetComponent<UIDocument>();
-
-            element = document.rootVisualElement.Q<SimulationSetupElement>();
-            if (element == null)
-            {
-                Debug.LogWarning($"{this} could not find a {typeof(SimulationSetupElement)} in {document}");
-                return;
+            { //Environment Setup
+                GameObject environmentGO = GameObject.FindGameObjectWithTag("Environment");
+                environment = environmentGO.GetComponent<EnvironmentManager>();
+                Debug.Assert(environment != null, $"{this} could not find a {typeof(EnvironmentManager)} in {environmentGO}");
             }
+            
+            { // UI Setup
+                UIDocument document = GetComponent<UIDocument>();
 
+                SimulationSetupElement element = document.rootVisualElement.Q<SimulationSetupElement>();
+                Debug.Assert(element != null, $"{this} could not find a {typeof(SimulationSetupElement)} in {document}");
 
-            element.OnRun = RunSimulation;
+                element.OnRun = RunSimulation;
 
-            element.OnCancel = SimulationManager.Instance.CancelSimulation;
+                element.OnCancel = SimulationManager.Instance.CancelSimulation;
 
-            element.SetViewModel(SimulationManager.Instance.Settings);
-            ImportManager.Instance.OnBusyChange += element.SetStatus;
-
+                element.SetViewModel(SimulationManager.Instance.Settings);
+                ImportManager.Instance.OnBusyChange += element.SetStatus;
+            }
         }
 
         private bool RunSimulation()
         {
-            return SimulationManager.Instance.RunSimulation(environment);
+            return environment != null && SimulationManager.Instance.RunSimulation(environment);
         }
     }
-
 }

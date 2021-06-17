@@ -32,10 +32,10 @@ namespace PedestrianSimulation.Simulation.Tests
                 indices = indices,
                 vertices = new List<Vector3>()
                 {
-                    new Vector3(offset,     offset),
-                    new Vector3(offset + 1, offset),
-                    new Vector3(offset,     offset + 1),
-                    new Vector3(offset + 1, offset + 1),
+                    new Vector3(offset,     0),
+                    new Vector3(offset + 1, 0),
+                    new Vector3(offset,     1),
+                    new Vector3(offset + 1, 1),
                 },
             };
         }
@@ -85,11 +85,11 @@ namespace PedestrianSimulation.Simulation.Tests
         
         private static void AssertContainsOne<T>(IEnumerable<T> collection, bool shouldContain, params T[] values)
         {
-            Assert.AreEqual(collection.Intersect(values).Count(), shouldContain ? 1 : 0,
+            Assert.AreEqual(shouldContain ? 1 : 0, collection.Intersect(values).Count(),
                 message: $"Expected collection to {Negative()} contain a value from {FormatCollection(values)}\n but was {FormatCollection(collection)}");
             
             string Negative() => shouldContain ? "" : "not";
-            string FormatCollection(IEnumerable<T> collection) => $"{{{String.Join(", ", collection.ToArray())}}}";
+            static string FormatCollection(IEnumerable<T> collection) => $"{{{string.Join(", ", collection.ToArray())}}}";
         }
         
     }

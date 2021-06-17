@@ -1,5 +1,6 @@
 
 using System;
+using System.Linq;
 using PedestrianSimulation.Agent.LocalAvoidance;
 using UnityEngine;
 using UnityEngine.AI;
@@ -12,7 +13,7 @@ namespace PedestrianSimulation.Agent
     {
         private const float GOAL_RADIUS = 0.5f;
         private const float DEFAULT_AGENT_SPEED = 3.5f;
-        private const float AGENT_RADIUS = 0.2f;
+        private const float AGENT_RADIUS = 0.5f;
 
         #region Agent State
 
@@ -25,7 +26,8 @@ namespace PedestrianSimulation.Agent
 
         private ILocalAvoidance localAvoidance;
         public Vector3 IntendedVelocity { get; private set; }
-
+        
+        [SerializeField]
         private int cornerIndex = 0;
         private Vector3[] path = null;
 
@@ -63,6 +65,7 @@ namespace PedestrianSimulation.Agent
         public void Update()
         {
             UpdateIntentions(Time.deltaTime);
+            Debug.DrawLine(transform.position, State.goal, Color.green);
         }
 
         public void LateUpdate()
@@ -84,31 +87,35 @@ namespace PedestrianSimulation.Agent
         }
         public void CommitAction()
         {
-            transform.position += IntendedVelocity;
+            var position = transform.position += IntendedVelocity;
 
             State = new AgentState(
                 id: State.id,
                 active: this.enabled,
                 radius: AGENT_RADIUS,
                 desiredSpeed: State.desiredSpeed,
-                goal: CalculateCurrentGoal(transform.position),
-                position: transform.position,
+                goal: CalculateCurrentGoal(position),
+                position: position,
                 rotation: transform.rotation,
                 velocity: IntendedVelocity);
         }
 
         private Vector3 CalculateCurrentGoal(Vector3 position)
         {
-            if (Vector3.Distance(position, path[cornerIndex]) < GOAL_RADIUS)
+            float distance = Vector3.Distance(position, path[cornerIndex]);
+            
+            if (distance < GOAL_RADIUS)
             {
                 cornerIndex++;
                 if (cornerIndex >= path.Length)
                 {
-                    //GOAL IS COMPLETE!
+                    Debug.Log("Terminal Goal is Complete!");
                 }
+
+                cornerIndex = Mathf.Min(cornerIndex, path.Length - 1);
             }
 
-            return path[Mathf.Max(cornerIndex, path.Length - 1)]; ;
+            return path[cornerIndex]; ;
         }
 
 

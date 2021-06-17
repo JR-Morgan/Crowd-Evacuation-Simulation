@@ -3,6 +3,7 @@ using PedestrianSimulation.Visualisation;
 using System.Collections.Generic;
 using PedestrianSimulation.Agent.LocalAvoidance;
 using JMTools;
+using PedestrianSimulation.Environment;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -37,7 +38,6 @@ namespace PedestrianSimulation.Simulation
         #endregion
 
         private GameObject visualSurface;
-        private NavMeshSurface navMeshSurface;
 
         public bool HasGenerated => Agents != null;
         public bool IsRunning { get; private set; }
@@ -46,7 +46,6 @@ namespace PedestrianSimulation.Simulation
         protected override void Awake()
         {
             base.Awake();
-            navMeshSurface = GetComponent<NavMeshSurface>();
             InitialiseManager();
         }
 
@@ -79,14 +78,14 @@ namespace PedestrianSimulation.Simulation
             IsRunning = false;
         }
 
-        public bool RunSimulation(GameObject environment)
+        public bool RunSimulation(EnvironmentManager environment)
         {
             return settings.useLegacyAgents
                 ? RunSimulation<LegacyPedestrianAgent>(environment)
                 : RunSimulation<PedestrianAgent>(environment);
         }
 
-        private bool RunSimulation<T>(GameObject environment) where T : AbstractAgent
+        private bool RunSimulation<T>(EnvironmentManager environment) where T : AbstractAgent
         {
             if (IsRunning)
             {
@@ -107,17 +106,7 @@ namespace PedestrianSimulation.Simulation
                     Random.InitState(settings.seed);
                 }
 
-                { // 2. Prepare Environment
-                    Transform[] c = environment.GetComponentsInChildren<Transform>(true);
-                    foreach (Transform t in c)
-                    {
-                        t.gameObject.layer = (int)(Mathf.Log((uint)navMeshSurface.layerMask.value, 2));
-                    }
-                }
-
-                { // 2. Build NavMesh
-                    navMeshSurface.BuildNavMesh();
-                }
+                environment.InitialiseEnvironment();
 
                 { // 3. Setup Visual Surface
                     
@@ -131,13 +120,13 @@ namespace PedestrianSimulation.Simulation
                         agentsGoal: settings.goal,
                         agentPrefab: agentPrefab,
                         numberOfAgents: settings.numberOfAgents,
-                        environmentModel: environment
+                        environmentModel: environment.gameObject //TODO might change this type to EnvironmentManager
                     ).AsReadOnly();
                 }
                 
                 { // 4.2 Initialise Agents
                     NavMeshTriangulation navmeshTriangulation = NavMesh.CalculateTriangulation();
-                    IList<Wall> walls = NavmeshProcessor.GetNavmeshBoundaryEdges(navmeshTriangulation);
+                    IList<Wall> walls = NavmeshProcessor.GetNavmeshBoundaryEdges(navmeshTriangulation); //TODO this will be moved into EnvironmentManager
                     AgentEnvironmentModel initialEnvironmentModel = new AgentEnvironmentModel(walls); //TODO for now this is the same for all agents
                     
                     ILocalAvoidance localAvoidance = Settings.NewLocalAvoidance();

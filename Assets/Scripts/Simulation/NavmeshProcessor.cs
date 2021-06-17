@@ -10,6 +10,8 @@ namespace PedestrianSimulation.Simulation
 {
     public static class NavmeshProcessor
     {
+        private const int ROUND_POSITION_PLACES = 4;
+        
         public static List<Wall> GetNavmeshBoundaryEdges(NavMeshTriangulation navMeshTriangulation)
         {
             IEnumerable<(Vector3,Vector3)> boundaryEdges = GetBoundaryEdges(navMeshTriangulation.indices, navMeshTriangulation.vertices);
@@ -45,8 +47,9 @@ namespace PedestrianSimulation.Simulation
             
             void CheckVisited(int a, int b)
             {
-                Vector3 aPos = vertices[a];//.Round(4);
-                Vector3 bPos = vertices[b];//.Round(4);
+                //Round Vector3 to fix issue with floating point precision of NavMeshTriangulation.
+                Vector3 aPos = vertices[a].Round(ROUND_POSITION_PLACES); 
+                Vector3 bPos = vertices[b].Round(ROUND_POSITION_PLACES);
 
                 var edge = aPos.GetHashCode() < bPos.GetHashCode() ? (aPos, bPos) : (bPos, aPos);
                 

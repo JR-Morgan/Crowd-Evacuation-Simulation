@@ -46,7 +46,7 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
             const float gamma = 0.35f;
             const float nPrime = 3f;
             const float n = 2f;
-            const float a = 4.5f; // (47.0 Trịnh Thành Trung) (4.5 * 10 Moussaïd)
+            const float a = 47f; // (47.0 Trịnh Thành Trung) (4.5 * 10 Moussaïd)
 
             float B, theta;
             int K;
@@ -60,7 +60,7 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
 
                 //continue if agent is too far (this might be replaced later with a hash grid system)
                 Vector3 translationToNeighbour = agent.position - neighbour.position;
-                if (translationToNeighbour.sqrMagnitude > observableRadiusSquared) continue;
+                //if (translationToNeighbour.sqrMagnitude > observableRadiusSquared) continue;
 
                 Vector3 directionToNeighbour = Vector3.Normalize(translationToNeighbour);
                 Vector3 interactionVector = lambda * (agent.velocity - neighbour.velocity) + directionToNeighbour;
