@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/SFM Test.unity
+    guid: c7ee4ef43de7dbf4d9844cdf78ebbc97
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 7db955963bc58a74babfa9b82594b9ec, type: 2}
     com.unity.localization.settings: {fileID: 11400000, guid: b67a82c5cbc049c4a8350f66bf760139, type: 2}
