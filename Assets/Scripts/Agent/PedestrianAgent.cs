@@ -68,6 +68,11 @@ namespace PedestrianSimulation.Agent
             Debug.DrawLine(transform.position, State.goal, Color.green);
         }
 
+        private void Sense()
+        {
+            //environmentModel.Walls.Add();
+        }
+
         public void LateUpdate()
         {
             CommitAction();

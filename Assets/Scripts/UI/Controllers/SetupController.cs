@@ -20,6 +20,7 @@ namespace PedestrianSimulation.UI.Controllers
             { //Environment Setup
                 GameObject environmentGO = GameObject.FindGameObjectWithTag("Environment");
                 environment = environmentGO.GetComponent<EnvironmentManager>();
+                //environment ??= environmentGO.AddComponent<EnvironmentManager>();
                 Debug.Assert(environment != null, $"{this} could not find a {typeof(EnvironmentManager)} in {environmentGO}");
             }
             

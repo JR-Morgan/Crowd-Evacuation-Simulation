@@ -5,17 +5,19 @@ namespace PedestrianSimulation.Agent
 {
     public class AgentEnvironmentModel
     {
-        public IList<AgentState> Neighbours { get; set; }
-        public IList<Wall> Walls { get; }
+        public List<AgentState> Neighbours { get; }
+        public List<Wall> Walls { get; }
 
-        public AgentEnvironmentModel(IList<AgentState> neighbours, IList<Wall> walls)
+        public AgentEnvironmentModel(List<AgentState> neighbours, List<Wall> walls)
         {
             Neighbours = neighbours;
             Walls = walls;
         }
 
-        public AgentEnvironmentModel(IList<Wall> walls)
+        public AgentEnvironmentModel(List<Wall> walls)
             : this(new List<AgentState>(), walls)
         { }
+        
+        
     }
 }

@@ -3,6 +3,7 @@ using PedestrianSimulation.Agent.LocalAvoidance;
 using System.Collections.Generic;
 using System.Linq;
 using JMTools;
+using JMTools.Geometry;
 using UnityEngine;
 using UnityEngine.AI;
 

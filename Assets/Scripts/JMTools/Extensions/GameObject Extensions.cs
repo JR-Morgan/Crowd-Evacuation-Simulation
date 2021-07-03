@@ -8,6 +8,7 @@ namespace JMTools
 {
     public static class GameObjectExtensions
     {
+
         /// <summary>
         /// Given a <see cref="GameObject"/>'s <paramref name="transform"/> will calculate the <see cref="Bounds"/>
         /// of the union of all <see cref="Renderer"/> <see cref="Component"/> attached to the <param name="transform"/> and its children.

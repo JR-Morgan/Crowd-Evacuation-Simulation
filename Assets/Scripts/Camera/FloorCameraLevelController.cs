@@ -1,3 +1,4 @@
+using System;
 using Objects.BuiltElements.Revit;
 using Speckle.ConnectorUnity;
 using UnityEngine;
@@ -6,7 +7,8 @@ namespace PedestrianSimulation.World
 {
     public class FloorCameraLevelController : MonoBehaviour
     {
-
+        private const string EnvironmentTag = "Environment";
+        
         [SerializeField]
         private float floorHeight, groundOffset, relativeOffset;
 
@@ -62,8 +64,8 @@ namespace PedestrianSimulation.World
         #region Set Floor View
         private static void SetFloorView(int floor)
         {
-            GameObject environment = GameObject.FindGameObjectWithTag("Environment");
-
+            GameObject environment = GameObject.FindGameObjectWithTag(EnvironmentTag);
+            Debug.Assert(environment != null, $"{typeof(FloorCameraLevelController)} could not find GameObject with tag \"{EnvironmentTag}\"");
             foreach (SpeckleProperties d in environment.GetComponentsInChildren<SpeckleProperties>(true))
             {
                 TrySetActive(d, floor);

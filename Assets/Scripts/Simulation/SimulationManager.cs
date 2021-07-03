@@ -102,12 +102,14 @@ namespace PedestrianSimulation.Simulation
 
 
                 { // 1. Initialise Random
-
                     Random.InitState(settings.seed);
                 }
-
-                environment.InitialiseEnvironment();
-
+                
+                { // 2. Initialise Environment
+                    
+                    environment.InitialiseEnvironment();
+                }
+                
                 { // 3. Setup Visual Surface
                     
                     var parent = GameObject.FindGameObjectWithTag("Visualisations").transform;
@@ -125,9 +127,8 @@ namespace PedestrianSimulation.Simulation
                 }
                 
                 { // 4.2 Initialise Agents
-                    NavMeshTriangulation navmeshTriangulation = NavMesh.CalculateTriangulation();
-                    IList<Wall> walls = NavmeshProcessor.GetNavmeshBoundaryEdges(navmeshTriangulation); //TODO this will be moved into EnvironmentManager
-                    AgentEnvironmentModel initialEnvironmentModel = new AgentEnvironmentModel(walls); //TODO for now this is the same for all agents
+
+                    AgentEnvironmentModel initialEnvironmentModel = new AgentEnvironmentModel(new List<Wall>()); //TODO for now this is the same for all agents
                     
                     ILocalAvoidance localAvoidance = Settings.NewLocalAvoidance();
                     
