@@ -26,14 +26,33 @@ namespace PedestrianSimulation.Import.Speckle
         [Tooltip("The layer that should be applied to stream objects")]
         private LayerMask layer;
 
+        private Transform parent;
+
         public Dictionary<string, SpeckleStream> StreamFromID { get; private set; }
         public ICollection<SpeckleStream> Streams => StreamFromID.Values;
 
         public Dictionary<string, Receiver> Receivers { get; private set; }
 
+
+        protected override void Awake()
+        {
+            base.Awake();
+            busyReceivers = new BusySet<Receiver>();
+            busyReceivers.OnStatusChange += UpdateBusy;
+            
+            StreamFromID = new Dictionary<string, SpeckleStream>();
+            Receivers = new Dictionary<string, Receiver>();
+        }
+
         private async void Start()
         {
             //Initial Checks
+            {
+                const string environmentTag = "Environment";
+                parent = GameObject.FindGameObjectWithTag(environmentTag).transform;
+                Debug.Assert(parent != null, $"Could not find parent target GameObject with tag \"{environmentTag}\"", this);
+            }
+            
             if (streamParentPrefab == null)
             {
                 Debug.LogError($"{nameof(streamParentPrefab)} was unassigned", this);
@@ -42,34 +61,28 @@ namespace PedestrianSimulation.Import.Speckle
             var defaultAccount = AccountManager.GetDefaultAccount();
             if (defaultAccount == null)
             {
-                Debug.Log("Please set a default account in SpeckleManager"); //TODO proper exceptions that are handled by UI
+                Debug.Log("Please set a default account in the Speckle Manager desktop application", this); //TODO proper exceptions that are handled by UI
                 return;
             }
 
+            
             //Setup
-            StreamFromID = new Dictionary<string, SpeckleStream>();
-            Receivers = new Dictionary<string, Receiver>();
-            List<SpeckleStream> StreamList = await SpeckleStreams.List();
-            if (!StreamList.Any())
+            List<SpeckleStream> streamList = await SpeckleStreams.List();
+            if (!streamList.Any())
             {
                 Debug.Log("There are no streams in your account, please create one online."); //TODO proper exceptions that are handled by UI
                 return;
             }
-            else
-            {
-                foreach(SpeckleStream s in StreamList)
-                {
-                    StreamFromID.Add(s.id, s);
-                }
 
-                OnReadyToReceive?.Invoke(defaultAccount.userInfo, defaultAccount.serverInfo);
+            foreach(SpeckleStream s in streamList)
+            {
+                StreamFromID.Add(s.id, s);
             }
 
-            busyReceivers = new BusySet<Receiver>();
-            busyReceivers.OnStatusChange += UpdateBusy;
+            OnReadyToReceive?.Invoke(defaultAccount.userInfo, defaultAccount.serverInfo);
 
 
-            //If there is already a model imported 
+                //If there is already a model imported 
             GameObject environment = GameObject.FindGameObjectWithTag("Environment");
             if (environment.GetComponentInChildren<Renderer>(false) != null)
             {
@@ -80,18 +93,16 @@ namespace PedestrianSimulation.Import.Speckle
         #region Busy
         private BusySet<Receiver> busyReceivers;
 
-        /// <summary>True when any receivers are currently receiving</summary>
+        /// <summary><see langword="true" /> when any <see cref="Receiver"/>s are currently receiving</summary>
         public bool IsBusy { get; private set; } = false;
         private void UpdateBusy(bool receiverBusy)
         {
-            bool oldBusy = IsBusy;
+            IsBusy = receiverBusy || parent.GetComponentsInChildren<Transform>().Length <= 1; // 0 (+ 1 for the parent transform)
 
-            IsBusy = receiverBusy || Receivers.Count <= 0;
-
-            //if (oldBusy != IsBusy)
             OnBusyChange?.Invoke(IsBusy);
         }
-        private void UpdateBusy() => UpdateBusy(busyReceivers.IsBusy);
+        
+        public void UpdateBusy() => UpdateBusy(busyReceivers.IsBusy);
 
         #endregion
 
@@ -100,11 +111,11 @@ namespace PedestrianSimulation.Import.Speckle
         private Receiver CreateReceiver(SpeckleStream stream, Transform parent, bool autoReceive, bool deleteOld)
         {
             string streamID = stream.id;
-            GameObject streamPrefab = Instantiate(streamParentPrefab, Vector3.zero, Quaternion.identity, parent);
+            GameObject streamGameObject = Instantiate(streamParentPrefab, Vector3.zero, Quaternion.identity, parent);
 
-            streamPrefab.name = $"Receiver-{streamID}";
+            streamGameObject.name = $"Receiver-{streamID}";
 
-            Receiver receiver = streamPrefab.AddComponent<Receiver>();
+            Receiver receiver = streamGameObject.AddComponent<Receiver>();
 
             receiver.Init(streamID, autoReceive, deleteOld,
                 onDataReceivedAction: (go) =>
@@ -184,8 +195,6 @@ namespace PedestrianSimulation.Import.Speckle
         public bool CreateReceiver(SpeckleStream stream, bool receiveNow = true, bool autoReceive = false, bool deleteOld = true)
         {
 
-            Transform parent = GameObject.FindGameObjectWithTag("Environment").transform;
-
             Receiver receiver = CreateReceiver(stream, parent, autoReceive, deleteOld);
 
             if (RegisterExisting(receiver))
@@ -245,6 +254,7 @@ namespace PedestrianSimulation.Import.Speckle
         {
             receiver.gameObject.SetActive(value);
             OnStreamVisibilityChange?.Invoke(StreamFromID[receiver.StreamId], receiver);
+            UpdateBusy();
         }
 
         #endregion

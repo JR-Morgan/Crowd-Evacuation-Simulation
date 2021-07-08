@@ -1,7 +1,9 @@
 
 using System;
 using System.Linq;
+using JMTools.Geometry.Cellular;
 using PedestrianSimulation.Agent.LocalAvoidance;
+using PedestrianSimulation.Environment;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -64,13 +66,26 @@ namespace PedestrianSimulation.Agent
 
         public void Update()
         {
-            UpdateIntentions(Time.deltaTime);
-            Debug.DrawLine(transform.position, State.goal, Color.green);
+            //Potentially run this concurrently
+            Sense();
+            UpdateIntentions(1f/60f);
         }
 
         private void Sense()
         {
-            //environmentModel.Walls.Add();
+            var agentIndex = EnvironmentManager.IndexFunction(transform.position);
+            var chunkIndices = CellularCircles2D.IndicesInCircle(agentIndex, 2);
+
+            
+            foreach (var i in chunkIndices)
+            {
+                if (!EnvironmentManager.TryGetChunk(i, out Chunk c)) continue; //If no valid chunk exists for this index
+                
+                foreach (Wall w in c.walls)
+                {
+                    environmentModel.Walls.Add(w);
+                }
+            }
         }
 
         public void LateUpdate()
@@ -114,6 +129,8 @@ namespace PedestrianSimulation.Agent
                 cornerIndex++;
                 if (cornerIndex >= path.Length)
                 {
+                    this.enabled = false;
+                    OnGoalComplete();
                     Debug.Log("Terminal Goal is Complete!");
                 }
 
@@ -123,6 +140,16 @@ namespace PedestrianSimulation.Agent
             return path[cornerIndex]; ;
         }
 
-
+        private void OnDrawGizmosSelected()
+        {
+            //Debug.DrawLine(transform.position, State.goal, Color.green);
+            
+            #if UNITY_EDITOR
+            if (EnvironmentManager.TryGetChunk(transform.position, out Chunk chunk))
+            {
+                ChunkVisualiser.Dict[chunk].Selected = true;
+            }
+            #endif
+        }
     }
 }

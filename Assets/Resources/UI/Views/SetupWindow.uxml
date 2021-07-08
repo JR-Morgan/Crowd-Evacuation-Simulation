@@ -4,7 +4,7 @@
         <ui:VisualElement name="Header" class="header">
             <ui:Label text="Simulation Setup" display-tooltip-when-elided="true" />
         </ui:VisualElement>
-        <ui:VisualElement name="ParameterParent" style="flex-grow: 1; padding-left: 15px; padding-right: 15px;" />
+        <ui:ScrollView name="ParameterParent" style="flex-grow: 1; padding-left: 15px; padding-right: 15px;" />
         <ui:Button text="Run Simulation" display-tooltip-when-elided="true" name="ButtonSubmit" class="med-text" style="bottom: 0; position: relative; margin-right: 30px; margin-left: 30px; margin-bottom: 25px;" />
     </ui:VisualElement>
 </ui:UXML>

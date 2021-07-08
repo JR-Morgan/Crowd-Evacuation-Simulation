@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using PedestrianSimulation.Agent.LocalAvoidance;
 using JMTools;
 using PedestrianSimulation.Environment;
+using PedestrianSimulation.Results;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -18,8 +19,9 @@ namespace PedestrianSimulation.Simulation
         [Header("Asset References")]
         [SerializeField]
         private Material heatmapMaterial;
+        
         [Header("Prefab References")]
-        [SerializeField]
+        [SerializeField, Tooltip("Reference to the prefab that should be instantiated for agent initialisation.")]
         private GameObject agentPrefab;
 
         [SerializeField]
@@ -28,40 +30,41 @@ namespace PedestrianSimulation.Simulation
         #endregion;
 
         #region Events
-        [SerializeField, Header("Events")]
+        [Header("Events"), Tooltip("Called on the frame before the simulation starts.")]
+        [SerializeField]
         private UnityEvent _onSimulationStart;
         public UnityEvent OnSimulationStart => _onSimulationStart;
 
-        [SerializeField]
-        private UnityEvent _onSimulationStop;
-        public UnityEvent OnSimulationStop => _onSimulationStop;
+        [SerializeField, Tooltip("Called when the simulation is terminated for any reason (e.g. terminated by user, completed naturally, etc.).")]
+        private UnityEvent _onSimulationTerminated;
+        public UnityEvent OnSimulationTerminated => _onSimulationTerminated;
+        
+        [SerializeField, Tooltip("Called when the simulation is naturally ends, called before" + nameof(OnSimulationTerminated))]
+        private UnityEvent<SimulationResults> _onSimulationFinished;
+        public UnityEvent<SimulationResults> OnSimulationFinished => _onSimulationFinished;
         #endregion
 
         private GameObject visualSurface;
-
+        
         public bool HasGenerated => Agents != null;
-        public bool IsRunning { get; private set; }
-        public IReadOnlyList<AbstractAgent> Agents { get; private set; } = null;
+        public float SimulationStartTime { get; private set; }
+
+        public bool IsRunning
+        {
+            get => SimulationStartTime > default(float);
+            private set => SimulationStartTime = value ? Time.time : default;
+        }
+
+        public IReadOnlyList<AbstractAgent> Agents { get; private set; }
+        
+        public HashSet<AbstractAgent> CompletedAgents { get; private set; } = new HashSet<AbstractAgent>();
 
         protected override void Awake()
         {
             base.Awake();
             InitialiseManager();
         }
-
-
-        public bool CancelSimulation()
-        {
-            if (IsRunning)
-            {
-                InitialiseManager();
-                OnSimulationStop.Invoke();
-                Debug.Log("Simulation canceled!", this);
-            }
-
-            return IsRunning;
-        }
-
+        
         public void InitialiseManager()
         {
             if (HasGenerated)
@@ -74,6 +77,7 @@ namespace PedestrianSimulation.Simulation
                 }
 
                 Agents = null;
+                CompletedAgents.Clear();
             }
             IsRunning = false;
         }
@@ -99,24 +103,19 @@ namespace PedestrianSimulation.Simulation
                     if (visualSurface != null) Destroy(visualSurface);
                     if (settings.goal == null) settings.goal = GameObject.FindGameObjectWithTag("Goal").transform;
                 }
-
-
-                { // 1. Initialise Random
-                    Random.InitState(settings.seed);
-                }
                 
-                { // 2. Initialise Environment
-                    
+                { // 1. Initialise Environment
+                    Random.InitState(settings.seed);
                     environment.InitialiseEnvironment();
                 }
                 
-                { // 3. Setup Visual Surface
+                { // 2. Setup Visual Surface
                     
                     var parent = GameObject.FindGameObjectWithTag("Visualisations").transform;
                     visualSurface = InstantiateVisualSurfaceMesh(heatmapMaterial, parent);
                 }
 
-                { // 4.1 Instantiate Agents
+                { // 3.1 Instantiate Agents
                     Agents = settings.NewDistribution<T>().InstantiateAgents(
                         agentParent: transform,
                         agentsGoal: settings.goal,
@@ -126,9 +125,9 @@ namespace PedestrianSimulation.Simulation
                     ).AsReadOnly();
                 }
                 
-                { // 4.2 Initialise Agents
+                { // 3.2 Initialise Agents
 
-                    AgentEnvironmentModel initialEnvironmentModel = new AgentEnvironmentModel(new List<Wall>()); //TODO for now this is the same for all agents
+                    AgentEnvironmentModel initialEnvironmentModel = new AgentEnvironmentModel(); //TODO for now this is the same for all agents
                     
                     ILocalAvoidance localAvoidance = Settings.NewLocalAvoidance();
                     
@@ -136,18 +135,50 @@ namespace PedestrianSimulation.Simulation
                     foreach(var agent in Agents)
                     {
                         agent.Initialise(i++, localAvoidance, initialEnvironmentModel);
+
+                        agent.GoalComplete += AgentGoalCompleteHandler;
+                        agent.GoalRegress += AgentGoalRegressedHandler;
                     }
                 }
                 
 
-                { // 5. Enable World State
+                { // 4. Enable World State
                     WorldStateManager.Instance.enabled = true;
                 }
 
-                { // 6. Invoke Event
+                { // 5. Invoke Event
                     OnSimulationStart.Invoke();
                     Debug.Log("Simulation has started!", this);
                 }
+            }
+
+            return IsRunning;
+        }
+
+        public bool CancelSimulation()
+        {
+            if (IsRunning)
+            {
+                InitialiseManager();
+                OnSimulationTerminated.Invoke();
+                Debug.Log("Simulation canceled!", this);
+            }
+
+            return IsRunning;
+        }
+
+        public bool SimulationFinish()
+        {
+            if (IsRunning)
+            {
+                InitialiseManager();
+                OnSimulationFinished.Invoke(ResultsHelper.GenerateResults(
+                    realTimeToExecute: SimulationStartTime - Time.deltaTime,
+                    timeToEvacuate: WorldStateManager.Instance.CurrentTime,
+                    agentStates: WorldStateManager.Instance.AgentStates)
+                    );
+                OnSimulationTerminated.Invoke();
+                Debug.Log("Simulation finished!", this);
             }
 
             return IsRunning;
@@ -179,7 +210,35 @@ namespace PedestrianSimulation.Simulation
             return visualSurfaceGO;
 
         }
+        
+        
+        
+        #region Goal Completions
+        
+        private bool CheckSimulationFinished()
+        {
+            if (CompletedAgents.Count < Agents.Count) return false;
 
+            var currentTime = WorldStateManager.Instance.CurrentTime;
+            
+            //Simulation is complete
+            Debug.Log($"Simulation Finished after {currentTime:0.##} seconds");
+            
+            SimulationFinish();
+            
+            return true;
+        }
 
+        private void AgentGoalCompleteHandler(AbstractAgent agent)
+        {
+            CompletedAgents.Add(agent);
+            CheckSimulationFinished();
+        }
+
+        private void AgentGoalRegressedHandler(AbstractAgent agent)
+        {
+            CompletedAgents.Remove(agent);
+        }
+        #endregion
     }
 }

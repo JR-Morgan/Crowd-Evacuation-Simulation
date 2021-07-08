@@ -44,7 +44,8 @@ namespace PedestrianSimulation.UI.Controllers
                     OnHide: () => {
                         child.gameObject.SetActive(!child.gameObject.activeInHierarchy);
                         element.SetVisibility(streamViewModel, child.gameObject.activeInHierarchy);
-                        },
+                        manager.UpdateBusy();
+                    },
                     OnUpdate: null,
                     OnRemove: null,
                     enabled: true
@@ -53,12 +54,8 @@ namespace PedestrianSimulation.UI.Controllers
                 element.SetVisibility(streamViewModel, child.gameObject.activeInHierarchy);
             }
             
-
-
-
-
-
             manager.OnReadyToReceive += Initialise;
+            
         }
 
 
@@ -78,10 +75,17 @@ namespace PedestrianSimulation.UI.Controllers
             manager.OnStreamReceived += StreamReceived;
 
             element.SetServerName(server.name);
+            
+            manager.UpdateBusy();
         }
         private void AddReceiver(Stream stream, Receiver receiver)
         {
-            element.AddReceiver(ToViewModel(stream), () => manager.HideReceiver(receiver), () => manager.Receive(receiver), () => manager.RemoveReceiver(receiver));
+            element.AddReceiver(
+                viewModel: ToViewModel(stream),
+                OnHide: () => manager.HideReceiver(receiver),
+                OnUpdate: () => manager.Receive(receiver),
+                OnRemove: () => manager.RemoveReceiver(receiver)
+                );
         }
 
         private void RemoveReceiver(Stream stream, Receiver receiver = null) => RemoveReceiver(ToViewModel(stream));

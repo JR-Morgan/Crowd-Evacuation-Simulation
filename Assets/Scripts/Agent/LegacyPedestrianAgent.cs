@@ -95,21 +95,28 @@ namespace PedestrianSimulation.Agent
 
         private bool AgentActive
         {
-            get => navAgent.obstacleAvoidanceType != ObstacleAvoidanceType.NoObstacleAvoidance;
+            get => this.enabled;
             set
             {
+                bool previous = this.enabled;
+                
                 navAgent.obstacleAvoidanceType = value ? ObstacleAvoidanceType.HighQualityObstacleAvoidance : ObstacleAvoidanceType.NoObstacleAvoidance;
                 this.enabled = value;
+
+                if (!previous && enabled)
+                {
+                    OnGoalRegress();
+                }
             }
         }
 
 
         private void Update()
         {
-
             if (Vector3.Distance(navAgent.destination, transform.position) < GOAL_DISTANCE_THREASHOLD)
             {
                 AgentActive = false;
+                OnGoalComplete();
             }
         }
 

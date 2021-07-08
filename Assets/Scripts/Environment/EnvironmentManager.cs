@@ -21,25 +21,26 @@ namespace PedestrianSimulation.Environment
         {
             this.walls = walls;
         }
-        
+
         public Chunk(Wall wall)
         {
-            this.walls = new List<Wall>() { wall };
+            this.walls = new List<Wall>() {wall};
         }
     }
-    
+
     [DisallowMultipleComponent]
     [RequireComponent(typeof(NavMeshSurface))]
-    public class EnvironmentManager : MonoBehaviour
+    public class EnvironmentManager : Singleton<EnvironmentManager>
     {
 
         private HashedChunkGrid chunkGrid;
-        
+
         private NavMeshSurface navMeshSurface;
         public NavMeshTriangulation navMeshTriangulation { get; private set; }
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             chunkGrid = new HashedChunkGrid();
             navMeshSurface = GetComponent<NavMeshSurface>();
         }
@@ -49,59 +50,71 @@ namespace PedestrianSimulation.Environment
             Transform[] children = this.GetComponentsInChildren<Transform>(true);
 
             int layerNumber = this.gameObject.layer;
-            Debug.Assert(navMeshSurface.layerMask.ContainsLayer(layerNumber), $"Expected {typeof(EnvironmentManager)}'s layer to be included in {typeof(NavMeshSurface)}.{nameof(NavMeshSurface.layerMask)} but was not. Ensure {gameObject}'s layer is set!", this);
-            
+            Debug.Assert(navMeshSurface.layerMask.ContainsLayer(layerNumber),
+                $"Expected {typeof(EnvironmentManager)}'s layer to be included in {typeof(NavMeshSurface)}.{nameof(NavMeshSurface.layerMask)} but was not. Ensure {gameObject}'s layer is set!",
+                this);
+
             foreach (Transform t in children)
             {
                 t.gameObject.layer = layerNumber;
             }
-            
+
             navMeshSurface.BuildNavMesh();
-            
+
             navMeshTriangulation = NavMesh.CalculateTriangulation();
-            
+
             chunkGrid = new HashedChunkGrid(GenerateChunks(navMeshTriangulation));
         }
 
-        private static ConcurrentDictionary<int, Chunk> GenerateChunks(NavMeshTriangulation navMeshTriangulation)
+        private static ConcurrentDictionary<Vector2Int, Chunk> GenerateChunks(NavMeshTriangulation navMeshTriangulation)
         {
-            ConcurrentDictionary<int, Chunk> dict = new ConcurrentDictionary<int, Chunk>();
-            
+            var dict = new ConcurrentDictionary<Vector2Int, Chunk>();
+
             IList<Wall> walls = NavmeshProcessor.GetNavmeshBoundaryEdges(navMeshTriangulation);
-            
+
             //Add walls
-            foreach(Wall wall in walls)
+            foreach (Wall wall in walls)
             {
                 var chunkIndices = BresenhamsLine.Intersect(
                     IndexFunction(wall.StartPoint),
                     IndexFunction(wall.EndPoint)
-                    );
+                );
 
                 foreach (var point in chunkIndices)
                 {
-                    AddWall(wall, HashFunction(point));
+                    AddWall(wall, point);
                 }
             }
             
+            #if UNITY_EDITOR
+            var parent = new GameObject("DEBUG Chunks");
+            foreach (var c in dict)
+            {
+                var go = new GameObject($"Chunk {c.Key}");
+                go.transform.parent = parent.transform;
+                var vis = go.AddComponent<ChunkVisualiser>();
+                vis.Initialise(c.Value, c.Key);
+            }
+            #endif
+            
             return dict;
 
-            void AddWall(Wall wall, int hash)
+            void AddWall(Wall wall, Vector2Int key)
             {
-                if (!dict.TryAdd(hash, new Chunk(wall)))
+                if (!dict.TryAdd(key, new Chunk(wall)))
                 {
-                    dict[hash].walls.Add(wall);
+                    dict[key].walls.Add(wall);
                 }
             }
         }
-
-
-        public bool TryGetChunk(int hash, out Chunk chunk) => chunkGrid.HashedChunks.TryGetValue(hash, out chunk);
-        public bool TryGetChunk(Vector3 position, out Chunk chunk) => TryGetChunk(HashFunction(position), out chunk);
-
-
-        public static Vector2Int IndexFunction(Vector3 position) => new Vector2Int((int) position.x, (int) position.z); //TODO for now just cast to int, consider using a rounding function for variable chunk size
-        private static int HashFunction(int x, int y) => (((x + y) * (x + y + 1) / 2) + y);
-        private static int HashFunction(Vector2Int xy) => HashFunction(xy.x, xy.y);
-        public static int HashFunction(Vector3 position) => HashFunction(IndexFunction(position));
+        
+        public static bool TryGetChunk(Vector2Int key, out Chunk chunk) => Instance.chunkGrid.HashedChunks.TryGetValue(key, out chunk);
+        public static bool TryGetChunk(Vector3 position, out Chunk chunk) => TryGetChunk(IndexFunction(position), out chunk);
+        
+        public static Vector2Int IndexFunction(Vector3 position) =>
+            new Vector2Int((int) position.x, (int) position.z); //TODO for now just cast to int, consider using a rounding function for variable chunk size
+        
+        public static Vector3 InverseIndexFunction(Vector2Int index) =>
+            new Vector3(index.x + 0.5f, 0, index.y + 0.5f); 
     }
 }

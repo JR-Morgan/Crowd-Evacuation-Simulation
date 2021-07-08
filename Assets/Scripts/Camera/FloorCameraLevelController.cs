@@ -75,13 +75,14 @@ namespace PedestrianSimulation.World
 
         private static bool TryGetLevel(SpeckleProperties d, out int startLevel, out int topLevel)
         {
-            if (d != null
-               && d.Data.TryGetValue("level", out object oStartLevel)
-               && oStartLevel != null
-               && int.TryParse(((RevitLevel)oStartLevel).name, out startLevel))
+            if (d != null // If level is defined
+                && d.Data != null
+                && d.Data.TryGetValue("level", out object oStartLevel)
+                && oStartLevel is RevitLevel level
+                && int.TryParse(level.name, out startLevel))
             {
 
-                if (!(
+                if (!( //If top level is not defined
                     d.Data.TryGetValue("topLevel", out object oTopLevel)
                     && oTopLevel != null
                     && int.TryParse(((RevitLevel)oTopLevel).name, out topLevel)

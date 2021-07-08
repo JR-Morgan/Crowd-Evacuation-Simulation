@@ -28,7 +28,7 @@ namespace PedestrianSimulation.Visualisation
         private void Start()
         {
             //LegacySimulationManager.Instance.OnSimulationStart.AddListener(SimulationStartHandler);
-            SimulationManager.Instance.OnSimulationStop.AddListener(SimulationStopHandler);
+            SimulationManager.Instance.OnSimulationTerminated.AddListener(SimulationStopHandler);
             //this.enabled = false;
             SimulationStartHandler();
         }

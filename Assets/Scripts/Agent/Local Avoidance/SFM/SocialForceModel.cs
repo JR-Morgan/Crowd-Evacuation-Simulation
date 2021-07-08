@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
@@ -20,6 +21,9 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
             Vector3 drivingForce = DrivingForce(agent);
             Vector3 interactionForce = model.Neighbours != null? InteractionForce(agent, model.Neighbours) : Vector3.zero;
             Vector3 obstacleInteractionForce = model.Walls != null ? ObstacleInteractionForce(agent, model.Walls) : Vector3.zero;
+
+            interactionForce.y = 0; //Assumes all agents are vertically oriented
+            obstacleInteractionForce.y = 0; //Assumes all walls are vertical oriented (perhaps a less fair assumption than the latter)
             
             Debug.DrawLine(agent.position, agent.position + drivingForce, Color.red);
             Debug.DrawLine(agent.position, agent.position + interactionForce, Color.cyan);
@@ -52,8 +56,7 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
             int K;
 
             Vector3 interactionForce = Vector3.zero;
-
-
+            
             foreach (AgentState neighbour in neighbours)
             {
                 if (agent.id == neighbour.id) continue;
@@ -97,7 +100,6 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
             
             foreach(Wall wall in walls)
             {
-                if (agent.id == 0) Debug.DrawLine(wall.StartPoint, wall.EndPoint); //This is just for debug purposes
                 Vector3 nearestPoint = agent.position - wall.GetNearestPoint(agent.position);
                 float sqrDistance = nearestPoint.sqrMagnitude;
 

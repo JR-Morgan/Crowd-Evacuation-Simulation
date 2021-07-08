@@ -31,7 +31,7 @@ namespace PedestrianSimulation.UI.Controllers
 
 
             SimulationManager.Instance.OnSimulationStart.AddListener(() => SetDisplayPanelVisible(true));
-            SimulationManager.Instance.OnSimulationStop.AddListener(() => SetDisplayPanelVisible(false));
+            SimulationManager.Instance.OnSimulationTerminated.AddListener(() => SetDisplayPanelVisible(false));
             SetDisplayPanelVisible(SimulationManager.Instance.IsRunning);
         }
 

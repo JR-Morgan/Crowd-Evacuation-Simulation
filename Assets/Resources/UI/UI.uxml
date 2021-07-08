@@ -1,8 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="Styles/UI_root.uss" />
-    <ui:VisualElement name="windowContainer" class="right">
+    <ui:VisualElement name="windowContainer" class="right" style="flex-direction: column-reverse;">
+        <PedestrianSimulation.UI.Elements.SimulationSetupElement style="flex-grow: 0; height: 50%;" />
         <PedestrianSimulation.UI.Elements.SpeckleWindowElement />
-        <PedestrianSimulation.UI.Elements.SimulationSetupElement />
     </ui:VisualElement>
     <ui:VisualElement name="bottom">
         <PedestrianSimulation.UI.Elements.TimelineElement />

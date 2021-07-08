@@ -1,7 +1,5 @@
-using PedestrianSimulation.Agent;
-using PedestrianSimulation.Simulation;
 using System;
-using System.Collections;
+using PedestrianSimulation.Agent;
 using System.Collections.Generic;
 using System.Linq;
 using JMTools;
@@ -13,7 +11,7 @@ namespace PedestrianSimulation.Simulation
     [AddComponentMenu("Simulation/Managers/World State Manager"), DisallowMultipleComponent]
     public class WorldStateManager : Singleton<WorldStateManager>
     {
-        [SerializeField, Range(0, byte.MaxValue)]
+        [SerializeField, Range(0, 255)]
         private float sFrameFrequency = 5;
 
         public List<IEnumerable<AgentState>> AgentStates { get; private set; }
@@ -37,7 +35,7 @@ namespace PedestrianSimulation.Simulation
         }
 
 
-
+        public float CurrentTime => currentTime;
 
         int currentS = 0;
         float currentTime = 0f;
@@ -56,8 +54,6 @@ namespace PedestrianSimulation.Simulation
                     currentS++;
 
                     AddSFrame(SimulationManager.Instance);
-
-
                 }
                 OnUpdate.Invoke(currentTime);
             }
@@ -85,22 +81,33 @@ namespace PedestrianSimulation.Simulation
 
         private void Jump(int position)
         {
-            if (this.enabled)
+            if (!this.enabled) return;
+            
+            
+            currentS = position;
+            currentTime = ToTime(position);
+            counter = 0;
+
+            var agents = SimulationManager.Instance.Agents;
+
+            int i = 0;
+            Debug.Log($"Jumping to {currentTime} setting {AgentStates[position].Count()} agent states");
+            
+            foreach (AgentState s in AgentStates[position])
             {
-                currentS = position;
-                currentTime = ToTime(position);
-                counter = 0;
-
-                var agents = SimulationManager.Instance.Agents;
-
-                int i = 0;
-                Debug.Log($"Jumping to {currentTime} setting {AgentStates[position].Count()} agent states");
-                foreach (AgentState s in AgentStates[position])
-                {
-                    agents[i++].State = s;
-                }
+                //There is a potential for problems to occur, where SimulationManager.CheckSimulationFinished is called each multiple times when an agent's state is changed.
+                //There may be an situation where this check thinks that all agents have completed part way through this surrounding for loop
+                //Which, when finished, it may be that not all agents are actually completed.
+                //This will lead to incorrect termination of the simulation
+                //However this is only likely to occur on the penultimate sFrame so will only introduce an error of a single sFrame.
+                //For non-deterministic simulations this may to more significant undesirable behaviour.
+                var agent = agents[i];
+                agent.State = s;
+                
+                i++;
             }
         }
+        
 
         private int NearestSFrame(float time) => Mathf.Max(Mathf.Min(Mathf.RoundToInt(time / (Time.fixedDeltaTime * sFrameFrequency)), AgentStates.Count - 1), 0);
         private float ToTime(int position) => position * (Time.fixedDeltaTime * sFrameFrequency);
