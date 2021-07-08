@@ -13,21 +13,23 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
     // With SMF parameters from Moussaïd et al. (2009). https://doi.org/10.1098/rspb.2009.0405
     public static class SocialForceModel
     {
-        //TODO benchmark in referance paramteres
+        //TODO benchmark in reference parameters
 
 
         public static Vector3 CalculateNextVelocity(AgentState agent, AgentEnvironmentModel model)
         {
             Vector3 drivingForce = DrivingForce(agent);
-            Vector3 interactionForce = model.Neighbours != null? InteractionForce(agent, model.Neighbours) : Vector3.zero;
-            Vector3 obstacleInteractionForce = model.Walls != null ? ObstacleInteractionForce(agent, model.Walls) : Vector3.zero;
+            Vector3 interactionForce = InteractionForce(agent, model.Neighbours);
+            Vector3 obstacleInteractionForce = ObstacleInteractionForce(agent, model.Walls);
 
             interactionForce.y = 0; //Assumes all agents are vertically oriented
             obstacleInteractionForce.y = 0; //Assumes all walls are vertical oriented (perhaps a less fair assumption than the latter)
             
+#if UnityEngine
             Debug.DrawLine(agent.position, agent.position + drivingForce, Color.red);
             Debug.DrawLine(agent.position, agent.position + interactionForce, Color.cyan);
             Debug.DrawLine(agent.position, agent.position + obstacleInteractionForce, Color.yellow);
+#endif
             
             return drivingForce +
                    interactionForce +
@@ -45,15 +47,12 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
 
         public static Vector3 InteractionForce(AgentState agent, IEnumerable<AgentState> neighbours)
         {
-            const float observableRadiusSquared = 10f * 10f;
+            //const float observableRadiusSquared = 10f * 10f;
             const float lambda = 2f;
             const float gamma = 0.35f;
             const float nPrime = 3f;
             const float n = 2f;
             const float a = 47f; // (47.0 Trịnh Thành Trung) (4.5 * 10 Moussaïd)
-
-            float B, theta;
-            int K;
 
             Vector3 interactionForce = Vector3.zero;
             
@@ -68,14 +67,14 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
                 Vector3 directionToNeighbour = Vector3.Normalize(translationToNeighbour);
                 Vector3 interactionVector = lambda * (agent.velocity - neighbour.velocity) + directionToNeighbour;
 
-                B = gamma * interactionVector.magnitude;
+                var B = gamma * interactionVector.magnitude;
 
                 Vector3 interactionDirection = Vector3.Normalize(interactionVector);
 
-                theta = Vector3.Angle(interactionDirection, directionToNeighbour);
+                var theta = Vector3.Angle(interactionDirection, directionToNeighbour);
 
 
-                K = (int)Mathf.Sign(theta);
+                var K = (int)Mathf.Sign(theta);
 
                 float distanceToNeighbour = translationToNeighbour.magnitude;
                 float deceleration = -a * Mathf.Exp(-distanceToNeighbour / B - (nPrime * B * theta) * (nPrime * B * theta));

@@ -34,16 +34,17 @@ namespace PedestrianSimulation.UI.Controllers
 
             foreach(Transform child in GameObject.FindGameObjectWithTag("Environment").transform)
             {
+                GameObject childGO = child.gameObject;
                 StreamViewModel streamViewModel = new StreamViewModel()
                 {
-                    streamID = "local" + child.GetInstanceID(),
+                    streamID = "local " + child.GetInstanceID(),
                     streamName = child.name
                 };
                 ReceiverElement e = element.AddReceiver(
                     viewModel: streamViewModel,
                     OnHide: () => {
-                        child.gameObject.SetActive(!child.gameObject.activeInHierarchy);
-                        element.SetVisibility(streamViewModel, child.gameObject.activeInHierarchy);
+                        childGO.SetActive(!childGO.activeInHierarchy);
+                        element.SetVisibility(streamViewModel, childGO.activeInHierarchy);
                         manager.UpdateBusy();
                     },
                     OnUpdate: null,
@@ -51,14 +52,12 @@ namespace PedestrianSimulation.UI.Controllers
                     enabled: true
                     );
 
-                element.SetVisibility(streamViewModel, child.gameObject.activeInHierarchy);
+                element.SetVisibility(streamViewModel, childGO.activeInHierarchy);
             }
             
             manager.OnReadyToReceive += Initialise;
-            
         }
-
-
+        
         private void Initialise(UserInfo user, ServerInfo server)
         {
             foreach (Stream stream in manager.Streams)

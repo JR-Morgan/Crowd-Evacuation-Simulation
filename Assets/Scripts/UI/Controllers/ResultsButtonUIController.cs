@@ -14,7 +14,7 @@ namespace PedestrianSimulation.UI.Controllers
     [RequireComponent(typeof(UIDocument))]
     public class ResultsButtonUIController : MonoBehaviour
     {
-        private UIDocument document;
+        private UIDocument? document;
         private Button? button;
         
         private void Start()
@@ -28,11 +28,14 @@ namespace PedestrianSimulation.UI.Controllers
 
         private void ShowButton(SimulationResults results)
         {
+            if (document == null) return;
+            
+            DestroyButton();
+            
             button = new Button(() => ShowResults(results))
             {
                 text = "Results"
             };
-
             document.rootVisualElement.Add(button);
         }
 
