@@ -1,0 +1,33 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "Results Viewer/1.0.0": {
+        "runtime": {
+          "Results Viewer.dll": {}
+        }
+      },
+      "Results Core/1.0.0": {
+        "runtime": {
+          "Results Core.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Results Viewer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Results Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

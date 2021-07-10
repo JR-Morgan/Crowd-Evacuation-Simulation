@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Results Viewer", "Results Viewer\Results Viewer.csproj", "{810DDFC7-5A67-4E5C-9747-96F92A7BF638}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Results Core", "Results Core\Results Core.csproj", "{6FBB6E31-5775-4ABD-B194-F9BC45ADBE63}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{810DDFC7-5A67-4E5C-9747-96F92A7BF638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{810DDFC7-5A67-4E5C-9747-96F92A7BF638}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{810DDFC7-5A67-4E5C-9747-96F92A7BF638}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{810DDFC7-5A67-4E5C-9747-96F92A7BF638}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FBB6E31-5775-4ABD-B194-F9BC45ADBE63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FBB6E31-5775-4ABD-B194-F9BC45ADBE63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FBB6E31-5775-4ABD-B194-F9BC45ADBE63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FBB6E31-5775-4ABD-B194-F9BC45ADBE63}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
