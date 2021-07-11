@@ -9,6 +9,7 @@ using Results_Core;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using AgentState = Results_Core.AgentState;
 using Vector3 = UnityEngine.Vector3;
 
 namespace PedestrianSimulation.Simulation
@@ -173,12 +174,14 @@ namespace PedestrianSimulation.Simulation
         {
             if (IsRunning)
             {
-                InitialiseManager();
                 OnSimulationFinished.Invoke(ResultsHelper.GenerateResults(
+                    numberOfAgents: Agents.Count,
                     realTimeToExecute: SimulationStartTime - Time.deltaTime,
                     timeToEvacuate: WorldStateManager.Instance.CurrentTime,
                     agentStates: WorldStateManager.Instance.AgentStates)
                     );
+                
+                InitialiseManager();
                 OnSimulationTerminated.Invoke();
                 Debug.Log("Simulation finished!", this);
             }

@@ -5,10 +5,20 @@
         <TargetFramework>net5.0-windows</TargetFramework>
         <RootNamespace>Results_Viewer</RootNamespace>
         <UseWPF>true</UseWPF>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Results Core\Results Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="OxyPlot.Wpf" Version="2.1.0-Preview1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controller" />
     </ItemGroup>
 
 </Project>

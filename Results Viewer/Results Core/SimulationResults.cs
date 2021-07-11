@@ -14,11 +14,14 @@ namespace Results_Core
         
         public TimeData[] timeData;
 
-        public SimulationResults(float realTimeToExecute, float timeToEvacuate, TimeData[] timeData)
+        public int numberOfAgents;
+
+        public SimulationResults(float realTimeToExecute, float timeToEvacuate, TimeData[] timeData, int numberOfAgents)
         {
             this.realTimeToExecute = realTimeToExecute;
             this.timeToEvacuate = timeToEvacuate;
             this.timeData = timeData;
+            this.numberOfAgents = numberOfAgents;
         }
     }
 

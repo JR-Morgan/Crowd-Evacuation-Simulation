@@ -62,13 +62,22 @@ namespace PedestrianSimulation.Simulation
 
         private void AddSFrame(SimulationManager simulationManager)
         {
+            float time;
+            
             if (currentS >= AgentStates.Count)
             {
+                time = ToTime(currentS);
                 var agents = simulationManager.Agents;
-                var states = agents.Select(a => a.State);
-
-                AgentStates.Add(states.ToList());
+                var states = agents.Select(a => SetTime(a.State)).ToList(); //To list is required to prevent lazy evaluation of IEnumerable<T>
+                
+                AgentStates.Add(states);
                 FlatAgentStates.AddRange(states);
+            }
+
+            AgentState SetTime(AgentState state)
+            {
+                state.time = time;
+                return state;
             }
         }
 

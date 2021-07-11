@@ -9,5 +9,7 @@
         public float desiredSpeed;
         
         public Vector3 goal, position, rotation, velocity;
+
+        public float time;
     }
 }

@@ -1,6 +1,9 @@
+using System;
 using System.Diagnostics;
+using System.IO;
 using PedestrianSimulation.Simulation;
 using Results_Core;
+using Speckle.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;
@@ -23,7 +26,7 @@ namespace PedestrianSimulation.UI.Controllers
             buttonParent = document.rootVisualElement.Q("resultsParent");
             
             SimulationManager.Instance.OnSimulationStart.AddListener(DestroyButton);
-            SimulationManager.Instance.OnSimulationFinished.AddListener(ShowButton);
+            SimulationManager.Instance.OnSimulationFinished.AddListener(ShowResults); //TODO change to show button
             SimulationManager.Instance.OnSimulationTerminated.AddListener(DestroyButton);
         }
 
@@ -46,28 +49,57 @@ namespace PedestrianSimulation.UI.Controllers
             button?.RemoveFromHierarchy();
         }
 
-        private void ShowResults(SimulationResults results)
+
+        private static void ShowResults(SimulationResults results) => ShowResults(JsonConvert.SerializeObject(results));
+        
+        private static void ShowResults(string json)
         {
-            const string application = @"Results Viewer.exe";
-            const string path =
-#if UNITY_EDITOR
-                @"Assets\Scripts\Results\Viewer\";
-#else
-                @"Assets\Scripts\Results\Viewer"; //TODO figure out how to move the exe into build dir
-#endif
             
             Debug.Log("Showing results");
+            
+            string jsonPath = WriteJSONToFile(json);
+            StartViewer(jsonPath);
 
+        }
+
+        [ContextMenu("Test")]
+        private void test()
+        {
+            StartViewer(@"C:\Users\Jedd\AppData\LocalLow\Jedd Morgan\Crowd Evacuation Simulation\results 132705128910396584.json");
+        }
+
+        private static void StartViewer(string arg)
+        {
+            const string application = @"Results Viewer.exe";
+            string path =
+#if UNITY_EDITOR
+                Application.dataPath + @"/Scripts/Results/Viewer/";
+#else
+                Application.dataPath + @"/Scripts/Results/Viewer/"; //TODO figure out how to move the exe into build dir
+#endif
+            
             Process resultsViewer = new Process
             {
                 StartInfo =
                 {
-                    FileName = path + application
+                    FileName = path + application,
+                    Arguments = $"\"{arg}\"",
                 },
             };
+            
+            
+            Debug.Log(path + application + " \"" + arg + '\"');
             resultsViewer.Start();
+        }
+        
 
-
+        private static string WriteJSONToFile(string json)
+        {
+            string path = Application.persistentDataPath + @$"/results {DateTime.Now.ToFileTimeUtc()}.json";
+            
+            if (!File.Exists(path)) File.Create(path).Dispose();
+            File.WriteAllText(path, json);
+            return path;
         }
     }
 }

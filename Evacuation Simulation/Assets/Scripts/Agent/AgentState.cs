@@ -16,7 +16,9 @@ namespace PedestrianSimulation.Agent
         public Quaternion rotation;
         public Vector3 velocity;
 
-        internal AgentState(int id, bool active, float radius, float desiredSpeed, Vector3 goal, Vector3 position, Quaternion rotation, Vector3 velocity)
+        public float time;
+
+        internal AgentState(int id, bool active, float radius, float desiredSpeed, Vector3 goal, Vector3 position, Quaternion rotation, Vector3 velocity, float time = -1f)
         {
             this.id = id;
             this.active = active;
@@ -26,6 +28,7 @@ namespace PedestrianSimulation.Agent
             this.position = position;
             this.rotation = rotation;
             this.velocity = velocity;
+            this.time = time;
         }
     }
 }

@@ -10,15 +10,18 @@ namespace PedestrianSimulation.Results
 {
     public static class ResultsHelper
     {
-        public static SimulationResults GenerateResults(float realTimeToExecute, float timeToEvacuate, IEnumerable<IEnumerable<AgentState>> agentStates)
+        public static SimulationResults GenerateResults(int numberOfAgents, float realTimeToExecute, float timeToEvacuate, IEnumerable<IEnumerable<AgentState>> agentStates)
         {
             return new SimulationResults(
+                numberOfAgents: numberOfAgents,
                 realTimeToExecute: realTimeToExecute ,
                 timeToEvacuate: timeToEvacuate,
                 timeData: ProcessTimeData(agentStates));
 
             static TimeData[] ProcessTimeData(IEnumerable<IEnumerable<AgentState>> agentStates)
-                => agentStates.Select(a => new TimeData(a.Select(b => b.AsResult()).ToArray())).ToArray();
+            {
+                return agentStates.Select(a => new TimeData(a.Select(b => b.AsResult()).ToArray())).ToArray();
+            }
         }
 
         
@@ -28,6 +31,7 @@ namespace PedestrianSimulation.Results
             return new ResultsAgentState
             {
                 id = state.id,
+                time = state.time,
                 active = state.active,
                 radius = state.radius,
                 rotation = state.rotation.eulerAngles.AsResult(),
