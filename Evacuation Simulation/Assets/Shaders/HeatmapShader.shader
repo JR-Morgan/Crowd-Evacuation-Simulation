@@ -64,14 +64,15 @@ Shader "Unlit/Test Shader"
 			//Returns value 0-1 based on a normal distribution
 			float Intensity(float distance)
 			{
-				const float std = 0.3989422804; // Standard deviation of y = 1
-				const float tau = 6.2831853071; // 2 * PI
-				const float e   = 2.7182818284; // e constant
+				const float pi  = 3.1415926535897932;
+				const float e   = 2.7182818284590452;
+			
+				const float d = -(sqrt(2) * sqrt(pi) * 0.5);
 
-				return pow((1 / (std * sqrt(tau))) * e, -(distance * distance) / (2 * (std * std)));
+				return pow(e, d * (distance * distance));
 			}
 
-			float ToRange(int i)
+			float ToRange(const int i)
 			{
 				const float rangeIncrement = 1.0 / (NUM_COLORS - 1.0);
 				return rangeIncrement * i;

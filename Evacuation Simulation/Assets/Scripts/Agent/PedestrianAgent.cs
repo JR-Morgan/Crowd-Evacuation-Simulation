@@ -21,7 +21,7 @@ namespace PedestrianSimulation.Agent
 
         [SerializeField]
         private AgentState _state;
-        public override AgentState State { get => _state; internal set => _state = value; }
+        public override AgentState State { get => _state; set => _state = value; }
 
         private AgentEnvironmentModel environmentModel;
         #endregion
@@ -33,7 +33,7 @@ namespace PedestrianSimulation.Agent
         private int cornerIndex = 0;
         private Vector3[] path = null;
 
-        public override bool SetGoal(Vector3 terminalGoal)
+        public override bool TrySetGoal(Vector3 terminalGoal)
         {
             NavMeshPath p = new NavMeshPath();
             NavMesh.CalculatePath(transform.position, terminalGoal, NavMesh.AllAreas, p);
@@ -50,16 +50,7 @@ namespace PedestrianSimulation.Agent
             this.name = $"{nameof(PedestrianAgent)} {id}";
             this.localAvoidance = localAvoidance;
 
-
-            State = new AgentState(
-                id: id,
-                active: this.enabled,
-                radius: AGENT_RADIUS,
-                desiredSpeed: DEFAULT_AGENT_SPEED,
-                goal: CalculateCurrentGoal(transform.position),
-                position: transform.position,
-                rotation: transform.rotation,
-                velocity: Vector3.zero);
+            State = ConstructState(id, AGENT_RADIUS, DEFAULT_AGENT_SPEED, CalculateCurrentGoal(transform.position), Vector3.zero);
 
             environmentModel = initialEnvironmentModel;
         }
@@ -109,15 +100,9 @@ namespace PedestrianSimulation.Agent
         {
             var position = transform.position += IntendedVelocity;
 
-            State = new AgentState(
-                id: State.id,
-                active: this.enabled,
-                radius: AGENT_RADIUS,
-                desiredSpeed: State.desiredSpeed,
-                goal: CalculateCurrentGoal(position),
-                position: position,
-                rotation: transform.rotation,
-                velocity: IntendedVelocity);
+
+            State = ConstructState(State.id, State.radius, State.desiredSpeed, CalculateCurrentGoal(position), IntendedVelocity);
+            
         }
 
         private Vector3 CalculateCurrentGoal(Vector3 position)

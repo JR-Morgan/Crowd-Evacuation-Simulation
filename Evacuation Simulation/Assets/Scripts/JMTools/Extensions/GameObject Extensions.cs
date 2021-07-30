@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace JMTools
 {
@@ -73,6 +74,12 @@ namespace JMTools
                        && attribute.m_Type1 != target
                        && attribute.m_Type2 != target;
             }
+        }
+
+        public static void DestroyApplicationSafe(this Object obj)
+        {
+            if (Application.isPlaying) Object.Destroy(obj); 
+            else Object.DestroyImmediate(obj);
         }
 
     }

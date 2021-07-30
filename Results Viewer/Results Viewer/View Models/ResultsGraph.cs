@@ -71,7 +71,7 @@ namespace Results_Viewer.View_Models
             var yAxis = new LinearAxis
             {
                 Position = AxisPosition.Left,
-                Title = "Agent Density",
+                Title = "Agent Frequency",
                 Minimum = 0d,
                 ExtraGridlines = new double[] { 0 },
             };
@@ -96,8 +96,6 @@ namespace Results_Viewer.View_Models
             SimulationResults results = JsonConvert.DeserializeObject<SimulationResults>(json);
             Results = results;
         }
-
-
 
         private void GenerateSeries()
         {

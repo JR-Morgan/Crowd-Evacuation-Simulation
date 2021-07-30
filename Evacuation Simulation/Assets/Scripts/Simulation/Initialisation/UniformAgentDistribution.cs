@@ -55,7 +55,7 @@ namespace PedestrianSimulation.Simulation.Initialisation
  
                 if (agentGameObject.GetComponentDependants<NavMeshAgent>().Count == 0)
                 {
-                    Object.Destroy(navAgent);
+                    navAgent.DestroyApplicationSafe();
                 }
 
                 bool failed = true;
@@ -68,7 +68,7 @@ namespace PedestrianSimulation.Simulation.Initialisation
                     if (navAgent != null) navAgent.Warp(position); //TODO consider doing this check in agent
                     else agentGameObject.transform.position = position;
 
-                    if (agent.SetGoal(goal.position))
+                    if (agent.TrySetGoal(goal.position))
                     {
                         failed = false;
                         break;
@@ -78,7 +78,8 @@ namespace PedestrianSimulation.Simulation.Initialisation
 
                 if (failed)
                 {
-                    Object.Destroy(agentGameObject);
+                    agentGameObject.DestroyApplicationSafe();
+
                     Debug.LogWarning($"Failed to instantiate agent in a valid location after {tries} tries.");
                 }
                 else
@@ -89,7 +90,6 @@ namespace PedestrianSimulation.Simulation.Initialisation
             }
             return agents;
         }
-
 
         protected static Vector3 GetRandomPointOnNavMesh(in Bounds bounds, Transform transform, float distance)
         {
