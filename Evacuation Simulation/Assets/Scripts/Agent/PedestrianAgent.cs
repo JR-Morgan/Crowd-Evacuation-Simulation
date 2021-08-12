@@ -57,9 +57,7 @@ namespace PedestrianSimulation.Agent
 
         public void Update()
         {
-            //Potentially run this concurrently
-            Sense();
-            UpdateIntentions(1f/60f);
+
         }
 
         private void Sense()
@@ -82,6 +80,7 @@ namespace PedestrianSimulation.Agent
         public void LateUpdate()
         {
             CommitAction();
+            Sense();
         }
 
         public override void UpdateIntentions(float timeStep)

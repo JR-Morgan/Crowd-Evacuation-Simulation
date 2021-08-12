@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JMTools;
 using JMTools.Geometry.Cellular;
+using PedestrianSimulation.Agent;
 using PedestrianSimulation.Agent.LocalAvoidance;
 using PedestrianSimulation.Simulation;
 using UnityEngine;
@@ -16,16 +17,17 @@ namespace PedestrianSimulation.Environment
     public readonly struct Chunk
     {
         public readonly List<Wall> walls;
-
+        public HashSet<AbstractAgent> Agents { get; }
+        
         public Chunk(List<Wall> walls)
         {
             this.walls = walls;
+            Agents = new HashSet<AbstractAgent>();
         }
 
         public Chunk(Wall wall)
-        {
-            this.walls = new List<Wall>() {wall};
-        }
+            : this(new List<Wall> {wall})
+        { }
     }
 
     [DisallowMultipleComponent]

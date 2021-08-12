@@ -40,7 +40,7 @@ namespace PedestrianSimulation.Simulation
             return strategy switch
             {
                 UpdateStrategy.Task => new AsyncTaskUpdater<T>(),
-                UpdateStrategy.Parallel => new ParralelForUpdater<T>(),
+                UpdateStrategy.Parallel => new ParallelForUpdater<T>(),
                 UpdateStrategy.Synchronous => new SynchronousUpdater<T>(),
                 _ => throw new StrategyNotImplementedException<UpdateStrategy>(strategy),
             };

@@ -1,11 +1,10 @@
 using System;
 using PedestrianSimulation.Agent.LocalAvoidance;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace PedestrianSimulation.Agent
 {
-    public abstract class AbstractAgent : MonoBehaviour
+    public abstract class AbstractAgent : MonoBehaviour, IAgent
     {
         public abstract AgentState State { get; set; }
 

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using PedestrianSimulation.Simulation;
 using Results_Core;
-using Speckle.Newtonsoft.Json;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;

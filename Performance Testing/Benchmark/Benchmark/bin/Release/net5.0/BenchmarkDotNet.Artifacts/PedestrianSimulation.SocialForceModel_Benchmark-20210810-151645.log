@@ -1,0 +1,4 @@
+// Validating benchmarks:
+Assembly Benchmark which defines benchmarks references non-optimized UnityEngine.CoreModule
+	If you own this dependency, please, build it in RELEASE.
+	If you don't, you can disable this policy by using 'config.WithOptions(ConfigOptions.DisableOptimizationsValidator)'.

@@ -62,19 +62,19 @@ Shader "Unlit/Test Shader"
 			float4 _Color4;
 
 			//Returns value 0-1 based on a normal distribution
-			float Intensity(float distance)
+			float Intensity(const float distanceSquared)
 			{
-				const float pi  = 3.1415926535897932;
-				const float e   = 2.7182818284590452;
+				static const float pi  = 3.1415926535897932;
+				static const float e   = 2.7182818284590452;
 			
-				const float d = -(sqrt(2) * sqrt(pi) * 0.5);
-
-				return pow(e, d * (distance * distance));
+				static const float d = -(sqrt(2) * sqrt(pi) * 0.5);
+				
+				return pow(e, d * distanceSquared);
 			}
 
 			float ToRange(const int i)
 			{
-				const float rangeIncrement = 1.0 / (NUM_COLORS - 1.0);
+				static const float rangeIncrement = 1.0 / (NUM_COLORS - 1.0);
 				return rangeIncrement * i;
 			}
 
@@ -114,13 +114,18 @@ Shader "Unlit/Test Shader"
 				return color;
 			}
 
-			float4 frag(v2f i) : SV_Target
+			float4 frag(const v2f i) : SV_Target
 			{
 				float intensity = 0;
 
 				for (int j = 0; j < numOfAgents; j++)
 				{
-					intensity += Intensity(distance(positionData[j], i.worldPos) / _AgentSize) / _Spread;
+					const float dv = positionData[j] - i.worldPos;
+					//const float dis = sqrt(dot(dv,dv)) /_AgentSize;
+					const float dis = distance(positionData[j], i.worldPos) /_AgentSize; 
+					intensity += Intensity(dis * dis) / _Spread;
+					
+					//intensity += Intensity(distance(positionData[j], i.worldPos) / _AgentSize) / _Spread;
 				}
 
 				return MapToColor(intensity);

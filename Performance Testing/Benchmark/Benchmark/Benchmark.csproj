@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" Version="0.13.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="PedestrianSimulation, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>C:\Users\Jedd\Desktop\Test Build\Crowd Evacuation Simulation_Data\Managed\PedestrianSimulation.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>C:\Users\Jedd\Desktop\Test Build\Crowd Evacuation Simulation_Data\Managed\UnityEngine.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>C:\Users\Jedd\Desktop\Test Build\Crowd Evacuation Simulation_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

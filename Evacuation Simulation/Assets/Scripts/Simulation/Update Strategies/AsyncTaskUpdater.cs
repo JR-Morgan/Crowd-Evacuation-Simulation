@@ -1,44 +1,26 @@
 using PedestrianSimulation.Agent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace PedestrianSimulation.Simulation.UpdateStrategies
 {
-    public class AsyncTaskUpdater<T> : IAgentUpdater<T> where T : AbstractAgent
+    public class AsyncTaskUpdater<T> : IAgentUpdater<T> where T : IAgent
     {
-        private List<Task> updateTasks;
-        private float timeStep;
-
-        public void Initialise(ICollection<T> agents)
+        
+        public void Tick(float timeStep, IEnumerable<T> agents)
         {
-            updateTasks = new List<Task>(agents.Count);
-            AddRange(agents);
-        }
-
-        public void Add(T agent)
-        {
-            updateTasks.Add(Task.Run(() => agent.UpdateIntentions(timeStep)));
-        }
-
-        public void AddRange(IEnumerable<T> agents)
-        {
-            foreach (var a in agents)
-            {
-                Add(a);
-            }
-        }
-
-        public void Tick(float timeStep, IEnumerable<T> _ = null)
-        {
-            Task t = TickAsync(timeStep);
-            //t.Start();
+            Task t = TickAsync(timeStep, agents);
+            t.Start();
             t.Wait();
         }
 
-        private async Task TickAsync(float timeStep)
+        private static async Task TickAsync(float timeStep, IEnumerable<T> agents)
         {
-            this.timeStep = timeStep;
-            await Task.WhenAll(updateTasks);
+            IEnumerable<Task> tasks = agents.Select(a => Task.Run(() => a.UpdateIntentions(timeStep)));
+
+            await Task.WhenAll(tasks);
         }
     }
 }
