@@ -136,7 +136,8 @@ namespace Speckle.ConnectorUnity
           remoteTransport: transport,
           onErrorAction: OnErrorAction,
           onProgressAction: OnProgressAction,
-          onTotalChildrenCountKnown: OnTotalChildrenCountKnown
+          onTotalChildrenCountKnown: OnTotalChildrenCountKnown,
+          disposeTransports: true
         );
         Dispatcher.Instance().Enqueue(() =>
         {
@@ -161,7 +162,7 @@ namespace Speckle.ConnectorUnity
 
     private void OnDestroy()
     {
-      Client?.CommitCreatedSubscription?.Dispose();
+      Client.CommitCreatedSubscription.Dispose();
     }
 
     #endregion

@@ -33,15 +33,15 @@ namespace PedestrianSimulation.Simulation
         #endregion
 
         #region Update Strategy
-        public UpdateStrategy updateStrategy;
-        public IAgentUpdater<T> NewUpdater<T>() where T : AbstractAgent => NewUpdater<T>(updateStrategy);
-        public static IAgentUpdater<T> NewUpdater<T>(UpdateStrategy strategy) where T : AbstractAgent
+        public UpdateStrategy updateStrategy = UpdateStrategy.Parallel;
+        public IAgentUpdater NewUpdater() => NewUpdater(updateStrategy);
+        public static IAgentUpdater NewUpdater(UpdateStrategy strategy)
         {
             return strategy switch
             {
-                UpdateStrategy.Task => new AsyncTaskUpdater<T>(),
-                UpdateStrategy.Parallel => new ParallelForUpdater<T>(),
-                UpdateStrategy.Synchronous => new SynchronousUpdater<T>(),
+                UpdateStrategy.Task => new AsyncTaskUpdater(),
+                UpdateStrategy.Parallel => new ParallelForUpdater(),
+                UpdateStrategy.Synchronous => new SynchronousUpdater(),
                 _ => throw new StrategyNotImplementedException<UpdateStrategy>(strategy),
             };
         }

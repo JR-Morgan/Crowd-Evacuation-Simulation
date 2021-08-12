@@ -3,14 +3,15 @@ using System.Collections.Generic;
 
 namespace PedestrianSimulation.Simulation.UpdateStrategies
 {
-    public class SynchronousUpdater<T> : IAgentUpdater<T> where T : IAgent
+    public class SynchronousUpdater : IAgentUpdater
+
     {
-        public void Tick(float timeStep, IEnumerable<T> agents)
+    public void Tick(float timeStep, IEnumerable<IAgent> agents)
+    {
+        foreach (var agent in agents)
         {
-            foreach(var agent in agents)
-            {
-                agent.UpdateIntentions(timeStep);
-            }
+            agent.UpdateIntentions(timeStep);
         }
+    }
     }
 }

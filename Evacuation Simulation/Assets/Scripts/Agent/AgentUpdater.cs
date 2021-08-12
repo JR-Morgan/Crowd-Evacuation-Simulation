@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using PedestrianSimulation.Agent;
-using PedestrianSimulation.Simulation;
 using PedestrianSimulation.Simulation.UpdateStrategies;
 using UnityEngine;
 
@@ -10,23 +9,20 @@ namespace PedestrianSimulation
 {
     public class AgentUpdater : MonoBehaviour
     {
-        public IAgentUpdater<IAgent> Updater { get; set; }
-        private IEnumerable<IAgent> agents;
+        private IAgentUpdater updater;
+        private IEnumerable<AbstractAgent> agents;
         private float timeStep;
-        private void Start()
-        {
-            SimulationManager.Instance.OnSimulationStart.AddListener(Initialise);
-        }
 
-        private void Initialise()
+        public void Initialise(IAgentUpdater updater, IEnumerable<AbstractAgent> agents, float timeStep)
         {
-            agents = SimulationManager.Instance.Agents;
-            timeStep = SimulationManager.Instance.Settings.timeStep;
+            this.updater = updater;
+            this.agents = agents;
+            this.timeStep = timeStep;
         }
         
         void Update()
         {
-             Updater.Tick(timeStep, agents);
+             updater.Tick(timeStep, agents);
         }
     }
 }

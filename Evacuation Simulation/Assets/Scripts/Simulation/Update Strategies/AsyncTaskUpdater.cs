@@ -6,21 +6,15 @@ using System.Threading.Tasks;
 
 namespace PedestrianSimulation.Simulation.UpdateStrategies
 {
-    public class AsyncTaskUpdater<T> : IAgentUpdater<T> where T : IAgent
+    public class AsyncTaskUpdater : IAgentUpdater
     {
         
-        public void Tick(float timeStep, IEnumerable<T> agents)
-        {
-            Task t = TickAsync(timeStep, agents);
-            t.Start();
-            t.Wait();
-        }
 
-        private static async Task TickAsync(float timeStep, IEnumerable<T> agents)
+        public void Tick(float timeStep, IEnumerable<IAgent> agents)
         {
             IEnumerable<Task> tasks = agents.Select(a => Task.Run(() => a.UpdateIntentions(timeStep)));
 
-            await Task.WhenAll(tasks);
+            Task.WaitAll(tasks.ToArray());
         }
     }
 }

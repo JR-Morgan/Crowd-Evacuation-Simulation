@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace PedestrianSimulation.Simulation.UpdateStrategies
 {
-    public class ParallelForUpdater<T> : IAgentUpdater<T> where T : IAgent
+    public class ParallelForUpdater : IAgentUpdater
     {
-        public void Tick(float timeStep, IEnumerable<T> agents)
+        public void Tick(float timeStep, IEnumerable<IAgent> agents)
         {
             Parallel.ForEach(agents, (a, s) => a.UpdateIntentions(timeStep));
         }

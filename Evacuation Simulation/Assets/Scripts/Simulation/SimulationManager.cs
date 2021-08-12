@@ -5,6 +5,7 @@ using PedestrianSimulation.Agent.LocalAvoidance;
 using JMTools;
 using PedestrianSimulation.Environment;
 using PedestrianSimulation.Results;
+using PedestrianSimulation.Simulation.UpdateStrategies;
 using Results_Core;
 using UnityEngine;
 using UnityEngine.AI;
@@ -48,6 +49,7 @@ namespace PedestrianSimulation.Simulation
         #endregion
 
         private GameObject visualSurface;
+        private AgentUpdater updater;
         
         public bool HasGenerated => Agents != null;
         public float SimulationStartTime { get; private set; }
@@ -70,6 +72,8 @@ namespace PedestrianSimulation.Simulation
         
         public void InitialiseManager()
         {
+            if(updater != null) Destroy(updater);
+            
             if (HasGenerated)
             {
                 if (WorldStateManager.IsSingletonInitialised) WorldStateManager.Instance.enabled = false;
@@ -105,6 +109,7 @@ namespace PedestrianSimulation.Simulation
                 { // 0. Cleanup from potential last run
                     if (visualSurface != null) Destroy(visualSurface);
                     if (settings.goal == null) settings.goal = GameObject.FindGameObjectWithTag("Goal").transform;
+                    if(updater != null) Destroy(updater);
                 }
                 
                 { // 1. Initialise Environment
@@ -142,6 +147,14 @@ namespace PedestrianSimulation.Simulation
                         agent.GoalComplete += AgentGoalCompleteHandler;
                         agent.GoalRegress += AgentGoalRegressedHandler;
                     }
+
+                    GameObject updaterGo = new GameObject("Updater");
+                    updater = updaterGo.AddComponent<AgentUpdater>();
+                    updater.Initialise(
+                        updater: settings.NewUpdater(),
+                        agents: Agents,
+                        timeStep: settings.timeStep
+                        );
                 }
                 
 
