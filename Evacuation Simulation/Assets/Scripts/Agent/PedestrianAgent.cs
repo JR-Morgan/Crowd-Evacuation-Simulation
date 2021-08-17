@@ -57,7 +57,7 @@ namespace PedestrianSimulation.Agent
 
         public void Update()
         {
-
+            
         }
 
         private void Sense()
@@ -95,13 +95,14 @@ namespace PedestrianSimulation.Agent
 
             IntendedVelocity = localAvoidance.NextVelocity(State, environmentModel) * timeStep;
         }
+        
         public void CommitAction()
         {
             var position = transform.position += IntendedVelocity;
-
-
+            
             State = ConstructState(State.id, State.radius, State.desiredSpeed, CalculateCurrentGoal(position), IntendedVelocity);
             
+            transform.rotation = Quaternion.LookRotation(IntendedVelocity, Vector3.up);
         }
 
         private Vector3 CalculateCurrentGoal(Vector3 position)

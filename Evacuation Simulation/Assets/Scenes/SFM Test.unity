@@ -1106,7 +1106,7 @@ MonoBehaviour:
     timeStep: 0.033333335
     useLegacyAgents: 1
     agentDistribution: 0
-    updateStrategy: 0
+    updateStrategy: 1
     localAvoidanceStrategy: 0
   _onSimulationStart:
     m_PersistentCalls:

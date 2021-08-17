@@ -21,7 +21,7 @@ namespace PedestrianSimulation
         private readonly int ticks, numberOfAgents, numberOfWalls;
         private readonly Random random;
 
-        public UpdateBenchmark() : this(new Random(255),1000,1000,500)
+        public UpdateBenchmark() : this(new Random(255),1000,2000,500)
         { }
         
         public UpdateBenchmark(Random random, int ticks, int numberOfAgents, int numberOfWalls)
@@ -38,26 +38,25 @@ namespace PedestrianSimulation
         [Benchmark]
         public void ParallelUpdater()
         {
-            Run(new ParallelForUpdater<TestAgent>());
+            Run(new ParallelForUpdater());
         }
         
         [Benchmark]
         public void TaskUpdater()
         {
-            Run(new AsyncTaskUpdater<TestAgent>());
+            Run(new AsyncTaskUpdater());
         }
         
         [Benchmark]
         public void SynchronousUpdater()
         {
-            Run(new SynchronousUpdater<TestAgent>());
+            Run(new SynchronousUpdater());
         }
 
-        private void Run(IAgentUpdater<TestAgent> updater, float timeStep = 1f)
+        private void Run(IAgentUpdater updater, float timeStep = 1f)
         {
             var agents = GenerateAgents(numberOfAgents, numberOfWalls, random);
-            updater.Initialise(agents);
-            
+           
             for (int i = 0; i < ticks; i++)
             {
                 updater.Tick(timeStep, agents);

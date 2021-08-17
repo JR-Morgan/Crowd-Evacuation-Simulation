@@ -91,7 +91,7 @@ namespace PedestrianSimulation.Simulation
 
         public bool RunSimulation(EnvironmentManager environment)
         {
-            return settings.useLegacyAgents
+            return settings.localAvoidanceStrategy == LocalAvoidanceStrategy.RVO
                 ? RunSimulation<LegacyPedestrianAgent>(environment)
                 : RunSimulation<PedestrianAgent>(environment);
         }
@@ -187,16 +187,17 @@ namespace PedestrianSimulation.Simulation
         {
             if (IsRunning)
             {
-                OnSimulationFinished.Invoke(ResultsHelper.GenerateResults(
+                var result = ResultsHelper.GenerateResults(
                     numberOfAgents: Agents.Count,
-                    realTimeToExecute: SimulationStartTime - Time.deltaTime,
+                    realTimeToExecute: Time.time - SimulationStartTime,
                     timeToEvacuate: WorldStateManager.Instance.CurrentTime,
-                    agentStates: WorldStateManager.Instance.AgentStates)
-                    );
+                    agentStates: WorldStateManager.Instance.AgentStates);
+                
+                OnSimulationFinished.Invoke(result);
                 
                 InitialiseManager();
                 OnSimulationTerminated.Invoke();
-                Debug.Log("Simulation finished!", this);
+                Debug.Log("Simulation finished\n" + result.ToString(), this);
             }
 
             return IsRunning;

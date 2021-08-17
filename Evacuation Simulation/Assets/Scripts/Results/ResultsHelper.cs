@@ -12,10 +12,19 @@ namespace PedestrianSimulation.Results
     {
         public static SimulationResults GenerateResults(int numberOfAgents, float realTimeToExecute, float timeToEvacuate, IEnumerable<IEnumerable<AgentState>> agentStates)
         {
+            var evacuationTime = agentStates.SelectMany(a => a)
+                .Where(a => !a.active)
+                .GroupBy(a => a.id)
+                .Select(g => g.OrderBy(a => a.time).First());
+
+            float meanTimeToEvacuate = evacuationTime.Select(a => a.time).Average();
+            
+            
             return new SimulationResults(
                 numberOfAgents: numberOfAgents,
                 realTimeToExecute: realTimeToExecute ,
                 timeToEvacuate: timeToEvacuate,
+                meanTimeToEvacuate: meanTimeToEvacuate,
                 timeData: ProcessTimeData(agentStates));
 
             static TimeData[] ProcessTimeData(IEnumerable<IEnumerable<AgentState>> agentStates)
@@ -52,5 +61,6 @@ namespace PedestrianSimulation.Results
             };
         }
         #endregion
+        
     }
 }

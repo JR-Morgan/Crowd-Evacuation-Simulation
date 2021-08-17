@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
+using OxyPlot;
 using Results_Viewer.View_Models;
 
 namespace Results_Viewer.Views
@@ -11,29 +14,22 @@ namespace Results_Viewer.Views
         {
             InitializeComponent();
             ViewModel = new ResultsGraph();
-            ViewModel.OnPlotInvalid += _ => pltPlot.InvalidatePlot();;
+            ViewModel.OnPlotInvalid += UpdateResults;
             DataContext = ViewModel;
         }
 
-        private void cboXDataGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void UpdateResults(PlotModel plotModel)
         {
-            throw new System.NotImplementedException();
+            pltPlot.InvalidatePlot();
+            lblResults.Content = ViewModel.Results;
         }
 
-        private void cboYDataGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnViewFile_Click(object sender, RoutedEventArgs e)
         {
-            throw new System.NotImplementedException();
-        }
+            if (string.IsNullOrWhiteSpace(ViewModel.FilePath)) return;
+            var filePath = System.IO.Path.GetFullPath(ViewModel.FilePath);
+            Process.Start("explorer.exe", $"/select,\"{filePath}\"");
 
-        private void btnExportJSON_Click(object sender, RoutedEventArgs e)
-        {
-            throw new System.NotImplementedException();
         }
-
-        private void btnExportCSV_Click(object sender, RoutedEventArgs e)
-        {
-            throw new System.NotImplementedException();
-        }
-        
     }
 }

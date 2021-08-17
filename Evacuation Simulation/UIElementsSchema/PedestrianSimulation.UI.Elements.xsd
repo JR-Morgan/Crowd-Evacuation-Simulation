@@ -43,6 +43,27 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:element name="CameraViewsElement" substitutionGroup="engine:VisualElement" xmlns:q2="PedestrianSimulation.UI.Elements" type="q2:CameraViewsElementType" />
+  <xs:complexType name="DisplayPanelElementType">
+    <xs:complexContent mixed="false">
+      <xs:restriction base="engine:VisualElementType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="engine:VisualElement" />
+        </xs:sequence>
+        <xs:attribute default="" name="name" type="xs:string" use="optional" />
+        <xs:attribute default="" name="view-data-key" type="xs:string" use="optional" />
+        <xs:attribute default="Position" name="picking-mode" type="engine:VisualElement_picking-mode_Type" use="optional" />
+        <xs:attribute default="" name="tooltip" type="xs:string" use="optional" />
+        <xs:attribute default="None" name="usage-hints" type="engine:VisualElement_usage-hints_Type" use="optional" />
+        <xs:attribute default="0" name="tabindex" type="xs:int" use="optional" />
+        <xs:attribute default="false" name="focusable" type="xs:boolean" use="optional" />
+        <xs:attribute default="" name="class" type="xs:string" use="optional" />
+        <xs:attribute default="" name="content-container" type="xs:string" use="optional" />
+        <xs:attribute default="" name="style" type="xs:string" use="optional" />
+        <xs:anyAttribute processContents="lax" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DisplayPanelElement" substitutionGroup="engine:VisualElement" xmlns:q3="PedestrianSimulation.UI.Elements" type="q3:DisplayPanelElementType" />
   <xs:complexType name="ImportUIElementType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -63,7 +84,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="ImportUIElement" substitutionGroup="engine:VisualElement" xmlns:q3="PedestrianSimulation.UI.Elements" type="q3:ImportUIElementType" />
+  <xs:element name="ImportUIElement" substitutionGroup="engine:VisualElement" xmlns:q4="PedestrianSimulation.UI.Elements" type="q4:ImportUIElementType" />
   <xs:complexType name="LoginUIElementType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -84,8 +105,8 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="LoginUIElement" substitutionGroup="engine:VisualElement" xmlns:q4="PedestrianSimulation.UI.Elements" type="q4:LoginUIElementType" />
-  <xs:complexType name="RecieverElementType">
+  <xs:element name="LoginUIElement" substitutionGroup="engine:VisualElement" xmlns:q5="PedestrianSimulation.UI.Elements" type="q5:LoginUIElementType" />
+  <xs:complexType name="ReceiverElementType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -105,7 +126,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="RecieverElement" substitutionGroup="engine:VisualElement" xmlns:q5="PedestrianSimulation.UI.Elements" type="q5:RecieverElementType" />
+  <xs:element name="ReceiverElement" substitutionGroup="engine:VisualElement" xmlns:q6="PedestrianSimulation.UI.Elements" type="q6:ReceiverElementType" />
   <xs:complexType name="SimulationSetupElementType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -126,7 +147,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="SimulationSetupElement" substitutionGroup="engine:VisualElement" xmlns:q6="PedestrianSimulation.UI.Elements" type="q6:SimulationSetupElementType" />
+  <xs:element name="SimulationSetupElement" substitutionGroup="engine:VisualElement" xmlns:q7="PedestrianSimulation.UI.Elements" type="q7:SimulationSetupElementType" />
   <xs:complexType name="SpeckleWindowElementType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -147,7 +168,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="SpeckleWindowElement" substitutionGroup="engine:VisualElement" xmlns:q7="PedestrianSimulation.UI.Elements" type="q7:SpeckleWindowElementType" />
+  <xs:element name="SpeckleWindowElement" substitutionGroup="engine:VisualElement" xmlns:q8="PedestrianSimulation.UI.Elements" type="q8:SpeckleWindowElementType" />
   <xs:complexType name="TimelineElementType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -168,5 +189,5 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="TimelineElement" substitutionGroup="engine:VisualElement" xmlns:q8="PedestrianSimulation.UI.Elements" type="q8:TimelineElementType" />
+  <xs:element name="TimelineElement" substitutionGroup="engine:VisualElement" xmlns:q9="PedestrianSimulation.UI.Elements" type="q9:TimelineElementType" />
 </xs:schema>

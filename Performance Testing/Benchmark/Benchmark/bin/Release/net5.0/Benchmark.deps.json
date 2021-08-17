@@ -1035,11 +1035,11 @@
           }
         }
       },
-      "Objects/2.1.0.0": {
+      "Objects/2.1.1.0": {
         "runtime": {
           "Objects.dll": {
-            "assemblyVersion": "2.1.0.0",
-            "fileVersion": "2.1.0.0"
+            "assemblyVersion": "2.1.1.0",
+            "fileVersion": "2.1.1.0"
           }
         }
       },
@@ -2361,7 +2361,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Objects/2.1.0.0": {
+    "Objects/2.1.1.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

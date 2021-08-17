@@ -13,10 +13,12 @@ namespace PedestrianSimulation.Simulation
     public class SimulationSettings
     {
         public int seed = 255;
+        
         public int numberOfAgents = 100;
+        
         public Transform goal;
+        
         public float timeStep = 1f / 30f;
-        public bool useLegacyAgents = false;
 
 
         #region Distribution Strategy
@@ -54,8 +56,9 @@ namespace PedestrianSimulation.Simulation
         {
             return strategy switch
             {
-                LocalAvoidanceStrategy.SFM => new DelegatedLocalAvoidance(SocialForceModel.CalculateNextVelocity),
-                _ => throw new StrategyNotImplementedException<LocalAvoidanceStrategy>(strategy),
+                _ => new DelegatedLocalAvoidance(SocialForceModel.CalculateNextVelocity), //For now, always return SFM. RVO doesn't use ILocalAvoidance anyway so will ignore it on initialisation
+                //LocalAvoidanceStrategy.SFM => new DelegatedLocalAvoidance(SocialForceModel.CalculateNextVelocity),
+                //_ => throw new StrategyNotImplementedException<LocalAvoidanceStrategy>(strategy),
             };
         }
         #endregion
@@ -76,6 +79,7 @@ namespace PedestrianSimulation.Simulation
 
     public enum LocalAvoidanceStrategy
     {
+        RVO,
         SFM,
     }
 

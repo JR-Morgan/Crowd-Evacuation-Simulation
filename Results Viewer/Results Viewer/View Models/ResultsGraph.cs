@@ -35,6 +35,8 @@ namespace Results_Viewer.View_Models
         }
         
         private int _numberOfBars;
+        public string FilePath { get; private set; }
+
         public int NumberOfBars
         {
             get => _numberOfBars;
@@ -85,7 +87,7 @@ namespace Results_Viewer.View_Models
         public void LoadResultsFromFile(string filePath)
         {
             if (!File.Exists(filePath)) return;
-
+            this.FilePath = filePath;
             string json = File.ReadAllText(filePath);
             LoadResultsFromString(json);
         }

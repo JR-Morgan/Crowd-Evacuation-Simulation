@@ -36,15 +36,9 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="30"/>
                 </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" HorizontalAlignment="Right">X Axis</Label>
-                <ComboBox Margin="2" Grid.Column="1" Grid.Row="0" Name="cboXDataGroup" SelectionChanged="cboXDataGroup_SelectionChanged"></ComboBox>
-
-                <Label Grid.Row="0" HorizontalAlignment="Right">Y Axis</Label>
-                <ComboBox Margin="2" Grid.Column="1" Grid.Row="0" Name="cboYDataGroup" SelectionChanged="cboYDataGroup_SelectionChanged"></ComboBox>
                 
-                <Button Margin="2" Grid.ColumnSpan="2" Grid.Row="255" Name="btnExportJSON" Click="btnExportJSON_Click">Export CSV</Button>
-                <Button Margin="2" Grid.ColumnSpan="2" Grid.Row="255" Name="btnExportCSV" Click="btnExportCSV_Click">Export CSV</Button>
+                
+                <Button Margin="2" Grid.ColumnSpan="2" Grid.Row="255" Name="btnViewFile" Click="btnViewFile_Click">View file in Explorer</Button>
             </Grid>
 
         </GroupBox>
@@ -52,7 +46,7 @@
         <!--Results-->
         <GroupBox Header="Results" Grid.Column="1" Grid.Row="1">
             <!-- Simple time to evacuate results-->
-            
+            <Label Name="lblResults"></Label>
         </GroupBox>
     </Grid>
 </Window>
