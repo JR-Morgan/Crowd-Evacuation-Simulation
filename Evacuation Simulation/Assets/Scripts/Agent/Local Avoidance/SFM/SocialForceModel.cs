@@ -52,7 +52,7 @@ namespace PedestrianSimulation.Agent.LocalAvoidance.SFM
             const float gamma = 0.35f;
             const float nPrime = 3f;
             const float n = 2f;
-            const float a = 47f; // (47.0 Trịnh Thành Trung) (4.5 * 10 Moussaïd)
+            const float a = 45f; // (47.0 Trịnh Thành Trung) (4.5 * 10 Moussaïd)
 
             Vector3 interactionForce = Vector3.zero;
             

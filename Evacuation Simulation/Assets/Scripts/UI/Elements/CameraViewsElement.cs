@@ -8,7 +8,7 @@ namespace PedestrianSimulation.UI.Elements
     public struct CameraViewViewModel
     {
         public string name;
-        public GameObject cameraGroup;
+        public GameObject gameObject;
     }
 
     public class CameraViewsElement : VisualElement
@@ -35,7 +35,7 @@ namespace PedestrianSimulation.UI.Elements
 
             e.RegisterCallback<ClickEvent>(evt =>
             {
-                CameraChangeEvent.Invoke(viewModel.cameraGroup);
+                CameraChangeEvent.Invoke(viewModel.gameObject);
             });
 
             return e;

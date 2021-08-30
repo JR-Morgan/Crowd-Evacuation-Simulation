@@ -2,18 +2,17 @@
     "name": "PedestrianSimulation.UI",
     "rootNamespace": "PedestrianSimulation.UI",
     "references": [
-        "GUID:7104629240eb8a645904aa070efcaeb8",
-        "GUID:8c09aa1e4b73db04094be9d510142dd2",
-        "GUID:a13b7dd826d69694da179165459a296a",
-        "GUID:4522475184f73f84ba62e2ee5361740d",
-        "GUID:dc37ff51f0dcd6a40ad701478c0a76b5"
+        "Speckle",
+        "PedestrianSimulation",
+        "JMTools",
+        "UnityEngine.UIElementsModule"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": true,
+    "autoReferenced": false,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

@@ -5,6 +5,7 @@ using JMTools;
 using PedestrianSimulation.Import.Speckle;
 using PedestrianSimulation.Simulation;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 namespace PedestrianSimulation.Cameras
@@ -15,6 +16,7 @@ namespace PedestrianSimulation.Cameras
     {
         
         private Camera cam;
+
 
         [SerializeField]
         private float _modelHeight;
@@ -28,6 +30,8 @@ namespace PedestrianSimulation.Cameras
             }
         }
         
+
+        
         [SerializeField, Range(0f, 1f)]
         private float _yProportion;
         public float YProportion
@@ -40,6 +44,8 @@ namespace PedestrianSimulation.Cameras
             }
         }
         
+
+        
         [SerializeField, Range(0f, 1f)]
         private float _depthProportion = DEFAULT_DEPTH;
         public float DepthProportion
@@ -51,6 +57,8 @@ namespace PedestrianSimulation.Cameras
                 ValueChangeHandler();
             } 
         }
+        
+
 
         private const float DEFAULT_POSITION = DEFAULT_DEPTH;
         public float YPosition
@@ -61,11 +69,13 @@ namespace PedestrianSimulation.Cameras
         
         private const float DEFAULT_DEPTH = 3f;
         
-        public float YDepth
+        
+        public float YDepthDistance
         {
             get => ModelHeight * DepthProportion;
             set => DepthProportion = Mathf.Min(ModelHeight / value, ModelHeight);
         }
+
         
         private void Awake()
         {
@@ -80,14 +90,26 @@ namespace PedestrianSimulation.Cameras
 
         private void ModelChangeHandler<A,B>(A a = default, B b = default)
         {
+            ModelChangeHandlerNoNotify();
+            OnModelChange.Invoke(this);
+        }
+        
+        private void ModelChangeHandlerNoNotify()
+        {
             ModelHeight = GameObject.FindGameObjectWithTag("Environment").CalculateRendererBounds().size.y;//TODO
             
-            if (YDepth == default) YDepth = DEFAULT_DEPTH;
+            if (YDepthDistance == default) YDepthDistance = DEFAULT_DEPTH;
             if (YPosition == default) YPosition = DEFAULT_POSITION;
         }
         
 
         private void ValueChangeHandler()
+        {
+            ValueChangeHandlerNoNotify();
+            OnValueChange.Invoke(this);
+        }
+        
+        private void ValueChangeHandlerNoNotify()
         {
             var position = transform.position;
             
@@ -95,9 +117,23 @@ namespace PedestrianSimulation.Cameras
             transform.position = position;
         }
 
+        public UnityEvent<Camera2DContinuousLevelController> OnValueChange;
+        public UnityEvent<Camera2DContinuousLevelController> OnModelChange;
+        public UnityEvent<Camera2DContinuousLevelController> OnControllerEnabledChange;
+
         private void OnValidate()
         {
             ValueChangeHandler();
+        }
+
+        private void OnEnable()
+        {
+            OnControllerEnabledChange.Invoke(this);
+        }
+        
+        private void OnDisable()
+        {
+            OnControllerEnabledChange.Invoke(this);
         }
     }
 }

@@ -9,6 +9,7 @@ using UnityEngine.AI;
 
 namespace PedestrianSimulation.Agent
 {
+
     [SelectionBase, DisallowMultipleComponent]
     [AddComponentMenu("Simulation/Pedestrian Agent")]
     public class PedestrianAgent : AbstractAgent
@@ -39,8 +40,6 @@ namespace PedestrianSimulation.Agent
             NavMesh.CalculatePath(transform.position, terminalGoal, NavMesh.AllAreas, p);
 
             path = p.corners;
-            //navAgent.CalculatePath(terminalGoal, path);
-
 
             return p.status == NavMeshPathStatus.PathComplete;
         }
@@ -85,20 +84,12 @@ namespace PedestrianSimulation.Agent
 
         public override void UpdateIntentions(float timeStep)
         {
-            //Vector3 desiredGoal = CalculateCurrentGoal(State.position);
-            //if (State.goal != desiredGoal)
-            //{
-                //TODO stop agent
-            //}
-
-            //TODO use Time step
-
             IntendedVelocity = localAvoidance.NextVelocity(State, environmentModel) * timeStep;
         }
         
         public void CommitAction()
         {
-            var position = transform.position += IntendedVelocity;
+            var position = transform.position = State.position + IntendedVelocity;
             
             State = ConstructState(State.id, State.radius, State.desiredSpeed, CalculateCurrentGoal(position), IntendedVelocity);
             

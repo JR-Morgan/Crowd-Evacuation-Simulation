@@ -103,6 +103,8 @@ namespace PedestrianSimulation.UI.Elements
         {
             this.Add(View.CloneTree());
             
+            
+            
             this.style.flexDirection = FlexDirection.Column;
 
             foldout = this.Q<Foldout>("Foldout");

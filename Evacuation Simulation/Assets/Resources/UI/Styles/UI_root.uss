@@ -30,3 +30,8 @@
 #windowContainer TemplateContainer {
     flex-grow: 1;
 }
+
+Label {
+    margin-bottom: 0;
+    margin-top: 0;
+}

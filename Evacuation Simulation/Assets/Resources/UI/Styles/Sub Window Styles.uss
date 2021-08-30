@@ -137,7 +137,7 @@ Label {
     border-bottom-right-radius: 1px;
 }
 
-.med-text {
+.mid-text {
     font-size: 14px;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;

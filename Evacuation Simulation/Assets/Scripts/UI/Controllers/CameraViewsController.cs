@@ -11,17 +11,19 @@ namespace PedestrianSimulation.UI.Controllers
     public class CameraViewsController : MonoBehaviour
     {
 
-        private CameraViewsElement element;
+        private CameraViewsElement viewElement;
+        private VisualElement documentRoot;
 
         private List<GameObject> availableCameraGroups;
 
         private void Start()
         {
             UIDocument document = GetComponent<UIDocument>();
-            element = document.rootVisualElement.Q<CameraViewsElement>();
-            if (element != null)
+            documentRoot = document.rootVisualElement;
+            viewElement = documentRoot.Q<CameraViewsElement>();
+            if (viewElement != null)
             {
-                element.CameraChangeEvent += ChangeCamera;
+                viewElement.CameraChangeEvent += ChangeCamera;
 
                 ImportManager i = ImportManager.Instance;
                 if (i != null)
@@ -43,7 +45,7 @@ namespace PedestrianSimulation.UI.Controllers
         private void CameraUpdate<A, B>(A a = default, B b = default) => InitialiseUI();
         private void InitialiseUI()
         {
-            element.Clear();
+            viewElement.Clear();
             availableCameraGroups = new List<GameObject>();
 
             //Dynamic cameras
@@ -75,11 +77,12 @@ namespace PedestrianSimulation.UI.Controllers
             //Create UI for all cameras
             foreach (GameObject camGroup in availableCameraGroups)
             {
-                if (camGroup.transform.parent.gameObject.activeInHierarchy)
-                {
-                    element.AddElement(new CameraViewViewModel() { cameraGroup = camGroup, name = camGroup.name });
-                }
+                if (!camGroup.transform.parent.gameObject.activeInHierarchy) continue;
+                
+                viewElement.AddElement(new CameraViewViewModel() { gameObject = camGroup, name = camGroup.name });
+                CameraControlsHelper.CreateControls(camGroup, documentRoot.Q("top"));
             }
+            
         }
 
         private void ChangeCamera(GameObject cam)

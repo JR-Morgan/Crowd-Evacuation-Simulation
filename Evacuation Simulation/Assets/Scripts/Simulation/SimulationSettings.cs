@@ -18,8 +18,7 @@ namespace PedestrianSimulation.Simulation
         
         public Transform goal;
         
-        public float timeStep = 1f / 30f;
-
+        //public float timeStep = 1f / 30f;
 
         #region Distribution Strategy
         public DistributionStrategy agentDistribution;

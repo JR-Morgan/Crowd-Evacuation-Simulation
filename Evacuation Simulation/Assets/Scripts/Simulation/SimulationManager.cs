@@ -153,7 +153,7 @@ namespace PedestrianSimulation.Simulation
                     updater.Initialise(
                         updater: settings.NewUpdater(),
                         agents: Agents,
-                        timeStep: settings.timeStep
+                        timeStep: 0.5f
                         );
                 }
                 
