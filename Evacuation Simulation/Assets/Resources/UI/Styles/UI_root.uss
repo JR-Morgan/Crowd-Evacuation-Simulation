@@ -35,3 +35,7 @@ Label {
     margin-bottom: 0;
     margin-top: 0;
 }
+
+#Speed > Button {
+    background-color: rgba(53, 59, 72, 255);
+}

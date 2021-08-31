@@ -5,8 +5,8 @@
         <PedestrianSimulation.UI.Elements.SpeckleWindowElement />
     </ui:VisualElement>
     <ui:VisualElement name="bottom" style="flex-direction: column-reverse;">
-        <PedestrianSimulation.UI.Elements.TimelineElement />
-        <ui:VisualElement name="resultsParent" style="width: 150px; margin-bottom: 20px; margin-left: 15px;" />
+        <PedestrianSimulation.UI.Elements.TimelineElement style="margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+        <ui:VisualElement name="speed" style="flex-direction: row; margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px;" />
     </ui:VisualElement>
     <ui:VisualElement name="top">
         <PedestrianSimulation.UI.Elements.CameraViewsElement />
