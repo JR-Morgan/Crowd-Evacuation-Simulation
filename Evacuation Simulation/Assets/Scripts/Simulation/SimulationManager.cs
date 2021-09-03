@@ -1,12 +1,14 @@
 using PedestrianSimulation.Agent;
 using PedestrianSimulation.Visualisation;
 using System.Collections.Generic;
+using System.Linq;
 using PedestrianSimulation.Agent.LocalAvoidance;
 using JMTools;
 using PedestrianSimulation.Environment;
 using PedestrianSimulation.Results;
 using PedestrianSimulation.Simulation.UpdateStrategies;
 using Results_Core;
+using Speckle.ConnectorUnity;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -72,7 +74,7 @@ namespace PedestrianSimulation.Simulation
         
         public void InitialiseManager()
         {
-            if(updater != null) Destroy(updater);
+            if(updater != null) Destroy(updater.gameObject);
             
             if (HasGenerated)
             {
@@ -108,7 +110,8 @@ namespace PedestrianSimulation.Simulation
                 
                 { // 0. Cleanup from potential last run
                     if (visualSurface != null) Destroy(visualSurface);
-                    if (settings.goal == null) settings.goal = GameObject.FindGameObjectWithTag("Goal").transform;
+                    //settings.goals ??= FindGoals(environment).ToArray();
+                    settings.goals = GameObject.FindGameObjectsWithTag("Goal").Select(go => go.transform).ToArray();
                     if(updater != null) Destroy(updater);
                 }
                 
@@ -126,7 +129,7 @@ namespace PedestrianSimulation.Simulation
                 { // 3.1 Instantiate Agents
                     Agents = settings.NewDistribution<T>().InstantiateAgents(
                         agentParent: transform,
-                        agentsGoal: settings.goal,
+                        agentsGoals: settings.goals,
                         agentPrefab: agentPrefab,
                         numberOfAgents: settings.numberOfAgents,
                         environmentModel: environment.gameObject //TODO might change this type to EnvironmentManager
@@ -148,13 +151,18 @@ namespace PedestrianSimulation.Simulation
                         agent.GoalRegress += AgentGoalRegressedHandler;
                     }
 
-                    GameObject updaterGo = new GameObject("Updater");
-                    updater = updaterGo.AddComponent<AgentUpdater>();
-                    updater.Initialise(
-                        updater: settings.NewUpdater(),
-                        agents: Agents,
-                        timeStep: 0.5f
+                    //RVO agents are updated by Unity's AIUpdate loop
+                    if (settings.localAvoidanceStrategy != LocalAvoidanceStrategy.RVO)
+                    {
+                        GameObject updaterGo = new GameObject("Updater");
+                        updater = updaterGo.AddComponent<AgentUpdater>();
+                        updater.Initialise(
+                            updater: settings.NewUpdater(),
+                            agents: Agents,
+                            timeStep: 0.5f
                         );
+                    }
+                    
                 }
                 
 
@@ -230,7 +238,12 @@ namespace PedestrianSimulation.Simulation
 
         }
         
-        
+        private static IEnumerable<Transform> FindGoals(Component environment)
+        {
+            return environment.GetComponentsInChildren<SpeckleProperties>()
+                .Where(properties => properties.Data.ContainsKey("ce0693b3243b8b2f8174e7d6b31cda3c"))
+                .Select(properties => properties.transform);
+        }
         
         #region Goal Completions
         

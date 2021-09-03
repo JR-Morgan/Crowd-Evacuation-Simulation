@@ -15,9 +15,9 @@ MonoBehaviour:
   m_Version: 1.1.0
   m_Material: {fileID: 4683684913593235938}
   m_SourceFontFileGUID: 189c84d4bdcba6d449b66c25aad92981
-  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 189c84d4bdcba6d449b66c25aad92981, type: 3}
   m_SourceFontFile: {fileID: 12800000, guid: 189c84d4bdcba6d449b66c25aad92981, type: 3}
   m_AtlasPopulationMode: 1
+  InternalDynamicOS: 0
   m_FaceInfo:
     m_FaceIndex: 0
     m_FamilyName: Liberation Sans
@@ -82,6 +82,7 @@ MonoBehaviour:
   m_FallbackFontAssetTable: []
   m_fontAssetCreationEditorSettings:
     sourceFontFileGUID: 189c84d4bdcba6d449b66c25aad92981
+    faceIndex: 0
     pointSizeSamplingMode: 0
     pointSize: 90
     padding: 9
@@ -189,9 +190,9 @@ Material:
     - _OutlineSoftness: 0
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
-    - _ScaleRatioA: 1
+    - _ScaleRatioA: 0.9
     - _ScaleRatioB: 1
-    - _ScaleRatioC: 1
+    - _ScaleRatioC: 0.73125
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0

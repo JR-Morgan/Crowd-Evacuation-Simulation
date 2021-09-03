@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SFM Test.unity
+    path: Assets/Scenes/Simulation Scene.unity
     guid: c7ee4ef43de7dbf4d9844cdf78ebbc97
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 7db955963bc58a74babfa9b82594b9ec, type: 2}

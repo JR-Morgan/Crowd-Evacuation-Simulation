@@ -57,7 +57,7 @@ namespace PedestrianSimulation.Simulation.Initialisation.Tests
         {
             var agents = distribution.InstantiateAgents(
                 agentParent: new GameObject().transform,
-                agentsGoal: new GameObject().transform,
+                agentsGoals: new [] { new GameObject().transform },
                 agentPrefab: new GameObject(),
                 numberOfAgents: numberOfAgents,
                 environmentModel: environment
@@ -77,7 +77,7 @@ namespace PedestrianSimulation.Simulation.Initialisation.Tests
             
             var agents = distribution.InstantiateAgents(
                 agentParent: new GameObject().transform,
-                agentsGoal: new GameObject().transform,
+                agentsGoals: new [] { new GameObject().transform },
                 agentPrefab: new GameObject(),
                 numberOfAgents: numberOfAgents,
                 environmentModel: environment
@@ -98,7 +98,7 @@ namespace PedestrianSimulation.Simulation.Initialisation.Tests
             
             var agents = distribution.InstantiateAgents(
                 agentParent: parent,
-                agentsGoal: goal,
+                agentsGoals: new [] {goal},
                 agentPrefab: new GameObject(),
                 numberOfAgents: numberOfAgents,
                 environmentModel: environment

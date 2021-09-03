@@ -16,7 +16,7 @@ namespace PedestrianSimulation.Simulation
         
         public int numberOfAgents = 100;
         
-        public Transform goal;
+        public Transform[] goals;
         
         //public float timeStep = 1f / 30f;
 

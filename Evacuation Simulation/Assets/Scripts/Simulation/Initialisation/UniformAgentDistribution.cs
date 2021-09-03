@@ -1,9 +1,11 @@
 #nullable enable
 using PedestrianSimulation.Agent;
 using System.Collections.Generic;
+using System.Linq;
 using JMTools;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Assertions;
 
 namespace PedestrianSimulation.Simulation.Initialisation
 {
@@ -22,9 +24,9 @@ namespace PedestrianSimulation.Simulation.Initialisation
             Distance = distance;
         }
 
-        public List<T> InstantiateAgents(Transform agentParent, Transform agentsGoal, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel)
+        public List<T> InstantiateAgents(Transform agentParent, ICollection<Transform> agentsGoals, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel)
         {
-            return InstantiateAgents(agentParent, agentsGoal, agentPrefab, numberOfAgents, environmentModel, this.Tries, this.Distance);
+            return InstantiateAgents(agentParent, agentsGoals, agentPrefab, numberOfAgents, environmentModel, this.Tries, this.Distance);
         }
         #endregion
 
@@ -33,7 +35,7 @@ namespace PedestrianSimulation.Simulation.Initialisation
         /// Creates the specified <paramref name="numberOfAgents"/> as children of <paramref name="agentParent"/>.
         /// </summary>
         /// <param name="agentParent">The parent transform of all of the new agents</param>
-        /// <param name="goal">The agents goal</param>
+        /// <param name="agentsGoals">The agents goals</param>
         /// <param name="agentPrefab">The prefab used to create agents</param>
         /// <param name="numberOfAgents">The number of agents that should be created</param>
         /// <param name="environmentModel">The agent's environment, used to calculate bounds</param>
@@ -41,8 +43,17 @@ namespace PedestrianSimulation.Simulation.Initialisation
         /// <param name="distance">The size of voxels used to spawn agents, Should be less than or equal to the size of agents.
         ///     The smaller the more uniform the agent's distribution but the higher chance of a single try failing</param>
         /// <returns>The list of new agents. May contain null values if some agents failed to spawn within the number of <paramref name="tries"/></returns>
-        public static List<T> InstantiateAgents(Transform agentParent, Transform goal, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel, int tries = DEFAULT_TRIES, float distance = DEFAULT_DISTANCE)
+        private static List<T> InstantiateAgents(Transform agentParent, ICollection<Transform> agentsGoals, GameObject agentPrefab, int numberOfAgents, GameObject environmentModel, int tries = DEFAULT_TRIES, float distance = DEFAULT_DISTANCE)
         {
+            if (agentsGoals.Count <= 0)
+            {
+                var goal = new GameObject {
+                    transform = { position = new Vector3(15f, 0f, 0f) }
+                };
+                agentsGoals.Add(goal.transform); //For debug purposes, just add a valid goal
+            }
+            
+            
             List<T> agents = new List<T>(numberOfAgents);
             Bounds bounds =  environmentModel.CalculateRendererBounds();
 
@@ -68,12 +79,10 @@ namespace PedestrianSimulation.Simulation.Initialisation
                     if (navAgent != null) navAgent.Warp(position); //TODO consider doing this check in agent
                     else agentGameObject.transform.position = position;
 
-                    if (agent.TrySetGoal(goal.position))
-                    {
-                        failed = false;
-                        break;
-                    }
-
+                    if (!SetGoal(agent, position, agentsGoals)) continue;
+                    
+                    failed = false;
+                    break;
                 }
 
                 if (failed)
@@ -89,6 +98,14 @@ namespace PedestrianSimulation.Simulation.Initialisation
 
             }
             return agents;
+        }
+
+        private static bool SetGoal(T agent, Vector3 agentPosition, IEnumerable<Transform> agentsGoals)
+        {
+            IEnumerable<Transform> orderedGoals = agentsGoals
+                .OrderBy(goal => Vector3.Distance(goal.position, agentPosition));
+
+            return orderedGoals.Any(goal => agent.TrySetGoal(goal.position));
         }
 
         protected static Vector3 GetRandomPointOnNavMesh(in Bounds bounds, Transform transform, float distance)

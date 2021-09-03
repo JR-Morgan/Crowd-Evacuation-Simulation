@@ -9,10 +9,12 @@ using UnityEngine.UIElements;
 
 namespace PedestrianSimulation.UI
 {
+    [AddComponentMenu("Simulation/UI/Time Scale Controller"), DisallowMultipleComponent]
     [RequireComponent(typeof(UIDocument))]
     public class TimeScaleController : MonoBehaviour
     {
-       
+        private const string PREFIX = "X"; //"\u2715"; //for some reason, I'm having some problems getting unicode to render with UI toolkits fonts
+        
         private VisualElement element;
         private void Start()
         {
@@ -26,21 +28,27 @@ namespace PedestrianSimulation.UI
 
 
         private static List<VisualElement> GenerateSpeedControls(params float[] speedParams) => GenerateSpeedControls(speeds: speedParams);
-        private static List<VisualElement> GenerateSpeedControls(IEnumerable<float> speeds)
+        private static List<VisualElement> GenerateSpeedControls(ICollection<float> speeds)
         {
             var elements = new List<VisualElement>();
-            
-            foreach (float speed in speeds)
+
+            if (speeds.Count >= 0)
             {
-                var button = new Button(() =>
-                {
-                    SetTimeScale(speed);
-                })
-                {
-                    text = $"{speed}",
-                };
+                var label = new Label("Speed: ");
+                elements.Add(label);
                 
-                elements.Add(button);
+                foreach (float speed in speeds)
+                {
+                    var button = new Button(() =>
+                    {
+                        SetTimeScale(speed);
+                    })
+                    {
+                        text = $"{PREFIX}{speed}",
+                    };
+                
+                    elements.Add(button);
+                }
             }
 
             return elements;
